@@ -1,4 +1,5 @@
-.venv
+# Python interpreter
+.venv/
 
 # JetBrains IDEs
 **/.idea/
