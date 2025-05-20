@@ -1,1 +1,16 @@
-numpy==2.2.5
+# JAX (CPU)
+jax>=0.6.0 # CPU
+
+# JAX libraries
+jaxlib>=0.6.0
+orthax>=0.2.4
+
+# Further mathematical libraries
+numpy>=2.2.5
+scipy>=1.15.3
+
+# Visualisation
+matplotlib>=3.10.3
+
+# Testing
+pytest>=8.3.5
