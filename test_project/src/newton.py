@@ -1,6 +1,8 @@
 import jax
 import jax.numpy as jnp
 
+
+@jax.jit
 def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
@@ -16,26 +18,24 @@ def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.n
     coef: 1D array of divided differences a_k, starting with a_0 = f[x_0], a_1 = f[x_0, x_1], etc.
     """
 
-    if interpolation_nodes.size == 0:
-        raise ValueError("Interpolation nodes must not be empty.")
-    if function_values.size == 0:
-        raise ValueError("Function values must not be empty.")
-    if interpolation_nodes.size != function_values.size:
-        raise ValueError("Interpolation nodes and function values must have the same length.")
-    if jnp.unique(interpolation_nodes).size != interpolation_nodes.size:
-        raise ValueError("Interpolation nodes must be distinct.")
-
     n = interpolation_nodes.size
     coef = function_values.copy()
 
-    for j in range(1, n):
-        numerator = coef[j:n] - coef[j - 1: n - 1]
-        denominator = interpolation_nodes[j:n] - interpolation_nodes[0 : n - j]
-        coef = coef.at[j:n].set(numerator / denominator)
+    def outer_loop(j, coef):
+        def inner_loop(i, coef_inner):
+            num = coef[i] - coef[i - 1]
+            denom = interpolation_nodes[i] - interpolation_nodes[i - j]
+            return coef_inner.at[i].set(num / denom)
+
+        coef = jax.lax.fori_loop(j, n, inner_loop, coef)
+        return coef
+
+    coef = jax.lax.fori_loop(1, n, outer_loop, coef)
 
     return coef
 
 
+@jax.jit
 def newton_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.ndarray, coef: jnp.ndarray) -> jnp.ndarray:
     """
     Evaluates the Newton interpolation polynomial at given points.
@@ -51,15 +51,6 @@ def newton_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.
     -------
     polynomial_values: Array containing the evaluated polynomial values p(x).
     """
-
-    if interpolation_nodes.size == 0:
-        raise ValueError("Interpolation nodes must not be empty.")
-    if coef.size == 0:
-        raise ValueError("Divided difference coefficients must not be empty.")
-    if interpolation_nodes.size != coef.size:
-        raise ValueError("Interpolation nodes and coefficients must have the same length.")
-    if jnp.unique(interpolation_nodes).size != interpolation_nodes.size:
-        raise ValueError("Interpolation nodes must be distinct.")
 
     # Ensure input x is at least 1D to allow vectorized evaluation
     evaluation_points = jnp.atleast_1d(evaluation_points)
