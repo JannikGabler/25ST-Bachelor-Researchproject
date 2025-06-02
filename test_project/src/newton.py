@@ -23,16 +23,16 @@ def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.n
     coefficients = function_values.copy()
 
     # Compute divided differences of increasing order
-    def outer_loop(j, coef):
+    def outer_loop(j, coef_outer):
         # Update entries for current order of divided differences
         def inner_loop(i, coef_inner):
-            numerator = coef[i] - coef[i - 1]
+            numerator = coef_outer[i] - coef_outer[i - 1]
             denominator = interpolation_nodes[i] - interpolation_nodes[i - j]
             return coef_inner.at[i].set(numerator/denominator)
 
         # Apply the inner loop to update coefficients for the current order
-        coef = jax.lax.fori_loop(j, n, inner_loop, coef)
-        return coef
+        coef_outer = jax.lax.fori_loop(j, n, inner_loop, coef_outer)
+        return coef_outer
 
     # Apply the outer loop to compute all orders of divided differences
     coefficients = jax.lax.fori_loop(1, n, outer_loop, coefficients)
