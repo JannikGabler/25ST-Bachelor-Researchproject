@@ -1,14 +1,13 @@
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from test_project.src.newton import divided_differences, newton_interpolate
+from test_project.src.newton import newton_interpolate
 
 
 def plot_sin_example():
     interpolation_nodes = jnp.array([0.0, 0.5, 1.0, 1.5])
     function_values = jnp.sin(interpolation_nodes)
-    coef = divided_differences(interpolation_nodes, function_values)
     evaluation_points = jnp.linspace(0, 2.0, 200)
-    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, coef)
+    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
 
     plt.plot(evaluation_points, interpolated_values, label="Interpolation")
     plt.plot(evaluation_points, jnp.sin(evaluation_points), '--', label="sin(x)")
@@ -22,9 +21,8 @@ def plot_quadratic_example():
     def f(x): return 2 * x**2 - 3 * x + 1
     interpolation_nodes = jnp.linspace(-5, 10, 15)
     function_values = f(interpolation_nodes)
-    coef = divided_differences(interpolation_nodes, function_values)
     evaluation_points = jnp.linspace(-5, 10, 300)
-    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, coef)
+    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
     true_values = f(evaluation_points)
 
     plt.plot(evaluation_points, interpolated_values, label="Newton-Interpolation", color='blue')
@@ -39,9 +37,8 @@ def plot_exp_example():
     def f(x): return jnp.exp(x)
     interpolation_nodes = jnp.linspace(0, 2, 6)
     function_values = f(interpolation_nodes)
-    coef = divided_differences(interpolation_nodes, function_values)
-    evaluation_points = jnp.linspace(0, 5, 300)
-    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, coef)
+    evaluation_points = jnp.linspace(0, 3, 300)
+    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
     true_values = f(evaluation_points)
 
     plt.plot(evaluation_points, interpolated_values, label="Newton-Interpolation", color='blue')
@@ -56,9 +53,8 @@ def plot_log_example():
     def f(x): return jnp.log(x + 1)
     interpolation_nodes = jnp.linspace(0, 5, 6)
     function_values = f(interpolation_nodes)
-    coef = divided_differences(interpolation_nodes, function_values)
-    evaluation_points = jnp.linspace(0, 10, 300)
-    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, coef)
+    evaluation_points = jnp.linspace(0, 6, 300)
+    interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
     true_values = f(evaluation_points)
 
     plt.plot(evaluation_points, interpolated_values, label="Newton-Interpolation", color='blue')

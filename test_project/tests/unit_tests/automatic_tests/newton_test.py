@@ -1,47 +1,39 @@
 import unittest
 import jax.numpy as jnp
 
-from test_project.src.newton import divided_differences, newton_interpolate
+from test_project.src.newton import newton_interpolate
 
 
 class MyTestCase(unittest.TestCase):
     def test_exact_interpolation_points(self):
-        x_data = jnp.array([0.0, 1.0, 2.0])
-        y_data = x_data ** 2 + 1
-        coef = divided_differences(x_data, y_data)
-
-        for x, y in zip(x_data, y_data):
-            y_interp = newton_interpolate(x, x_data, coef)
-            self.assertTrue(jnp.isclose(y_interp, y, atol=1e-8))
+        interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
+        function_values = interpolation_nodes ** 2 + 1
+        for node, true_value in zip(interpolation_nodes, function_values):
+            interpolated_value = newton_interpolate(node, interpolation_nodes, function_values)
+            self.assertTrue(jnp.isclose(interpolated_value, true_value, atol=1e-8))
 
     def test_quadratic_function_midpoint(self):
-        x_data = jnp.array([0.0, 1.0, 2.0])
-        y_data = x_data ** 2 + 1
-        coef = divided_differences(x_data, y_data)
-
-        x_test = 1.5
-        expected = x_test ** 2 + 1
-        y_interp = newton_interpolate(x_test, x_data, coef)
-        self.assertTrue(jnp.isclose(y_interp, expected, atol=1e-6))
+        interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
+        function_values = interpolation_nodes ** 2 + 1
+        evaluation_point = 1.5
+        expected_value = evaluation_point ** 2 + 1
+        interpolated_value = newton_interpolate(evaluation_point, interpolation_nodes, function_values)
+        self.assertTrue(jnp.isclose(interpolated_value, expected_value, atol=1e-6))
 
     def test_constant_function(self):
-        x_data = jnp.array([-2.0, 0.0, 2.0])
-        y_data = jnp.array([5.0, 5.0, 5.0])
-        coef = divided_differences(x_data, y_data)
-
-        x_test = jnp.linspace(-2, 2, 5)
-        y_interp = newton_interpolate(x_test, x_data, coef)
-        self.assertTrue(jnp.allclose(y_interp, 5.0))
+        interpolation_nodes = jnp.array([-2.0, 0.0, 2.0])
+        function_values = jnp.array([5.0, 5.0, 5.0])
+        evaluation_points = jnp.linspace(-2, 2, 5)
+        interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
+        self.assertTrue(jnp.allclose(interpolated_values, 5.0))
 
     def test_linear_function(self):
-        x_data = jnp.array([1.0, 2.0, 3.0])
-        y_data = 3 * x_data + 2
-        coef = divided_differences(x_data, y_data)
-
-        x_test = jnp.array([1.5, 2.5])
-        y_expected = 3 * x_test + 2
-        y_interp = newton_interpolate(x_test, x_data, coef)
-        self.assertTrue(jnp.allclose(y_interp, y_expected, atol=1e-6))
+        interpolation_nodes = jnp.array([1.0, 2.0, 3.0])
+        function_values = 3 * interpolation_nodes + 2
+        evaluation_points = jnp.array([1.5, 2.5])
+        expected_values = 3 * evaluation_points + 2
+        interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
+        self.assertTrue(jnp.allclose(interpolated_values, expected_values, atol=1e-6))
 
 
 if __name__ == '__main__':
