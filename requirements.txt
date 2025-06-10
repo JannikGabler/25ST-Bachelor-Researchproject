@@ -1,3 +1,6 @@
+# Data structures
+anytree >= 2.13.0
+
 # JAX (CPU)
 jax>=0.6.0 # CPU
 
@@ -14,3 +17,6 @@ matplotlib>=3.10.3
 
 # Testing
 pytest>=8.3.5
+
+# Version management
+packaging>=25.0
