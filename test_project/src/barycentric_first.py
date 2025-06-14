@@ -88,12 +88,15 @@ def barycentric_type1_interpolate(evaluation_points: jnp.ndarray, interpolation_
         1D array of interpolated values at each evaluation point.
         If x_eval was a scalar, a 1-element array is returned.
     """
-
-    # Compute the weights
-    weights = compute_weights(interpolation_nodes)
+    # Convert any array‐like to JAX arrays
+    interpolation_nodes = jnp.asarray(interpolation_nodes)
+    function_values = jnp.asarray(function_values)
 
     # Ensure input x is at least 1D to allow vectorized evaluation
     evaluation_points = jnp.atleast_1d(evaluation_points)
+
+    # Compute the weights
+    weights = compute_weights(interpolation_nodes)
 
     # Compute interpolation value for each evaluation point individually but efficiently
     return jax.vmap(lambda x: interpolate_single(x, interpolation_nodes, function_values, weights))(evaluation_points)
