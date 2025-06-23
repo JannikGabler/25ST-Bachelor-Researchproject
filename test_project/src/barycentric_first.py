@@ -23,13 +23,13 @@ def compute_weights(interpolation_nodes: jnp.ndarray) -> jnp.ndarray:
 
     # Create a boolean matrix with False on the diagonal and True elsewhere
     # This is used to exclude self-differences (which are zero) from the product
-    mask = ~jnp.eye(len(interpolation_nodes), dtype=bool)
+    bool_diff = ~jnp.eye(len(interpolation_nodes), dtype=bool)
 
     # Replace diagonal entries (which are zero) with 1.0 to avoid affecting the product
     # Then compute the product across each row (over all k ≠ j)
-    product = jnp.prod(jnp.where(mask, pairwise_diff, 1.0), axis=1)
+    product = jnp.prod(jnp.where(bool_diff, pairwise_diff, 1.0), axis=1)
 
-    # Return the inverse of each product to get the barycentric weights
+    # Divide 1.0 by the product to get the barycentric weights (Equation (5.6))
     return 1.0 / product
 
 
