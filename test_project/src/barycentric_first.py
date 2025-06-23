@@ -86,8 +86,9 @@ def barycentric_type1_interpolate(evaluation_points: jnp.ndarray, interpolation_
 
     Returns:
         1D array of interpolated values at each evaluation point.
-        If x_eval was a scalar, a 1-element array is returned.
+        If evaluation_points was a scalar, a 1-element array is returned.
     """
+
     # Convert any array‐like to JAX arrays
     interpolation_nodes = jnp.asarray(interpolation_nodes)
     function_values = jnp.asarray(function_values)

@@ -13,7 +13,7 @@ def plot_sin_example():
     plt.plot(evaluation_points, interpolated_values, label="Baryzentrische Interpolation 1. Art")
     plt.plot(evaluation_points, jnp.sin(evaluation_points), '--', label="sin(x)")
     plt.scatter(interpolation_nodes, function_values, color='red', label="Stützstellen")
-    plt.title("Baryzentrische Interpolation 1. Art von sin(x)")
+    plt.title("f(x) = sin(x) auf [0, 2]")
     plt.legend()
     plt.grid(True)
     plt.show()
