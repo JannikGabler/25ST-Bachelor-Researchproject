@@ -1,5 +1,6 @@
 import unittest
 import jax.numpy as jnp
+import time
 
 from test_project.src.barycentric_first import barycentric_type1_interpolate
 
@@ -46,6 +47,27 @@ class MyTestCase(unittest.TestCase):
         interpolated_values = barycentric_type1_interpolate(interpolation_nodes, interpolation_nodes, function_values)
         self.assertTrue(jnp.allclose(interpolated_values, function_values, atol=1e-8),
                         msg=f"Expected {function_values}, got {interpolated_values}")
+
+    def test_interpolation_speed_various_sizes(self):
+        grid_sizes = [200, 1000, 2000, 5000, 10000]
+
+        for n in grid_sizes:
+            interpolation_nodes = jnp.linspace(-1.0, 1.0, 1000)
+            function_values = interpolation_nodes ** 2
+            evaluation_points = jnp.linspace(-1.0, 1.0, n)
+
+            # Warm-up JIT compile
+            barycentric_type1_interpolate(evaluation_points[:1], interpolation_nodes,
+                                          function_values).block_until_ready()
+
+            start = time.perf_counter()
+            barycentric_type1_interpolate(evaluation_points, interpolation_nodes, function_values).block_until_ready()
+            end = time.perf_counter()
+
+            elapsed = end - start
+            elapsed_ms = elapsed * 1000
+
+            print(f"Interpolation time for {n} evaluation points: {elapsed:.4f} seconds ({elapsed_ms:.1f} ms)")
 
 
 if __name__ == '__main__':
