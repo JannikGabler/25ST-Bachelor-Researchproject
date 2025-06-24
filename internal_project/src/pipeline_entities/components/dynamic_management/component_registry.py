@@ -83,7 +83,7 @@ class ComponentRegistry:
     # TODO
     @staticmethod
     def _register_default_interpolation_cores_():
-        __register_default_interpolation_cores__.register_node_generators()
+        __register_default_interpolation_cores__.register_interpolation_cores()
 
     @staticmethod
     def _register_default_node_generators_():
