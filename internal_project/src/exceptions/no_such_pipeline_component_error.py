@@ -1,0 +1,4 @@
+
+class NoSuchPipelineComponentError(Exception):
+    pass
+

@@ -1,0 +1,3 @@
+
+class ModuleAlreadyLoadedException(Exception):
+    pass
