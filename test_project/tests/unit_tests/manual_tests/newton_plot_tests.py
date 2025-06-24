@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
-from test_project.src.newton import newton_interpolate
+from test_project.src.newton_interpolation.newton import newton_interpolate
 
 
 def plot_sin_example():

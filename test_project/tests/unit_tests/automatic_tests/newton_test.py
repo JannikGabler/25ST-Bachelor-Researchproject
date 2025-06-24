@@ -1,7 +1,7 @@
 import unittest
 import jax.numpy as jnp
 
-from test_project.src.newton import newton_interpolate
+from test_project.src.newton_interpolation.newton import newton_interpolate
 
 
 class MyTestCase(unittest.TestCase):
