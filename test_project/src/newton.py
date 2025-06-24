@@ -55,6 +55,10 @@ def newton_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.
          polynomial_values: 1D array containing the evaluated polynomial values p(x) or scalar if input was scalar.
     """
 
+    # Convert any array‐like to JAX arrays
+    interpolation_nodes = jnp.asarray(interpolation_nodes)
+    function_values = jnp.asarray(function_values)
+
     # Compute the coefficients via divided differences
     coefficients = divided_differences(interpolation_nodes, function_values)
 
