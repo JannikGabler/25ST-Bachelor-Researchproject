@@ -1,0 +1,40 @@
+import inspect
+from abc import ABCMeta
+from typing import get_type_hints
+
+from pipeline_entities.data_transfer.pipeline_data import PipelineData
+from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
+
+
+
+class PipelineComponentMeta(ABCMeta):
+
+    def __init__(cls, name, bases, namespace, **kwargs):
+        super().__init__(name, bases, namespace)
+
+        if not inspect.isabstract(cls):
+            init_method = cls.__init__
+            signature = inspect.signature(init_method)
+            parameters = list(signature.parameters.values())[1:]   # Skip 'self' parameter
+
+            # Usage of module name and class name to prevent circular import
+            if any(base.__module__.endswith("input_pipeline_component") and base.__name__ == "InputPipelineComponent" for base in cls.__mro__[1:]):
+                expected_parameter_types = [PipelineInput, PipelineData]
+            else:
+                expected_parameter_types = [PipelineData]
+
+            hints = get_type_hints(init_method)
+            actual_parameter_types = [hints.get(parameter.name, None) for parameter in parameters]
+
+            if len(parameters) != len(expected_parameter_types) \
+                or any(actual_type != expected_type for actual_type, expected_type in zip(actual_parameter_types, expected_parameter_types)):
+
+                raise TypeError(f"The constructor of '{cls.__name__}' has invalid parameters. Expected types for the parameters are '{str(expected_parameter_types)}'.")
+
+
+
+
+
+
+
+

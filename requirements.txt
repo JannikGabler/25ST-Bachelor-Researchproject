@@ -8,9 +8,13 @@ orthax>=0.2.4
 # Further mathematical libraries
 numpy>=2.2.5
 scipy>=1.15.3
+sympy>=1.14.0
 
 # Visualisation
 matplotlib>=3.10.3
 
 # Testing
 pytest>=8.3.5
+
+# Version management
+packaging>=25.0
