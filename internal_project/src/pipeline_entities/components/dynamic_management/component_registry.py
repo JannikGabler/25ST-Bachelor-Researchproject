@@ -3,6 +3,8 @@ from exceptions.not_instantiable_error import NotInstantiableError
 from pipeline_entities.component_info.dataclasses.pipeline_component_info import (PipelineComponentInfo)
 from pipeline_entities.components.default_components.default_input_components import \
     __register_default_input_components__
+from pipeline_entities.components.default_components.default_interpolation_cores import \
+    __register_default_interpolation_cores__
 from pipeline_entities.components.default_components.default_node_generators import __register_default_node_generators__
 from pipeline_entities.components.default_components.default_test_components import __register_default_test_components__
 
@@ -81,7 +83,7 @@ class ComponentRegistry:
     # TODO
     @staticmethod
     def _register_default_interpolation_cores_():
-        pass
+        __register_default_interpolation_cores__.register_interpolation_cores()
 
     @staticmethod
     def _register_default_node_generators_():

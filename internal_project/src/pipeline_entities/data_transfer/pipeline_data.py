@@ -12,7 +12,10 @@ class PipelineData:
 
     nodes: Optional[jnp.ndarray] = None
 
+    interpolant: Optional[jnp.ndarray] = None
+
     additional_values: dict[str, Any] = field(default_factory=dict)
+
 
 
 
