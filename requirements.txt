@@ -1,6 +1,3 @@
-# Data structures
-anytree >= 2.13.0
-
 # JAX (CPU)
 jax>=0.6.0 # CPU
 
@@ -11,6 +8,7 @@ orthax>=0.2.4
 # Further mathematical libraries
 numpy>=2.2.5
 scipy>=1.15.3
+sympy>=1.14.0
 
 # Visualisation
 matplotlib>=3.10.3
