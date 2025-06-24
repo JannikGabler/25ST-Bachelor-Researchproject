@@ -2,7 +2,7 @@ import unittest
 import jax.numpy as jnp
 import time
 
-from test_project.src.barycentric_first import barycentric_type1_interpolate
+from test_project.src.barycentric_first.barycentric_first import barycentric_type1_interpolate
 
 
 class MyTestCase(unittest.TestCase):

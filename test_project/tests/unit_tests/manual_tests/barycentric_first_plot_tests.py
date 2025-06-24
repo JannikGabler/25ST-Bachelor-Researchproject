@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 
-from test_project.src.barycentric_first import barycentric_type1_interpolate
+from test_project.src.barycentric_first.barycentric_first import barycentric_type1_interpolate
 
 
 def plot_sin_example():
