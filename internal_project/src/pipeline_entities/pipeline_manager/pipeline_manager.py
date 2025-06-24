@@ -160,8 +160,9 @@ class PipelineManager:
             self._pipeline_data_dict_[node.path] = pipeline_data
             return pipeline_data
         else:
-            pipeline_data: PipelineData = self._pipeline_data_dict_[node.parent_node.path]
-            self._pipeline_data_dict_[node.path] = pipeline_data
-            return deepcopy(pipeline_data)
+            parent_pipeline_data: PipelineData = self._pipeline_data_dict_[node.parent_node.path]
+            new_pipeline_data: PipelineData = deepcopy(parent_pipeline_data)
+            self._pipeline_data_dict_[node.path] = new_pipeline_data
+            return new_pipeline_data
 
 
