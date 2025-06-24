@@ -14,9 +14,6 @@ def compute_weights(interpolation_nodes: jnp.ndarray) -> jnp.ndarray:
         1D array containing the barycentric weights.
     """
 
-    # Ensure input is a JAX array
-    interpolation_nodes = jnp.asarray(interpolation_nodes)
-
     # Create a square matrix where each entry [j, k] is the difference between node j and node k
     # Note that the diagonal entries are all zero, since each node is subtracted from itself
     pairwise_diff = interpolation_nodes[:, None] - interpolation_nodes[None, :]
