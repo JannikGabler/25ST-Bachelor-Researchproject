@@ -3,9 +3,31 @@ import jax.numpy as jnp
 import time
 
 from test_project.src.newton_interpolation.newton import newton_interpolate
+from test_project.src.newton_interpolation.newton import divided_differences
 
 
 class MyTestCase(unittest.TestCase):
+    def test_constant_function_coefficients(self):
+        interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
+        function_values = jnp.array([5.0, 5.0, 5.0])
+        coeffs = divided_differences(interpolation_nodes, function_values)
+        expected = jnp.array([5.0, 0.0, 0.0])
+        self.assertTrue(jnp.allclose(coeffs, expected, atol=1e-8))
+
+    def test_linear_function_coefficients(self):
+        interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
+        function_values = 3 * interpolation_nodes + 2
+        coeffs = divided_differences(interpolation_nodes, function_values)
+        expected = jnp.array([2.0, 3.0, 0.0])
+        self.assertTrue(jnp.allclose(coeffs, expected, atol=1e-8))
+
+    def test_quadratic_function_coefficients(self):
+        interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
+        function_values = interpolation_nodes ** 2 + 1
+        coeffs = divided_differences(interpolation_nodes, function_values)
+        expected = jnp.array([1.0, 1.0, 1.0])
+        self.assertTrue(jnp.allclose(coeffs, expected, atol=1e-8))
+
     def test_exact_interpolation_points(self):
         interpolation_nodes = jnp.array([0.0, 1.0, 2.0])
         function_values = interpolation_nodes ** 2 + 1
@@ -36,8 +58,8 @@ class MyTestCase(unittest.TestCase):
         interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
         self.assertTrue(jnp.allclose(interpolated_values, expected_values, atol=1e-6))
 
-    def test_interpolation_speed_various_sizes_newton(self):
-        grid_sizes = [200, 1000, 10000, 100000, 1000000]
+    def test_interpolation_speed_various_sizes(self):
+        grid_sizes = [1000, 10000, 100000, 1000000]
 
         for n in grid_sizes:
             interpolation_nodes = jnp.linspace(-1.0, 1.0, 1000)
