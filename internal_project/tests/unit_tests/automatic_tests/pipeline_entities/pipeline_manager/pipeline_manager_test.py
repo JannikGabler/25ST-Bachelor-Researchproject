@@ -1,7 +1,5 @@
 import unittest
-import jax.numpy as jnp
 
-from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
@@ -9,11 +7,12 @@ from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration
 from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
 from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
 from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
+from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
-        ComponentRegistry.register_default_components()
+        InternalLogicSetupManager.setup()
 
 
 
