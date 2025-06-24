@@ -42,15 +42,6 @@ class EquidistantNodeGenerator(NodeGenerator):
 
 
 
-    ##########################
-    ### Overridden methods ###
-    ##########################
-    # TODO: Move to abstract pipeline_component class
-    def __repr__(self) -> str:
-        return "Node generator for equidistant nodes"
-
-
-
     #######################
     ### Private methods ###
     #######################
