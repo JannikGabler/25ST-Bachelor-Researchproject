@@ -1,30 +1,72 @@
-from functools import partial
-
 import jax
 
 from jax import numpy as jnp
+
+from pipeline_entities.component_meta_info.default_component_meta_infos.node_generators.second_type_chebyshev_node_generator_meta_info import \
+    second_type_chebyshev_node_generator_meta_info
 from pipeline_entities.components.abstracts.node_generator import NodeGenerator
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
-from utils import jax_utils
+from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-# TODO: Update class (AOT compilation, change generate_nodes to perform_action, ...
-# @pipeline_component(id="Chebyshev2")
-# class SecondTypeChebyshevNodeGenerator(NodeGenerator):
-#
-#     @partial(jax.jit, static_argnums=0)
-#     def generate_nodes(self) -> jnp.ndarray:
-#         # Rescale int array for better stability
-#         nodes: jnp.ndarray = jnp.arange(0, self.__node_count__, dtype=self.__data_type__)
-#         jnp.multiply(nodes, jnp.pi / self.__node_count__)
-#
-#         jnp.cos(nodes)
-#
-#         jax_utils.rescale_array_to_interval(nodes, (-1, 1), self.__interval__)
-#
-#         return nodes #TODO rescaling does return an array!
-#
-#
-#
-#     def __repr__(self) -> str:
-#         return "Node generator for type 2 chebyshev points"
+@pipeline_component(id="chebyshev2 node generator", type=NodeGenerator, meta_info=second_type_chebyshev_node_generator_meta_info)
+class SecondTypeChebyshevNodeGenerator(NodeGenerator):
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    _compiled_jax_callable_: callable
+
+
+
+    ###################
+    ### Constructor ###
+    ###################
+    def __init__(self, pipeline_data: PipelineData) -> None:
+        super().__init__(pipeline_data)
+
+        data_type: type = pipeline_data.data_type
+        node_count: int = pipeline_data.node_count
+        interpolation_interval: jnp.ndarray = pipeline_data.interpolation_interval
+
+        self._compiled_jax_callable_ = self._create_compiled_callable_(data_type, node_count, interpolation_interval)
+
+
+
+    ######################
+    ### Public methods ###
+    ######################
+    def perform_action(self) -> None:
+        nodes = self._compiled_jax_callable_()
+        self._pipeline_data_.nodes = nodes
+
+
+
+    #######################
+    ### Private methods ###
+    #######################
+    def _create_compiled_callable_(self, data_type: type, node_count: int, interpolation_interval: jnp.ndarray):
+
+        def _internal_perform_action_() -> jnp.ndarray:
+            nodes: jnp.ndarray = jnp.arange(0, node_count, dtype=data_type)
+            nodes = jnp.multiply(nodes, jnp.pi / (node_count - 1))
+            nodes = jnp.cos(nodes)
+
+            do_rescale = jnp.logical_or(interpolation_interval[0] != -1, interpolation_interval[1] != 1)
+
+            def rescale_nodes():
+                old_length = 2
+                new_length = interpolation_interval[1] - interpolation_interval[0]
+                length_ratio = new_length / old_length
+
+                rescaled_nodes = jnp.multiply(nodes, length_ratio)
+                return jnp.add(rescaled_nodes, interpolation_interval[0] + length_ratio)
+
+            return jax.lax.cond(do_rescale, rescale_nodes, lambda: nodes)
+
+        return (
+            jax.jit(_internal_perform_action_)  # → XLA-compatible HLO
+            .lower()  # → Low-Level-IR
+            .compile()  # → executable Binary
+        )
+
+

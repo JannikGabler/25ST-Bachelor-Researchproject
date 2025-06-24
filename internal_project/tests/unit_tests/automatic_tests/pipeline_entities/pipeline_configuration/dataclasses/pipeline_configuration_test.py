@@ -8,11 +8,12 @@ from pipeline_entities.component_info.dataclasses.pipeline_component_info import
 from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
+from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        ComponentRegistry.register_default_components()
+        InternalLogicSetupManager.setup()
 
 
     def test_all_attributes_correctly_set(self):

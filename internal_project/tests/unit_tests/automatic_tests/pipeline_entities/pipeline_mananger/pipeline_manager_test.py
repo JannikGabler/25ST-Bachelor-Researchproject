@@ -1,5 +1,7 @@
 import unittest
+import jax.numpy as jnp
 
+from pipeline_entities.data_transfer.pipeline_data import PipelineData
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
@@ -16,10 +18,10 @@ class MyTestCase(unittest.TestCase):
 
 
 
-    def test_only_dummy_components(self):
+    def test_equidistant_node_generation_pipeline(self):
         pipeline_configuration_data: PipelineConfigurationData = PipelineConfigurationData()
         pipeline_configuration_data.supported_program_version = "Version(\"1.0.0\")"
-        pipeline_configuration_data.components = "Tree(\"\"\"dummy\n dummy\n  dummy\"\"\")"
+        pipeline_configuration_data.components = "Tree(\"\"\"BaseInput\n Equidistant Node Generator\n\"\"\")"
 
         pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_configuration_data)
 
@@ -35,7 +37,17 @@ class MyTestCase(unittest.TestCase):
 
         pipeline_manager.execute_all()
 
-        self.assertEqual(True, False)  # add assertion here
+        final_pipeline_data: PipelineData = pipeline_manager._pipeline_data_dict_["/0/"]
+
+        self.assertEqual(jnp.float32, final_pipeline_data.data_type)
+        self.assertEqual(5, final_pipeline_data.node_count)
+        self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), final_pipeline_data.interpolation_interval))
+        self.assertIsNone(final_pipeline_data.function_values)
+
+        self.assertTrue(jnp.array_equal(jnp.array([-1, -0.5, 0, 0.5, 1]), final_pipeline_data.nodes))
+
+        self.assertEqual({}, final_pipeline_data.additional_values)
+
 
 
 if __name__ == '__main__':
