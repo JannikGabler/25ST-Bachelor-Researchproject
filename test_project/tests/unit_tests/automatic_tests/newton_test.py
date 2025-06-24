@@ -1,5 +1,6 @@
 import unittest
 import jax.numpy as jnp
+import time
 
 from test_project.src.newton_interpolation.newton import newton_interpolate
 
@@ -34,6 +35,26 @@ class MyTestCase(unittest.TestCase):
         expected_values = 3 * evaluation_points + 2
         interpolated_values = newton_interpolate(evaluation_points, interpolation_nodes, function_values)
         self.assertTrue(jnp.allclose(interpolated_values, expected_values, atol=1e-6))
+
+    def test_interpolation_speed_various_sizes_newton(self):
+        grid_sizes = [200, 1000, 10000, 100000, 1000000]
+
+        for n in grid_sizes:
+            interpolation_nodes = jnp.linspace(-1.0, 1.0, 1000)
+            function_values = interpolation_nodes ** 2
+            evaluation_points = jnp.linspace(-1.0, 1.0, n)
+
+            # Warm-up JIT compile
+            newton_interpolate(evaluation_points[:1], interpolation_nodes, function_values).block_until_ready()
+
+            start = time.perf_counter()
+            newton_interpolate(evaluation_points, interpolation_nodes, function_values).block_until_ready()
+            end = time.perf_counter()
+
+            elapsed = end - start
+            elapsed_ms = elapsed * 1000
+
+            print(f"Interpolation time for {n} evaluation points (JAX): {elapsed:.4f} seconds ({elapsed_ms:.1f} ms)")
 
 
 if __name__ == '__main__':
