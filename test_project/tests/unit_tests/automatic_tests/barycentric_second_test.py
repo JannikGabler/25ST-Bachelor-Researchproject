@@ -70,6 +70,25 @@ class MyTestCase(unittest.TestCase):
 
             print(f"Type 2: Interpolation time for {n} evaluation points (JAX): {elapsed:.4f} seconds ({elapsed_ms:.1f} ms)")
 
+    def test_compute_weights_speed(self):
+        node_counts = [10, 100, 500, 1000, 5000, 10000]
+
+        for n in node_counts:
+            interpolation_nodes = jnp.linspace(-1.0, 1.0, n)
+
+            # Warm-up: JIT-Kompilierung
+            compute_weights(interpolation_nodes).block_until_ready()
+
+            # Jetzt echte Messung
+            start = time.perf_counter()
+            compute_weights(interpolation_nodes).block_until_ready()
+            end = time.perf_counter()
+
+            elapsed = end - start
+            elapsed_ms = elapsed * 1000
+
+            print(f"compute_weights: Time for {n} nodes: {elapsed:.4f} s ({elapsed_ms:.1f} ms)")
+
 
 
 if __name__ == '__main__':
