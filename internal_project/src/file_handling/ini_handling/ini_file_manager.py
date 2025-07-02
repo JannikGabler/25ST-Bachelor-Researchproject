@@ -26,7 +26,7 @@ class INIFileManager:
             raise FileNotFoundError(f"File '{str(path)}' does not exists.")
 
         file_content: str
-        with open(path, 'r') as file:
+        with open(path, 'r', encoding='utf-8') as file:
             file_content: str = file.read()
 
         return INIFormatUtils.split_into_entries(file_content)
