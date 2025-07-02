@@ -3,11 +3,11 @@ import textwrap
 import unittest
 from pathlib import Path
 
-from exceptions.duplicate_value_error import DuplicateValueError
+from exceptions.duplicate_value_error import DuplicateError
 from file_handling.ini_handling.ini_file_manager import INIFileManager
 
 
-class MyTestCase(unittest.TestCase):
+class LoadFileAsKeyValuePairs(unittest.TestCase):
     def test_simple_content(self):
         file_content: bytes = textwrap.dedent("""\
                                                 name="TestPipeline"
@@ -21,18 +21,19 @@ class MyTestCase(unittest.TestCase):
             with open(temp_file, "wb") as f:
                 f.write(file_content)
 
-            result: dict[str, str] = INIFileManager.load_file(temp_file)
+            result: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(temp_file)
             expected: dict[str, str] = {"name": "\"TestPipeline\"", "data_type": "jnp.float32", "node_count": "5"}
 
             self.assertEqual(expected, result)
 
-    def test_whitespaces(self):
-        file_content: bytes = b"""
+
+    def test_whitespace(self):
+        file_content: bytes = textwrap.dedent("""
                                name ="TestPipeline"  
                                data_type= jnp.float32  
                                
                                node_count=5  
-                               """
+                               """).encode("utf-8")
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_file: Path = Path(temp_dir + "/temp_file.ini")
@@ -40,7 +41,7 @@ class MyTestCase(unittest.TestCase):
             with open(temp_file, "wb") as f:
                 f.write(file_content)
 
-            result: dict[str, str] = INIFileManager.load_file(temp_file)
+            result: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(temp_file)
             expected: dict[str, str] = {"name": "\"TestPipeline\"", "data_type": "jnp.float32", "node_count": "5"}
 
             self.assertEqual(expected, result)
@@ -140,7 +141,7 @@ class MyTestCase(unittest.TestCase):
             with open(temp_file, "wb") as f:
                 f.write(file_content)
 
-            with self.assertRaises(DuplicateValueError):
+            with self.assertRaises(DuplicateError):
                 INIFileManager.load_file(temp_file)
 
 
