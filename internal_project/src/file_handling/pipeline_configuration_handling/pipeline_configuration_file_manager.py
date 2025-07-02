@@ -25,7 +25,7 @@ class PipelineConfigurationFileManager:
     def load_from_file(path: Path) -> PipelineConfigurationData:
         data: PipelineConfigurationData = PipelineConfigurationData()
 
-        entries: dict[str, str] = INIFileManager.load_file(path)
+        entries: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(path)
 
         for key, value in entries.items():
             PipelineConfigurationFileManager._handle_key_value_pair_in_loading_(key, value, data)
