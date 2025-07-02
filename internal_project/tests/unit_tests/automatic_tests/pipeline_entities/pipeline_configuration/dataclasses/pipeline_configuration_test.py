@@ -1,17 +1,22 @@
+import textwrap
 import unittest
 
 from packaging.version import Version
 
+from data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
+from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from data_structures.tree.tree import Tree
 from data_structures.tree.tree_node import TreeNode
 from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
+from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    PipelineComponentInstantiationInfo
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 
 
-class MyTestCase(unittest.TestCase):
+class InitPipelineConfiguration(unittest.TestCase):
     def setUp(self) -> None:
         InternalLogicSetupManager.setup()
 
@@ -21,7 +26,17 @@ class MyTestCase(unittest.TestCase):
 
         data.name = "\"Test Data\""
         data.supported_program_version = "Version(\"1.0.3\")"
-        data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        data.components = textwrap.dedent("""
+            DirectionalAcyclicGraph(\"\"\"
+            0=dummy
+                property1=value1
+            1=dummy
+                predecessors=["0"]
+            2=dummy
+                predecessors=["1"]
+                property2=value2
+            \"\"\")
+            """)
 
         data.additional_values["test1"] = "Tree(None)"
 
@@ -31,12 +46,24 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(Version("1.0.3"), pipeline_configuration.supported_program_version)
 
         dummy_info: PipelineComponentInfo = ComponentRegistry.get_component("dummy")
-        root_node: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        child_node_1: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        child_node_2: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        root_node.add_child_nodes([child_node_1, child_node_2])
 
-        self.assertEqual(Tree(root_node), pipeline_configuration.components)
+        node_0_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('0', dummy_info, {'property1': 'value1'})
+        node_1_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('1', dummy_info, {})
+        node_2_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('2', dummy_info, {'property2': 'value2'})
+
+        node_0: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_0_value)
+        node_1: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_1_value)
+        node_2: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_2_value)
+
+        expected_graph: DirectionalAcyclicGraph[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraph()
+        expected_graph.add_node(node_0)
+        expected_graph.add_node(node_1)
+        expected_graph.add_node(node_2)
+
+        expected_graph.add_edge(node_0, node_1)
+        expected_graph.add_edge(node_1, node_2)
+
+        self.assertEqual(expected_graph, pipeline_configuration.components)
 
         self.assertEqual({'test1': Tree(None)}, pipeline_configuration.additional_values)
 
@@ -45,7 +72,15 @@ class MyTestCase(unittest.TestCase):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
         data.supported_program_version = "Version(\"1.0.3\")"
-        data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        data.components = textwrap.dedent("""
+                    DirectionalAcyclicGraph(\"\"\"
+                    0=dummy
+                    1=dummy
+                        predecessors=["0"]
+                    2=dummy
+                        predecessors=["1"]
+                    \"\"\")
+                    """)
 
         pipeline_configuration: PipelineConfiguration = PipelineConfiguration(data)
 
@@ -53,12 +88,24 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(Version("1.0.3"), pipeline_configuration.supported_program_version)
 
         dummy_info: PipelineComponentInfo = ComponentRegistry.get_component("dummy")
-        root_node: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        child_node_1: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        child_node_2: TreeNode[PipelineComponentInfo] = TreeNode(dummy_info)
-        root_node.add_child_nodes([child_node_1, child_node_2])
 
-        self.assertEqual(Tree(root_node), pipeline_configuration.components)
+        node_0_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('0', dummy_info, {})
+        node_1_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('1', dummy_info, {})
+        node_2_value: PipelineComponentInstantiationInfo = PipelineComponentInstantiationInfo('2', dummy_info, {})
+
+        node_0: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_0_value)
+        node_1: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_1_value)
+        node_2: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraphNode(node_2_value)
+
+        expected_graph: DirectionalAcyclicGraph[PipelineComponentInstantiationInfo] = DirectionalAcyclicGraph()
+        expected_graph.add_node(node_0)
+        expected_graph.add_node(node_1)
+        expected_graph.add_node(node_2)
+
+        expected_graph.add_edge(node_0, node_1)
+        expected_graph.add_edge(node_1, node_2)
+
+        self.assertEqual(expected_graph, pipeline_configuration.components)
 
         self.assertEqual({}, pipeline_configuration.additional_values)
 
@@ -67,7 +114,15 @@ class MyTestCase(unittest.TestCase):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
         #data.supported_program_version = "Version(\"1.0.3\")"
-        data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        data.components = textwrap.dedent("""
+                    DirectionalAcyclicGraph(\"\"\"
+                    0=dummy
+                    1=dummy
+                        predecessors=["0"]
+                    2=dummy
+                        predecessors=["1"]
+                    \"\"\")
+                    """)
 
         with self.assertRaises(ValueError):
             PipelineConfiguration(data)
@@ -77,7 +132,15 @@ class MyTestCase(unittest.TestCase):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
         data.supported_program_version = "Version(\"1.0.3\")"
-        #data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        # data.components = textwrap.dedent("""
+        #             DirectionalAcyclicGraph(\"\"\"
+        #             0=dummy
+        #             1=dummy
+        #                 predecessors=["0"]
+        #             2=dummy
+        #                 predecessors=["1"]
+        #             \"\"\")
+        #             """)
 
         with self.assertRaises(ValueError):
             PipelineConfiguration(data)
@@ -86,9 +149,17 @@ class MyTestCase(unittest.TestCase):
     def test_name_with_wrong_type(self):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
-        data.name = "Tree(None)"
+        data.name = "5"
         data.supported_program_version = "Version(\"1.0.3\")"
-        data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        data.components = textwrap.dedent("""
+                    DirectionalAcyclicGraph(\"\"\"
+                    0=dummy
+                    1=dummy
+                        predecessors=["0"]
+                    2=dummy
+                        predecessors=["1"]
+                    \"\"\")
+                    """)
 
         with self.assertRaises(TypeError):
             PipelineConfiguration(data)
@@ -97,8 +168,17 @@ class MyTestCase(unittest.TestCase):
     def test_supported_program_version_with_wrong_type(self):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
-        data.supported_program_version = "Tree(None)"
-        data.components = "Tree(\"\"\"\ndummy\n dummy\n dummy\n\"\"\")"
+        data.name = "\"Test Data\""
+        data.supported_program_version = "DirectionalAcyclicGraph()"
+        data.components = textwrap.dedent("""
+                    DirectionalAcyclicGraph(\"\"\"
+                    0=dummy
+                    1=dummy
+                        predecessors=["0"]
+                    2=dummy
+                        predecessors=["1"]
+                    \"\"\")
+                    """)
 
         with self.assertRaises(TypeError):
             PipelineConfiguration(data)
@@ -107,8 +187,8 @@ class MyTestCase(unittest.TestCase):
     def test_components_with_wrong_type(self):
         data: PipelineConfigurationData = PipelineConfigurationData()
 
-        data.supported_program_version = "Tree(None)"
-        data.components = "False"
+        data.supported_program_version = "Version(\"1.0.3\")"
+        data.components = "Tree(None)"
 
         with self.assertRaises(TypeError):
             PipelineConfiguration(data)
