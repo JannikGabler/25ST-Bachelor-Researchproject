@@ -7,7 +7,7 @@ from file_handling.pipeline_input_handling.pipeline_input_file_manager import Pi
 from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
 
 
-class MyTestCase(unittest.TestCase):
+class LoadFromFile(unittest.TestCase):
     def test_load_with_all_attributes_set(self):
         file_content: bytes = textwrap.dedent("""\
                                         name="TestPipeline"
