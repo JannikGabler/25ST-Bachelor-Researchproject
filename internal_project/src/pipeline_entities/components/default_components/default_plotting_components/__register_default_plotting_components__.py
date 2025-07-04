@@ -1,4 +1,4 @@
 ### DO NOT REMOVE IMPORTS, THEY ARE NECESSARY!  ###
 
-def register_interpolation_cores():
+def register_plotting_components():
     from . import plot_component
