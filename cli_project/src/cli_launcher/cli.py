@@ -42,15 +42,19 @@ def main():
         pcd_path = Path(args.pipeline_config)
         pipeline_configuration_data: PipelineConfigurationData = PipelineConfigurationFileManager.load_from_file(pcd_path)
         pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_configuration_data)
+        print("pipeline configured sucessfully!")
 
         pid_path = Path(args.pipeline_input)
         pipeline_input_data: PipelineInputData = PipelineInputFileManager.load_from_file(pid_path)
         pipeline_input: PipelineInput = PipelineInput(pipeline_input_data)
+        print("pipeline inputs read sucessfully!")
         
         pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_input)
 
         manager  = PipelineManager(pipeline)
+        print("executing pipeline...")
         manager.execute_all()
+        print("pipeline execution finished!")
         print(manager._pipeline_data_dict_["/0/0/0/"])
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
