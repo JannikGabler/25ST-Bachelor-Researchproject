@@ -13,5 +13,5 @@ multiple_function_expressions_input_component_meta_info: ComponentMetaInfo = Com
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("nodes")],
     
-    mixed_constraints=[]
+    #mixed_constraints=[]
 )

@@ -10,6 +10,6 @@ equidistant_node_generator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("interpolation_interval")],
 
-    mixed_constraints=[]
+    #mixed_constraints=[]
 )
 

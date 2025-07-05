@@ -12,5 +12,5 @@ function_callable_input_component_meta_info: ComponentMetaInfo = ComponentMetaIn
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("nodes")],
 
-    mixed_constraints=[]
+    #mixed_constraints=[]
 )

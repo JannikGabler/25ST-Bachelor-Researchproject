@@ -10,6 +10,6 @@ first_type_chebyshev_node_generator_meta_info: ComponentMetaInfo = ComponentMeta
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("interpolation_interval")],
 
-    mixed_constraints=[]
+    #mixed_constraints=[]
 )
 
