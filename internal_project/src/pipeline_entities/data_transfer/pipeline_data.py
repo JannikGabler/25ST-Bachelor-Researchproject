@@ -1,22 +1,22 @@
 from dataclasses import dataclass, field
-from typing import Optional, Tuple, Any
+from typing import Optional, Any, Callable
 import jax.numpy as jnp
+
 
 @dataclass
 class PipelineData:
-    data_type: Optional[type] = None
+    data_type: type | None = None
+    node_count: int | None = None
+    interpolation_interval: jnp.ndarray | None = None
 
-    node_count: Optional[int] = None
-    interpolation_interval: Optional[jnp.ndarray] = None
-    function_values: Optional[jnp.ndarray] = None
+    function_callable: Callable[[jnp.ndarray], jnp.ndarray] | None = None
 
-    nodes: Optional[jnp.ndarray] = None
+    interpolation_nodes: jnp.ndarray | None = None
+    interpolation_values: jnp.ndarray | None = None
 
-    interpolant: Optional[jnp.ndarray] = None
+    interpolant: jnp.ndarray | None = None
 
     additional_values: dict[str, Any] = field(default_factory=dict)
-
-
 
 
 
