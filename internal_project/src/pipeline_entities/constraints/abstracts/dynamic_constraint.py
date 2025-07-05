@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
 
 if TYPE_CHECKING:
@@ -23,7 +24,7 @@ class DynamicConstraint(Constraint, ABC):
     ### Public methods ###
     ######################
     @abstractmethod
-    def evaluate(self, pipeline_data: PipelineData, pipeline_input: PipelineInput) -> bool:
+    def evaluate(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> bool:
         pass
 
 
