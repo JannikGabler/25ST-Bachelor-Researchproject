@@ -33,7 +33,7 @@ class InterpolantPlotComponent(InterpolationCore):
         interpolated_values = pipeline_data.interpolant.evaluate(evaluation_points)
 
         plt.figure(figsize=(8, 5))
-        plt.plot(evaluation_points, true_function_values, label="Original function")
+        plt.plot(evaluation_points, true_function_values, '--',  linewidth=2.5, label="Original function", zorder=5)
         plt.plot(evaluation_points, interpolated_values, label="Interpolant")
         plt.scatter(nodes, pipeline_data.function_callable(nodes), color='red', label="Nodes")
         plt.legend()

@@ -51,7 +51,6 @@ class NewtonInterpolationCore(InterpolationCore):
 
         interpolant = NewtonInterpolant(
             nodes=pipeline_data.interpolation_nodes,
-            values=pipeline_data.interpolation_values,
             weights=weights
         )
 

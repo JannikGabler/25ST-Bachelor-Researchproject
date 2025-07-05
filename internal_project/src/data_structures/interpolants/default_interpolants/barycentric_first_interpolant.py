@@ -54,6 +54,7 @@ class BarycentricFirstInterpolant(Interpolant):
         return jnp.where(jnp.any(bool_diffs), exact_value, interpolated_value)
 
 
+
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
         return jax.vmap(self._interpolate_single)(x)
 
@@ -66,3 +67,12 @@ class BarycentricFirstInterpolant(Interpolant):
 
     def __str__(self) -> str:
         return self.__repr__()
+
+
+
+    def __eq__(self, other):
+        if not isinstance(other, BarycentricFirstInterpolant):
+            return False
+        else:
+            return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
+
