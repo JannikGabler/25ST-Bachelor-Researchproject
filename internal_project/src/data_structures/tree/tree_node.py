@@ -131,7 +131,7 @@ class TreeNode(Generic[T], Freezable):
 
 
     def __hash__(self) -> int | None:
-        if self.__frozen__:   # instance is immutable
+        if self._frozen_:   # instance is immutable
             parent_node_value: int = 1 if self._parent_node_ else 0
 
             return hash((self._value_, parent_node_value, len(self._child_nodes_)))

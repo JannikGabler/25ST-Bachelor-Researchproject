@@ -3,6 +3,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pipeline_entities.components.meta_classes.pipeline_component_meta import PipelineComponentMeta
+from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 if TYPE_CHECKING:
@@ -20,15 +21,17 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     ###############################
     ### Attributes of instances ###
     ###############################
-    _pipeline_data_: PipelineData
+    _pipeline_data_: list[PipelineData]
+    _additional_execution_info_: AdditionalComponentExecutionData
 
 
 
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, pipeline_data: PipelineData) -> None:
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
         self._pipeline_data_ = pipeline_data
+        self._additional_execution_info_ = additional_execution_info
 
 
 
@@ -36,7 +39,7 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     ### Abstract methods ###
     ########################
     @abstractmethod
-    def perform_action(self) -> None:
+    def perform_action(self) -> PipelineData:
         pass
 
 
@@ -47,3 +50,4 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     @property
     def info(self) -> PipelineComponentInfo:
         return self._info_ # PipelineComponentInfo is immutable
+

@@ -7,15 +7,14 @@ from data_structures.interpolants.abstracts.interpolant import Interpolant
 
 @dataclass
 class PipelineData:
-    data_type: Optional[type] = None
+    data_type: type | None = None
+    node_count: int | None = None
+    interpolation_interval: jnp.ndarray | None = None
 
-    node_count: Optional[int] = None
-    interpolation_interval: Optional[jnp.ndarray] = None
-    function_callable: Optional[Callable[[jnp.ndarray], jnp.ndarray]] = None
-    function_values: Optional[jnp.ndarray] = None
+    function_callable: Callable[[jnp.ndarray], jnp.ndarray] | None = None   # Not Jax compiled, must be compiled by using components
 
-
-    nodes: Optional[jnp.ndarray] = None
+    interpolation_nodes: jnp.ndarray | None = None
+    interpolation_values: jnp.ndarray | None = None
 
     interpolant: Optional[Interpolant] = None
 

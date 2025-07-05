@@ -1,19 +1,21 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from data_structures.tree.tree_node import TreeNode
-
-if TYPE_CHECKING:
-    from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    PipelineComponentInstantiationInfo
 
 
 class PipelineExecutionAttributeUnmodifiedException(Exception):
-    _causing_node_: TreeNode[PipelineComponentInfo]
+    _causing_node_: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]
     _causing_attribute_name_: str
 
 
 
-    def __init__(self, msg: str, causing_node: TreeNode[PipelineComponentInfo], causing_attribute_name: str) -> None:
+    def __init__(self, msg: str, causing_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
+                 causing_attribute_name: str) -> None:
+
         super().__init__(msg)
 
         self._causing_node_ = causing_node
@@ -22,7 +24,7 @@ class PipelineExecutionAttributeUnmodifiedException(Exception):
 
 
     @property
-    def causing_pipeline_component(self) -> TreeNode[PipelineComponentInfo]:
+    def causing_pipeline_component(self) -> DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]:
         return self._causing_node_
 
     @property

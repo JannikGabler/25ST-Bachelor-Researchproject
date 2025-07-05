@@ -6,10 +6,11 @@ from pipeline_entities.components.abstracts.interpolation_core import Interpolat
 import jax.numpy as jnp
 
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
+from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="Newton Interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
+@pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
 class EquidistantNodeGenerator(InterpolationCore):
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
@@ -28,37 +29,42 @@ class EquidistantNodeGenerator(InterpolationCore):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, pipeline_data: PipelineData) -> None:
-        super().__init__(pipeline_data)
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        super().__init__(pipeline_data, additional_execution_data)
+        data: PipelineData = pipeline_data[0]
 
-        nodes = pipeline_data.nodes
-        function_values = pipeline_data.function_values
+        nodes: jnp.ndarray = data.interpolation_nodes
+        interpolation_values: jnp.ndarray = data.interpolation_values
 
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, function_values)
-
+        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, interpolation_values)
 
 
 
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> None:
-        interpolant = self._compiled_jax_callable_()
-        self._pipeline_data_.interpolant = interpolant
+    def perform_action(self) -> PipelineData:
+        pipeline_data: PipelineData = self._pipeline_data_[0]
+
+        interpolant = self._compiled_jax_callable_()   # TODO: add type
+
+        pipeline_data.interpolant = interpolant
+        return pipeline_data
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _create_compiled_callable_(self, nodes: jnp.ndarray, function_values: jnp.ndarray):
+    @staticmethod
+    def _create_compiled_callable_(nodes: jnp.ndarray, interpolation_values: jnp.ndarray) -> callable:
 
         def _internal_perform_action_() -> jnp.ndarray:
             # Number of interpolation points
             n = nodes.size
 
             # Initialize coefficients array with function values
-            coefficients = function_values.copy()
+            coefficients = interpolation_values.copy()
 
             # Compute divided differences of increasing order
             def outer_loop(j, coef_outer):
