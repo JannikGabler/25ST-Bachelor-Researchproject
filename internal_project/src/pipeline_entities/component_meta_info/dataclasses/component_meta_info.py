@@ -13,4 +13,5 @@ class ComponentMetaInfo:
     static_constraints: list[StaticConstraint]
     #mixed_constraints: list[MixedConstraint]
 
+    allow_additional_value_modifications_outside_specification: bool = False
 
