@@ -1,8 +1,8 @@
 import jax
 
-from data_structures.interpolants.default_interpolants.barycentric_first_interpolant import BarycentricType1Interpolant
-from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
-    barycentric_first_interpolation_core_meta_info
+from data_structures.interpolants.default_interpolants.barycentric_second_interpolant import BarycentricType2Interpolant
+from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
+    barycentric_second_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
@@ -10,10 +10,10 @@ from pipeline_entities.components.decorators.pipeline_component import pipeline_
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="Barycentric First Form Interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
+@pipeline_component(id="Barycentric Second Form Interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
 class EquidistantNodeGenerator(InterpolationCore):
     """
-    Computes the barycentric weights for the first form of the barycentric interpolation formula.
+    Computes the barycentric weights for the second form of the barycentric interpolation formula.
 
     Returns:
         1D array containing the barycentric weights.
@@ -46,7 +46,7 @@ class EquidistantNodeGenerator(InterpolationCore):
         weights = self._compiled_jax_callable_()
         values = self._pipeline_data_.function_values
 
-        interpolant = BarycentricType1Interpolant(
+        interpolant = BarycentricType2Interpolant(
             nodes=self._pipeline_data_.nodes,
             values=values,
             weights=weights
