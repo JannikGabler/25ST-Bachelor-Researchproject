@@ -5,6 +5,7 @@ from pipeline_entities.component_meta_info.default_component_meta_infos.node_gen
     first_type_chebyshev_node_generator_meta_info
 from pipeline_entities.components.abstracts.node_generator import NodeGenerator
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
+from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
@@ -20,12 +21,13 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, pipeline_data: PipelineData) -> None:
-        super().__init__(pipeline_data)
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
+        super().__init__(pipeline_data, additional_execution_info)
+        data: PipelineData = pipeline_data[0]
 
-        data_type: type = pipeline_data.data_type
-        node_count: int = pipeline_data.node_count
-        interpolation_interval: jnp.ndarray = pipeline_data.interpolation_interval
+        data_type: type = data.data_type
+        node_count: int = data.node_count
+        interpolation_interval: jnp.ndarray = data.interpolation_interval
 
         self._compiled_jax_callable_ = self._create_compiled_callable_(data_type, node_count, interpolation_interval)
 
@@ -34,16 +36,21 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> None:
+    def perform_action(self) -> PipelineData:
+        pipeline_data = self._pipeline_data_[0]
+
         nodes = self._compiled_jax_callable_()
-        self._pipeline_data_.nodes = nodes
+
+        pipeline_data.interpolation_nodes = nodes
+        return pipeline_data
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _create_compiled_callable_(self, data_type: type, node_count: int, interpolation_interval: jnp.ndarray):
+    @staticmethod
+    def _create_compiled_callable_(data_type: type, node_count: int, interpolation_interval: jnp.ndarray) -> callable:
 
         def _internal_perform_action_() -> jnp.ndarray:
             nodes = jnp.arange(1, 2 * node_count + 1, 2, dtype=data_type)
