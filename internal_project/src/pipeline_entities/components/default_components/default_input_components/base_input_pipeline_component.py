@@ -6,7 +6,7 @@ from pipeline_entities.data_transfer.pipeline_data import PipelineData
 from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
 
 
-@pipeline_component(id="Base Input", type=InputPipelineComponent, meta_info=base_input_pipeline_component_meta_info)
+@pipeline_component(id="base input", type=InputPipelineComponent, meta_info=base_input_pipeline_component_meta_info)
 class BaseInputPipelineComponent(InputPipelineComponent):
 
     def perform_action(self) -> PipelineData:

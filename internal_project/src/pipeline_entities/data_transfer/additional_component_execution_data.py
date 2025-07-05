@@ -1,0 +1,18 @@
+from dataclasses import dataclass
+
+from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
+from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    PipelineComponentInstantiationInfo
+from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
+from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
+
+
+@dataclass(frozen=True)
+class AdditionalComponentExecutionData:
+    pipeline_configuration: PipelineConfiguration
+    pipeline_input: PipelineInput
+
+    own_graph_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]
+
+    component_execution_reports: dict[int, PipelineComponentExecutionReport]

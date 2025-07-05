@@ -8,5 +8,5 @@ base_input_pipeline_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
 
     static_constraints=[],
 
-    #mixed_constraints=[]
+    allow_additional_value_modifications_outside_specification = True
 )
