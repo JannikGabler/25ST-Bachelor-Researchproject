@@ -7,7 +7,5 @@ dummy_pipeline_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     dynamic_constraints=[],
 
     static_constraints=[],
-
-    #mixed_constraints=[]
 )
 
