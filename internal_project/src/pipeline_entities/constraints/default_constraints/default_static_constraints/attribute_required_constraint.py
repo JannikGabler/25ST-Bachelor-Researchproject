@@ -1,9 +1,12 @@
 from dataclasses import fields
 
+from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from data_structures.tree.tree_node import TreeNode
 from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 from pipeline_entities.constraints.abstracts.static_constraint import StaticConstraint
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
+from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    PipelineComponentInstantiationInfo
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
 
 
@@ -29,19 +32,10 @@ class AttributeRequiredConstraint(StaticConstraint):
     ##########################
     ### Overridden methods ###
     ##########################
-    def evaluate(self, own_tree_node: TreeNode[PipelineComponentInfo], pipeline_configuration: PipelineConfiguration) -> bool:
-        current_node: TreeNode[PipelineComponentInfo] = own_tree_node.parent_node
+    def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
+                 pipeline_configuration: PipelineConfiguration) -> bool:
 
-        while current_node:
-            component_info: PipelineComponentInfo = current_node.value
-            attributes_modifying: set[str] = component_info.component_meta_info.attributes_modifying
-
-            if self.__attribute_name__ in attributes_modifying:
-                return True
-
-            current_node = current_node.parent_node
-
-        return False
+        return self._is_attribute_for_component_guaranteed_set_(own_node)
 
 
 
@@ -63,5 +57,15 @@ class AttributeRequiredConstraint(StaticConstraint):
 
 
 
+    #######################
+    ### Private methods ###
+    #######################
+    def _is_attribute_for_component_guaranteed_set_(self, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> bool:
+        attributes_modifying: set[str] = node.value.component.component_meta_info.attributes_modifying
 
+        if self.__attribute_name__ in attributes_modifying:
+            return True
+        if not node.predecessors:
+            return False
 
+        return all(self._is_attribute_for_component_guaranteed_set_(predecessor) for predecessor in node.predecessors)

@@ -11,7 +11,7 @@ class DummyPipelineComponent(NodeGenerator):
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> None:
+    def perform_action(self) -> PipelineComponent:
         pass
 
 

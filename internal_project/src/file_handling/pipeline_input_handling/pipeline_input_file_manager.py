@@ -24,7 +24,7 @@ class PipelineInputFileManager:
     def load_from_file(path: Path) -> PipelineInputData:
         data: PipelineInputData = PipelineInputData()
 
-        entries: dict[str, str] = INIFileManager.load_file(path)
+        entries: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(path)
 
         for key, value in entries.items():
             if key.startswith('§'):
@@ -59,32 +59,3 @@ class PipelineInputFileManager:
     def _handle_direct_injecting_key_value_pair_in_loading_(key: str, value: str, data: PipelineInputData) -> None:
         key = key[1:]
         data.additional_directly_injected_values[key] = value
-
-
-
-    # TODO: delete
-    # @staticmethod
-    # def _handle_line_in_loading_(line_number: int, line: str, path: Path, data: PipelineInputData) -> None:
-    #     if line and not line.startswith("#"):
-    #         key, value = PipelineInputFileManager._extract_key_value_from_line_(line_number, line, path)
-    #
-    #         if not key:
-    #             raise ValueError(f"Line {line_number} of file '{str(path)}' contains invalid syntax. The key is empty.")
-    #
-    #         if key.startswith('§'):
-    #             PipelineInputFileManager._handle_direct_injecting_key_value_pair_in_loading_(key, value, data)
-    #         else:
-    #             PipelineInputFileManager._handle_regular_key_value_pair_in_loading_(key, value, data)
-
-
-
-    # @staticmethod
-    # def _extract_key_value_from_line_(line_number: int, line: str, path: Path) -> tuple[str, str]:
-    #     if '=' not in line:
-    #         raise ValueError(f"Line {line_number} of file '{str(path)}' contains invalid syntax. There was no '=' character found.")
-    #
-    #     raw_key, raw_val = line.split('=', 1)
-    #     key: str = raw_key.strip()
-    #     value: str = raw_val.strip()
-    #
-    #     return key, value

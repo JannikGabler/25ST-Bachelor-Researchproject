@@ -1,0 +1,4 @@
+
+
+class CycleException(Exception):
+    pass
