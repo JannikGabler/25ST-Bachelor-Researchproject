@@ -6,10 +6,11 @@ from pipeline_entities.components.abstracts.interpolation_core import Interpolat
 import jax.numpy as jnp
 
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
+from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="Barycentric First Form Interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
+@pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
 class EquidistantNodeGenerator(InterpolationCore):
     """
     Computes the barycentric weights for the first form of the barycentric interpolation formula.
@@ -27,29 +28,34 @@ class EquidistantNodeGenerator(InterpolationCore):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, pipeline_data: PipelineData) -> None:
-        super().__init__(pipeline_data)
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        super().__init__(pipeline_data, additional_execution_data)
+        data: PipelineData = pipeline_data[0]
 
-        nodes = pipeline_data.nodes
+        nodes = data.interpolation_nodes
 
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
-
 
 
 
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> None:
-        interpolant = self._compiled_jax_callable_()
-        self._pipeline_data_.interpolant = interpolant
+    def perform_action(self) -> PipelineData:
+        pipeline_data: PipelineData = self._pipeline_data_[0]
+
+        interpolant = self._compiled_jax_callable_() # TODO: add type
+
+        pipeline_data.interpolant = interpolant
+        return pipeline_data
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _create_compiled_callable_(self, nodes: jnp.ndarray):
+    @staticmethod
+    def _create_compiled_callable_(nodes: jnp.ndarray) -> callable:
 
         def _internal_perform_action_() -> jnp.ndarray:
             # Create a square matrix where each entry [j, k] is the difference between node j and node k
