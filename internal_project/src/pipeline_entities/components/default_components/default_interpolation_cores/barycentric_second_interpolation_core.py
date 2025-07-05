@@ -1,20 +1,19 @@
 import jax
 
-from data_structures.interpolants.default_interpolants.barycentric_first_interpolant import BarycentricType1Interpolant
-from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
-    barycentric_first_interpolation_core_meta_info
+from data_structures.interpolants.default_interpolants.barycentric_second_interpolant import BarycentricType2Interpolant
+from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
+    barycentric_second_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
-from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
+@pipeline_component(id="Barycentric Second Form Interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
 class EquidistantNodeGenerator(InterpolationCore):
     """
-    Computes the barycentric weights for the first form of the barycentric interpolation formula.
+    Computes the barycentric weights for the second form of the barycentric interpolation formula.
 
     Returns:
         1D array containing the barycentric weights.
@@ -29,11 +28,11 @@ class EquidistantNodeGenerator(InterpolationCore):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
-        super().__init__(pipeline_data, additional_execution_data)
-        data: PipelineData = pipeline_data[0]
+    def __init__(self, pipeline_data: PipelineData) -> None:
+        super().__init__(pipeline_data)
 
-        nodes = data.interpolation_nodes
+        nodes = pipeline_data.nodes
+        self.function_values = pipeline_data.function_values
 
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
 
@@ -43,28 +42,24 @@ class EquidistantNodeGenerator(InterpolationCore):
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
-
+    def perform_action(self) -> None:
         weights = self._compiled_jax_callable_()
+        values = self._pipeline_data_.function_values
 
-        interpolant = BarycentricType1Interpolant(
-            nodes=pipeline_data.interpolation_nodes,
-            values=pipeline_data.interpolation_values,
+        interpolant = BarycentricType2Interpolant(
+            nodes=self._pipeline_data_.nodes,
+            values=values,
             weights=weights
         )
 
-        pipeline_data.interpolant = interpolant
-
-        return pipeline_data
+        self._pipeline_data_.interpolant = interpolant
 
 
 
     #######################
     ### Private methods ###
     #######################
-    @staticmethod
-    def _create_compiled_callable_(nodes: jnp.ndarray) -> callable:
+    def _create_compiled_callable_(self, nodes: jnp.ndarray):
 
         def _internal_perform_action_() -> jnp.ndarray:
             # Create a square matrix where each entry [j, k] is the difference between node j and node k

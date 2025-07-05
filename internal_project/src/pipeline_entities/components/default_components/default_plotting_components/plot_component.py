@@ -43,17 +43,17 @@ class EquidistantNodeGenerator(InterpolationCore):
     ######################
     def perform_action(self) -> None:
         # Erzeuge ein fein aufgelöstes Gitter für das Intervall:
-        x_plot = jnp.linspace(self.interpolation_interval[0], self.interpolation_interval[1], 500)
+        evaluation_points = jnp.linspace(self.interpolation_interval[0], self.interpolation_interval[1], 500)
 
         # Berechne Funktionswerte:
-        y_true = self.function_callable(x_plot)
+        true_function_values  = self.function_callable(evaluation_points)
 
         # Berechne Interpolant-Werte:
-        y_interp = self.interpolant.vectorized_evaluate(x_plot)
+        interpolated_values = self.interpolant.evaluate(evaluation_points)
 
         plt.figure(figsize=(8, 5))
-        plt.plot(x_plot, y_true, label="Original function")
-        plt.plot(x_plot, y_interp, label="Interpolant")
+        plt.plot(evaluation_points, true_function_values, label="Original function")
+        plt.plot(evaluation_points, interpolated_values, label="Interpolant")
         plt.scatter(self.nodes, self.function_callable(self.nodes), color='red', label="Nodes")
         plt.legend()
         plt.title("Interpolant Plot")
