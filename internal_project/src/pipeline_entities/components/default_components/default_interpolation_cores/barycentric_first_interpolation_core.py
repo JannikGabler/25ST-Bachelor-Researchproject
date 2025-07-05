@@ -12,10 +12,10 @@ from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
 @pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
-class EquidistantNodeGenerator(InterpolationCore):
+class BarycentricFirstInterpolationCore(InterpolationCore):
     """
     Computes the barycentric weights for the first form of the barycentric interpolation formula.
-
+e
     Returns:
         1D array containing the barycentric weights.
     """

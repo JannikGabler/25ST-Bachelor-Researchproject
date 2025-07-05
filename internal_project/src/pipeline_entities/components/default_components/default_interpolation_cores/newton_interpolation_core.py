@@ -12,7 +12,7 @@ from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
 @pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
-class EquidistantNodeGenerator(InterpolationCore):
+class NewtonInterpolationCore(InterpolationCore):
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
     These coefficients can then be used to evaluate the interpolation polynomial efficiently in Newton form.

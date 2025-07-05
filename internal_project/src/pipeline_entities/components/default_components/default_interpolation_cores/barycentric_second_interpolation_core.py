@@ -11,7 +11,7 @@ from pipeline_entities.data_transfer.additional_component_execution_data import 
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="Barycentric Second Form Interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
+@pipeline_component(id="barycentric2 interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
 class BarycentricSecondInterpolationCore(InterpolationCore):
     """
     Computes the barycentric weights for the second form of the barycentric interpolation formula.
