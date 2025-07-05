@@ -7,7 +7,7 @@ class Freezable(ABC):
     ###############################
     ### Attributes of instances ###
     ###############################
-    __frozen__: bool = False
+    _frozen_: bool = False
 
 
 
@@ -15,7 +15,7 @@ class Freezable(ABC):
     ### Getters & setters ###
     #########################
     def freeze(self):
-        self.__frozen__ = True
+        self._frozen_ = True
 
 
 
@@ -23,7 +23,7 @@ class Freezable(ABC):
     ### Private methods ###
     #######################
     def __setattr__(self, name: str, value: any) -> None:
-        if self.__frozen__:
+        if self._frozen_:
             raise FrozenInstanceError(f"Cannot modify attribute '{name}'.")
         else:
             super().__setattr__(name, value)

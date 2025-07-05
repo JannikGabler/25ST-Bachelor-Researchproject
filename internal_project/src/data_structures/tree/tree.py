@@ -20,7 +20,7 @@ class Tree(Generic[T], Freezable, Iterable[T]):
     ### Constructor ###
     ###################
     def __init__(self, argument: TreeNode[T] | str | None) -> None:
-        if argument:
+        if argument is not None:
             if isinstance(argument, TreeNode):
                 self._init_from_root_node_(argument)
             elif isinstance(argument, str):
@@ -107,7 +107,7 @@ class Tree(Generic[T], Freezable, Iterable[T]):
 
 
     def __hash__(self):
-        if self.__frozen__:  # instance is immutable
+        if self._frozen_:  # instance is immutable
             hash_values: list[int] = [node.__hash__() for node in self]
             return hash(hash_values)
         else:  # instance is mutable

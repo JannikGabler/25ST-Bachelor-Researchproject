@@ -7,7 +7,7 @@ from file_handling.pipeline_input_handling.pipeline_input_file_manager import Pi
 from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
 
 
-class MyTestCase(unittest.TestCase):
+class LoadFromFile(unittest.TestCase):
     def test_load_with_all_attributes_set(self):
         file_content: bytes = textwrap.dedent("""\
                                         name="TestPipeline"
@@ -35,11 +35,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual("jnp.float32", pipeline_input_data.data_type)
             self.assertEqual("5", pipeline_input_data.node_count)
             self.assertEqual("jnp.array([-1, 1])", pipeline_input_data.interpolation_interval)
-            self.assertEqual("\"x**2 + 1\"", pipeline_input_data.single_function_expression)
-            self.assertEqual("[((0,1), 'x'), ((1,2), 'x**2')]", pipeline_input_data.multiple_function_expressions)
+            self.assertEqual("\"x**2 + 1\"", pipeline_input_data.function_expression)
+            self.assertEqual("[((0,1), 'x'), ((1,2), 'x**2')]", pipeline_input_data.piecewise_function_expression)
             self.assertEqual("True", pipeline_input_data.sympy_function_expression_simplification)
             self.assertEqual("lambda x: x**2 + 3", pipeline_input_data.function_callable)
-            self.assertEqual("jnp.array([0.0, 1.0, 4.0, 9.0])", pipeline_input_data.function_values)
+            self.assertEqual("jnp.array([0.0, 1.0, 4.0, 9.0])", pipeline_input_data.interpolation_values)
 
             self.assertEqual({"secret_token": "\"abc123\""}, pipeline_input_data.additional_directly_injected_values)
             self.assertEqual({"custom_param": "[1, 2, 3]"}, pipeline_input_data.additional_values)
@@ -62,11 +62,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(None, pipeline_input_data.data_type)
             self.assertEqual(None, pipeline_input_data.node_count)
             self.assertEqual(None, pipeline_input_data.interpolation_interval)
-            self.assertEqual(None, pipeline_input_data.single_function_expression)
-            self.assertEqual(None, pipeline_input_data.multiple_function_expressions)
+            self.assertEqual(None, pipeline_input_data.function_expression)
+            self.assertEqual(None, pipeline_input_data.piecewise_function_expression)
             self.assertEqual(None, pipeline_input_data.sympy_function_expression_simplification)
             self.assertEqual(None, pipeline_input_data.function_callable)
-            self.assertEqual(None, pipeline_input_data.function_values)
+            self.assertEqual(None, pipeline_input_data.interpolation_values)
 
             self.assertEqual({}, pipeline_input_data.additional_directly_injected_values)
             self.assertEqual({}, pipeline_input_data.additional_values)
@@ -90,11 +90,11 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(None, pipeline_input_data.data_type)
             self.assertEqual(None, pipeline_input_data.node_count)
             self.assertEqual(None, pipeline_input_data.interpolation_interval)
-            self.assertEqual(None, pipeline_input_data.single_function_expression)
-            self.assertEqual(None, pipeline_input_data.multiple_function_expressions)
+            self.assertEqual(None, pipeline_input_data.function_expression)
+            self.assertEqual(None, pipeline_input_data.piecewise_function_expression)
             self.assertEqual(None, pipeline_input_data.sympy_function_expression_simplification)
             self.assertEqual(None, pipeline_input_data.function_callable)
-            self.assertEqual(None, pipeline_input_data.function_values)
+            self.assertEqual(None, pipeline_input_data.interpolation_values)
 
             self.assertEqual({}, pipeline_input_data.additional_directly_injected_values)
             self.assertEqual({"additional_values": "5", "additional_directly_injected_values": "9"}, pipeline_input_data.additional_values)

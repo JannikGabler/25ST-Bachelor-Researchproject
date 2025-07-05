@@ -8,8 +8,11 @@ import jax
 import jax.numpy as jnp
 import numpy
 
+from data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
+from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from data_structures.tree.tree_node import TreeNode
 from exceptions.evaluation_error import EvaluationError
+from exceptions.pipeline_constraint_violation_exception import PipelineConstraintViolationException
 from exceptions.type_annotation_error import TypeAnnotationError
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
 
@@ -19,9 +22,9 @@ from packaging.version import Version
 
 from data_structures.tree.tree import Tree
 from exceptions.no_such_pipeline_component_error import NoSuchPipelineComponentError
+from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    PipelineComponentInstantiationInfo
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
-from exceptions.pipeline_configuration_constraint_exception import \
-    PipelineConfigurationConstraintException
 from utils.typing_utils import TypingUtils
 
 from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
@@ -32,7 +35,9 @@ class PipelineConfiguration:
     ### Attributes of class ###
     ###########################
     _parsing_eval_namespace_: dict[str, Any] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode} # Namespace for dynamically loaded modules is getting added on demand
+                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode,
+                                                'DirectionalAcyclicGraph': DirectionalAcyclicGraph,
+                                                'DirectionalAcyclicGraphNode': DirectionalAcyclicGraphNode} # Namespace for dynamically loaded modules is getting added on demand
 
 
 
@@ -42,9 +47,10 @@ class PipelineConfiguration:
     _name_: str | None
     _supported_program_version_: Version
 
-    _components_: Tree[PipelineComponentInfo]
+    _components_: DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]
 
     _additional_values_: dict[str, Any]
+
 
 
     ###################
@@ -57,6 +63,7 @@ class PipelineConfiguration:
         self._components_.freeze()
 
         self._check_for_constraint_violations_()
+
 
 
     # def __init__(self, pipeline_configuration_data: PipelineConfigurationData) -> None:
@@ -84,7 +91,7 @@ class PipelineConfiguration:
         return self._supported_program_version_
 
     @property
-    def components(self) -> Tree[PipelineComponentInfo]:
+    def components(self) -> DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]:
         return self._components_   #__components__ is frozen (immutable)
 
     @property
@@ -163,24 +170,25 @@ class PipelineConfiguration:
 
     def _parse_components_value_(self, input_data: PipelineConfigurationData, eval_name_space: dict[str, Any]) -> None:
         if input_data.components is None:
-            raise ValueError(f"The attribute '{self.__class__.__name__}.components' of this instance is not set although it's required to be set.")
+            raise ValueError(f"The attribute 'components' of the given '{input_data.__class__.__name__}' is not set although it's required to be set for parsing into '{self.__class__.__name__}'.")
 
-        components = self._try_expression_evaluation_(input_data.components, "components", eval_name_space)
+        components = PipelineConfiguration._try_expression_evaluation_(input_data.components, "components", eval_name_space)
 
-        if not isinstance(components, Tree):
+        if not isinstance(components, DirectionalAcyclicGraph):
             raise TypeError(f"The attribute '{self.__class__.__name__}.components' of this instance was initialized with a wrong type. "
-                            f"Expected is 'Tree[str]' but got '{type(components)}'.")
+                            f"Expected is 'DirectionalAcyclicGraph[tuple[str, str, dict[str, str]]' but got '{type(components)}'.")
 
-        self._components_ = self._map_component_id_tree_to_component_info_tree_(components)
+        self._components_ = self._map_input_components_dag_into_internal_components_dag_(components)
 
 
 
-    def _try_expression_evaluation_(self, expression: str, field_name: str, name_space: dict[str, Any]) -> Any:
+    @staticmethod
+    def _try_expression_evaluation_(expression: str, field_name: str, name_space: dict[str, Any]) -> Any:
         try:
             # Security node: __builtins__ are available by default! Might be a security issue (-> define custom safe build ins).
             return eval(expression, {}, name_space)
         except Exception as e:
-            raise EvaluationError(f"Error while evaluating '{expression}': {e}")
+            raise EvaluationError(f"Error while evaluating {repr(expression)}.")
 
 
 
@@ -239,32 +247,52 @@ class PipelineConfiguration:
 
 
 
-    def _map_component_id_tree_to_component_info_tree_(self, component_ids: Tree[str]) -> Tree[PipelineComponentInfo]:
-        value_mapping: Callable[[str], PipelineComponentInfo] = self._map_component_id_to_meta_info_
-        return component_ids.value_map(value_mapping)
+    @staticmethod
+    def _map_input_components_dag_into_internal_components_dag_(input_dag: DirectionalAcyclicGraph[tuple[str, str, dict[str, str]]]) -> DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]:
+        value_mapping: Callable[[tuple[str, str, dict[str, str]]], PipelineComponentInstantiationInfo] = PipelineConfiguration._map_input_dag_node_value_to_instantiation_info_
+        return input_dag.value_map(value_mapping)
 
 
 
-    def _map_component_id_to_meta_info_(self, id: str) -> PipelineComponentInfo:
+    @staticmethod
+    def _map_input_dag_node_value_to_instantiation_info_(node_value: tuple[str, str, dict[str, str]]) -> PipelineComponentInstantiationInfo:
         from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
 
-        meta_info: PipelineComponentInfo | None = ComponentRegistry.get_component(id)
+        component_info: PipelineComponentInfo = ComponentRegistry.get_component(node_value[1])
 
-        if meta_info:
-            return meta_info
+        if component_info:
+            return PipelineComponentInstantiationInfo(node_value[0], component_info, node_value[2])
         else:
-            raise NoSuchPipelineComponentError(f"There is no Pipeline component registered with the ID '{id}'.")
+            raise NoSuchPipelineComponentError(f"There is no Pipeline component registered with the ID '{node_value[1]}'.")
+
+
+
+    # def _map_component_id_tree_to_component_info_tree_(self, component_ids: Tree[str]) -> Tree[PipelineComponentInfo]:
+    #     value_mapping: Callable[[str], PipelineComponentInfo] = self._map_component_id_to_meta_info_
+    #     return component_ids.value_map(value_mapping)
+    #
+    #
+    #
+    # def _map_component_id_to_meta_info_(self, id: str) -> PipelineComponentInfo:
+    #     from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
+    #
+    #     meta_info: PipelineComponentInfo | None = ComponentRegistry.get_component(id)
+    #
+    #     if meta_info:
+    #         return meta_info
+    #     else:
+    #         raise NoSuchPipelineComponentError(f"There is no Pipeline component registered with the ID '{id}'.")
 
 
 
     def _check_for_constraint_violations_(self) -> None:
-        for tree_node in self._components_:
-            component_info: PipelineComponentInfo = tree_node.value
+        for node in self._components_:
+            component_info: PipelineComponentInfo = node.value.component
 
             for static_constraint in component_info.component_meta_info.static_constraints:
-                if not static_constraint.evaluate(tree_node, self):
-                    raise PipelineConfigurationConstraintException(f"The static constraint '{static_constraint}' of the component"
-                       f"'{component_info.component_id}' at the path '{tree_node.path}' was violated.", tree_node, static_constraint)
+                if not static_constraint.evaluate(node, self):
+                    raise PipelineConstraintViolationException(f"The static constraint '{static_constraint}' of the component "
+                       f"'{node.value.component_name}' with id '{component_info.component_id}' was violated.", node, static_constraint)
 
         return None
 

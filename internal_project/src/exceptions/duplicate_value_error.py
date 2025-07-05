@@ -1,3 +1,3 @@
 
-class DuplicateValueError(Exception):
+class DuplicateError(Exception):
     pass

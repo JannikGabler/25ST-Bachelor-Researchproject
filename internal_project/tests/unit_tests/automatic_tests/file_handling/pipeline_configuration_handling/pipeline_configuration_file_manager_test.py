@@ -10,13 +10,15 @@ from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration
 
 class MyTestCase(unittest.TestCase):
     def test_load_with_all_attributes_set(self):
-        file_content: bytes = textwrap.dedent("""\
+        file_content: bytes = textwrap.dedent("""
                                         name="TestPipeline"
                                         supported_program_version=Version(\"1.0.0\")
-                                        components=Tree(\"\"\"\\
-                                        root\\
-                                            child\\
-                                        \"\"\")
+                                        components=DirectionalAcyclicGraph(\"\"\"
+                                            root=Root
+                                            
+                                            child=Child
+                                                predecessors=["root"]
+                                            \"\"\")
                                         extra_value=True
                                         """).encode("utf-8")
 
@@ -33,7 +35,7 @@ class MyTestCase(unittest.TestCase):
 
             self.assertEqual("\"TestPipeline\"", pipeline_configuration_data.name)
             self.assertEqual("Version(\"1.0.0\")", pipeline_configuration_data.supported_program_version)
-            self.assertEqual("Tree(\"\"\"\nroot\n    child\n\"\"\")", pipeline_configuration_data.components)
+            self.assertEqual("DirectionalAcyclicGraph(\"\"\"\nroot=Root\n\nchild=Child\n    predecessors=[\"root\"]\n\"\"\")", pipeline_configuration_data.components)
 
             self.assertEqual({"extra_value": "True"}, pipeline_configuration_data.additional_values)
 
