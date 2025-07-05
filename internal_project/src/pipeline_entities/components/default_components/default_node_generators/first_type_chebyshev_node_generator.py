@@ -37,9 +37,9 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data = self._pipeline_data_[0]
+        pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        nodes = self._compiled_jax_callable_()
+        nodes: jnp.ndarray = self._compiled_jax_callable_()
 
         pipeline_data.interpolation_nodes = nodes
         return pipeline_data

@@ -37,9 +37,13 @@ class EquidistantNodeGenerator(NodeGenerator):
     ######################
     ### Public methods ###
     ######################
-    def perform_action(self) -> None:
-        nodes = self._compiled_jax_callable_()
-        self._pipeline_data_[0].interpolation_nodes = nodes
+    def perform_action(self) -> PipelineData:
+        pipeline_data: PipelineData = self._pipeline_data_[0]
+
+        nodes: jnp.ndarray = self._compiled_jax_callable_()
+
+        pipeline_data.interpolation_nodes = nodes
+        return pipeline_data
 
 
 
