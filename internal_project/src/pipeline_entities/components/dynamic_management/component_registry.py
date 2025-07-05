@@ -1,6 +1,8 @@
 from exceptions.none_error import NoneError
 from exceptions.not_instantiable_error import NotInstantiableError
 from pipeline_entities.component_info.dataclasses.pipeline_component_info import (PipelineComponentInfo)
+from pipeline_entities.components.default_components.default_evaluation_components import \
+    __register_default_evaluation_components__
 from pipeline_entities.components.default_components.default_input_components import \
     __register_default_input_components__
 from pipeline_entities.components.default_components.default_interpolation_cores import \
@@ -31,9 +33,10 @@ class ComponentRegistry:
     @staticmethod
     def register_default_components() -> None:
         ComponentRegistry._register_default_input_components_()
-        ComponentRegistry._register_default_test_components_()
-        (ComponentRegistry._register_default_node_generators_())
+        ComponentRegistry._register_default_evaluation_components_()
+        ComponentRegistry._register_default_node_generators_()
         ComponentRegistry._register_default_interpolation_cores_()
+        ComponentRegistry._register_default_test_components_()
 
 
 
@@ -78,20 +81,23 @@ class ComponentRegistry:
     #######################
     @staticmethod
     def _register_default_input_components_():
-        __register_default_input_components__.register_default_input_components()
+        __register_default_input_components__.register()
 
-    # TODO
     @staticmethod
-    def _register_default_interpolation_cores_():
-        __register_default_interpolation_cores__.register_interpolation_cores()
+    def _register_default_evaluation_components_():
+        __register_default_evaluation_components__.register()
 
     @staticmethod
     def _register_default_node_generators_():
-        __register_default_node_generators__.register_node_generators()
+        __register_default_node_generators__.register()
+
+    @staticmethod
+    def _register_default_interpolation_cores_():
+        __register_default_interpolation_cores__.register()
 
     @staticmethod
     def _register_default_test_components_():
-        __register_default_test_components__.register_default_test_components()
+        __register_default_test_components__.register()
 
 
 
