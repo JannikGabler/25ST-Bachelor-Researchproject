@@ -1,6 +1,6 @@
 ### DO NOT REMOVE IMPORTS, THEY ARE NECESSARY!  ###
 
-def register_default_input_components():
+def register():
     from . import base_input_pipeline_component
     from . import function_callable_input_component
     from . import function_values_input_component
