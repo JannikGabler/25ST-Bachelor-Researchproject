@@ -36,8 +36,8 @@ class PipelineInput:
     _node_count_: int
     _interpolation_interval_: jnp.ndarray
 
-    _single_function_expression_: str | None
-    _multiple_function_expressions_: list[tuple[tuple[float, float], str]] | None
+    _function_expression_: str | None
+    _piecewise_function_expression_: list[tuple[tuple[float, float], str]] | None
     _sympy_function_expression_simplification_: bool | None
     _function_callable_: Callable[[jnp.ndarray], jnp.ndarray] | None
     _interpolation_values_: jnp.ndarray | None
@@ -80,12 +80,12 @@ class PipelineInput:
         return self._interpolation_interval_
 
     @property
-    def single_function_expression(self) -> str | None:
-        return self._single_function_expression_
+    def function_expression(self) -> str | None:
+        return self._function_expression_
 
     @property
-    def multiple_function_expressions(self) -> list[tuple[tuple[any, any], str]] | None:
-        return self._multiple_function_expressions_
+    def piecewise_function_expression(self) -> list[tuple[tuple[any, any], str]] | None:
+        return self._piecewise_function_expression_
 
     @property
     def sympy_function_expression_simplification(self) -> bool | None:
@@ -96,7 +96,7 @@ class PipelineInput:
         return self._function_callable_
 
     @property
-    def function_values(self) -> jnp.ndarray | None:
+    def interpolation_values(self) -> jnp.ndarray | None:
         return self._interpolation_values_
 
     @property
@@ -115,11 +115,11 @@ class PipelineInput:
     def __repr__(self):
         return (f"{self.__class__.__name__}(name='{self._name_}', data_type='{self._data_type_}', "
                 f"node_count='{self.node_count}', interpolation_interval='{self.interpolation_interval}', "
-                f"single_function_expression='{self.single_function_expression}', "
-                f"multiple_function_expressions='{self.multiple_function_expressions}', "
+                f"function_expression='{self.function_expression}', "
+                f"piecewise_function_expressions='{self.piecewise_function_expression}', "
                 f"sympy_function_expression_simplification='{self.sympy_function_expression_simplification}', "
                 f"function_callable='{self.function_callable}', "
-                f"function_values='{self.function_values}', "
+                f"interpolation_values='{self.interpolation_values}', "
                 f"additional_directly_injected_values='{self.additional_directly_injected_values}', "
                 f"additional_values='{self.additional_values}')")
 

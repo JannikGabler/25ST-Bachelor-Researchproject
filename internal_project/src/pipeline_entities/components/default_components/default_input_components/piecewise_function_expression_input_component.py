@@ -46,7 +46,7 @@ class PiecewiseFunctionExpressionInputComponent(InputPipelineComponent):
     def _create_piecewise_sympy_expression(self, x: Any) -> Expr:
         pipeline_input: PipelineInput = self._additional_execution_info_.pipeline_input
 
-        function_expressions: list[tuple[tuple[float, float], str]] = pipeline_input.multiple_function_expressions
+        function_expressions: list[tuple[tuple[float, float], str]] = pipeline_input.piecewise_function_expression
         simplify_expression: bool = pipeline_input.sympy_function_expression_simplification
 
         expressions: list[tuple[Expr, any]] = []

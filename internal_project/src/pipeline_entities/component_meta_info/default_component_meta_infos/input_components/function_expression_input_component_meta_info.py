@@ -8,10 +8,10 @@ from pipeline_entities.constraints.default_constraints.default_static_constraint
 from pipeline_entities.constraints.default_constraints.default_static_constraints.min_predecessors_constraint import \
     MinPredecessorsConstraint
 
-piecewise_function_expression_input_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+function_expression_input_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"function_callable"},
 
-    dynamic_constraints=[InputKeyRequiredConstraint("piecewise_function_expression"),
+    dynamic_constraints=[InputKeyRequiredConstraint("function_expression"),
                          InputKeyRequiredConstraint("sympy_function_expression_simplification")],
 
     static_constraints=[MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1),],
