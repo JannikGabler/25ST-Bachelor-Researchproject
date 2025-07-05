@@ -1,6 +1,8 @@
 import argparse
 import sys
-
+import threading
+import queue
+import time
 from pathlib import Path
 
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
@@ -14,12 +16,10 @@ from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
 
-def main():
-    print("setting up internal logic...")
-    InternalLogicSetupManager.setup()
-
-    print("reading pipeline config and input files...")
-
+def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInputData]]"):
+    """
+    Parses args, shows trust warning, loads the .ini files, then puts the parsed data on out_q.
+    """
     parser = argparse.ArgumentParser(
         prog="interpolation_pipeline",
         description="Build and execute your interpolation pipeline"
@@ -39,32 +39,50 @@ def main():
     args = parser.parse_args()
 
     if not args.skip_trust_warning:
-        print("Warning! Loading .ini files may execute arbitrary code. Only use pipeline config and input files from trusted sources!", file=sys.stderr)
+        print(
+            "Warning! Loading .ini files may execute arbitrary code. "
+            "Only use pipeline config and pipeline input files from trusted sources!",
+            file=sys.stderr
+        )
         reply = input("Do you trust these files? Proceed [y/N] ").strip().lower()
         if reply not in ("y", "yes"):
             print("Aborting.", file=sys.stderr)
             sys.exit(1)
 
-        print("parsed arguments:", args)
+    pcd_path = Path(args.pipeline_config)
+    pid_path = Path(args.pipeline_input)
+    pcd = PipelineConfigurationFileManager.load_from_file(pcd_path)
+    pid = PipelineInputFileManager.load_from_file(pid_path)
 
-    try:
-        pcd_path = Path(args.pipeline_config)
-        pipeline_configuration_data: PipelineConfigurationData = PipelineConfigurationFileManager.load_from_file(pcd_path)
-        pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_configuration_data)
-        print("pipeline configured sucessfully!")
+    # send to main thread
+    out_q.put((pcd, pid))
 
-        pid_path = Path(args.pipeline_input)
-        pipeline_input_data: PipelineInputData = PipelineInputFileManager.load_from_file(pid_path)
-        pipeline_input: PipelineInput = PipelineInput(pipeline_input_data)
-        print("pipeline inputs read sucessfully!")
-        
-        pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_input)
+def main():
+    print("setting up internal logic...")
+    InternalLogicSetupManager.setup()
 
-        manager  = PipelineManager(pipeline)
-        print("executing pipeline...")
-        manager.execute_all()
-        print("pipeline execution finished!")
-        print(manager._pipeline_data_dict_["/0/0/0/"])
-    except Exception as e:
-        print(f"ERROR: {e}", file=sys.stderr)
-        raise e
+    # CLI thread
+    config_queue: "queue.Queue[tuple[PipelineConfigurationData, PipelineInputData]]" = queue.Queue() # new (empty) queue
+    t = threading.Thread(target=_cli_worker, args=(config_queue,), daemon=True)
+    t.start()
+
+    # wait for the CLI thread to finish loading configs
+    pipeline_config_data, pipeline_input_data = config_queue.get()
+
+    # TODO we could warm up JAX here while waiting for the CLI
+
+    start_time = time.perf_counter()
+
+    # stays on main thread
+    pipeline_config = PipelineConfiguration(pipeline_config_data)
+    pipeline_input = PipelineInput(pipeline_input_data)
+    pipeline = PipelineBuilder.build(pipeline_config, pipeline_input)
+    manager = PipelineManager(pipeline)
+
+    print("executing pipeline…")
+    manager.execute_all()
+    end_time = time.perf_counter()
+
+    print("pipeline execution finished!")
+    print("Result at /0/0/0/:", manager._pipeline_data_dict_["/0/0/0/"])
+    print(f"Total time: {end_time - start_time:.3f}s")
