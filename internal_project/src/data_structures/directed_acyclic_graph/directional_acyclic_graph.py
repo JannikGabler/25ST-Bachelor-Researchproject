@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from collections import deque
 from collections.abc import Iterable
 from copy import copy
 from itertools import zip_longest
@@ -103,7 +105,7 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
 
     def death_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
-        stack: list[DirectionalAcyclicGraphNode[T]] = copy(self._entry_nodes_)
+        stack: deque[DirectionalAcyclicGraphNode[T]] = deque(self._entry_nodes_)
         traversed_nodes: set[int] = set()
 
         while stack:
@@ -115,20 +117,21 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
                 traversed_nodes.add(id(current_node))
                 yield current_node
 
-
-
     def breadth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
-        queue: list[DirectionalAcyclicGraphNode[T]] = copy(self._entry_nodes_)
+        queue: deque[DirectionalAcyclicGraphNode[T]] = deque(self._entry_nodes_)
         traversed_nodes: set[int] = set()
 
         while queue:
-            current_node: DirectionalAcyclicGraphNode[T] = queue.pop(0)
+            current_node: DirectionalAcyclicGraphNode[T] = queue.popleft()
 
             queue.extend(current_node.successors)
 
             if id(current_node) not in traversed_nodes:
                 traversed_nodes.add(id(current_node))
                 yield current_node
+
+    def topological_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        yield from DirectionalAcyclicGraphUtils.topological_traversal(self)
 
 
 
@@ -137,6 +140,14 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
             return DirectionalAcyclicGraph[U]()
         else:
             return self._create_mapped_dag_based_on_self_(value_mapping)
+
+
+    def get_index_of_node_(self, node: DirectionalAcyclicGraphNode[T]) -> int:
+        for index, own_node in enumerate(self.breadth_first_traversal()):
+            if own_node is node:
+                return index
+
+        raise ValueError(f"The node '{str(node)}' is not contained in the graph.")
 
 
 
@@ -178,6 +189,14 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
     def __iter__(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         yield from self.breadth_first_traversal()
+
+
+    def __getitem__(self, index: int) -> DirectionalAcyclicGraphNode[T]:
+        for i, node in enumerate(self.breadth_first_traversal()):
+            if i == index:
+                return node
+
+        raise IndexError(f"Index '{index}' is out of range.")
 
 
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import deque
 from copy import copy
 from typing import Generic, TypeVar, Any, Generator
 
@@ -7,6 +8,7 @@ from data_structures.freezable import Freezable
 from exceptions.cycle_exception import CycleException
 from exceptions.duplicate_value_error import DuplicateError
 from utils.collections_utils import CollectionsUtils
+from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 
 T = TypeVar('T')
 
@@ -84,7 +86,7 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
 
 
     def death_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
-        stack: list[DirectionalAcyclicGraphNode[T]] = [self]
+        stack: deque[DirectionalAcyclicGraphNode[T]] = deque([self])
 
         while stack:
             current_node: DirectionalAcyclicGraphNode[T] = stack.pop()
@@ -94,14 +96,29 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
             yield current_node
 
     def breadth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
-        queue: list[DirectionalAcyclicGraphNode[T]] = [self]
+        queue: deque[DirectionalAcyclicGraphNode[T]] = deque([self])
 
         while queue:
-            current_node: DirectionalAcyclicGraphNode[T] = queue.pop(0)
+            current_node: DirectionalAcyclicGraphNode[T] = queue.popleft()
 
             queue.extend(current_node._successors_)
 
             yield current_node
+
+    def topological_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        yield from DirectionalAcyclicGraphUtils.topological_traversal(self)
+
+
+
+    def all_predecessors_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        queue: deque[DirectionalAcyclicGraphNode[T]] = deque(self._predecessors_)
+
+        while queue:
+            predecessor: DirectionalAcyclicGraphNode[T] = queue.popleft()
+
+            queue.extend(predecessor._predecessors_)
+
+            yield predecessor
 
 
 
@@ -187,3 +204,4 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
                 return True
 
         return False
+
