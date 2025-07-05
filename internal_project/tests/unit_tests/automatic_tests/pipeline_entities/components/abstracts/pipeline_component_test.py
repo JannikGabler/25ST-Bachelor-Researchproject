@@ -1,12 +1,12 @@
 import unittest
 
-from pipeline.components.abstracts.pipeline_component import PipelineComponent
-from pipeline.components.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
-from pipeline.components.default_components.default_node_generators.first_type_chebyshev_node_generator import \
+from pipeline_entities.components.abstracts.pipeline_component import PipelineComponent
+from pipeline_entities.components.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
+from pipeline_entities.components.default_components.default_node_generators.first_type_chebyshev_node_generator import \
     FirstTypeChebyshevNodeGenerator
-from pipeline.components.default_components.default_node_generators.second_type_chebyshev_node_generator import \
+from pipeline_entities.components.default_components.default_node_generators.second_type_chebyshev_node_generator import \
     SecondTypeChebyshevNodeGenerator
-from pipeline.components.enums.component_type import ComponentType
+from pipeline_entities.components.enums.component_type import ComponentType
 
 
 class MyTestCase(unittest.TestCase):
