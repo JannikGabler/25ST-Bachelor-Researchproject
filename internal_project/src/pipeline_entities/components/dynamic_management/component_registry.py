@@ -8,6 +8,8 @@ from pipeline_entities.components.default_components.default_input_components im
 from pipeline_entities.components.default_components.default_interpolation_cores import \
     __register_default_interpolation_cores__
 from pipeline_entities.components.default_components.default_node_generators import __register_default_node_generators__
+from pipeline_entities.components.default_components.default_plotting_components import \
+    __register_default_plotting_components__
 from pipeline_entities.components.default_components.default_test_components import __register_default_test_components__
 
 
@@ -37,6 +39,7 @@ class ComponentRegistry:
         ComponentRegistry._register_default_node_generators_()
         ComponentRegistry._register_default_interpolation_cores_()
         ComponentRegistry._register_default_test_components_()
+        ComponentRegistry._register_default_ploting_components_()
 
 
 
@@ -98,6 +101,10 @@ class ComponentRegistry:
     @staticmethod
     def _register_default_test_components_():
         __register_default_test_components__.register()
+
+    @staticmethod
+    def _register_default_ploting_components_():
+        __register_default_plotting_components__.register_plotting_components()
 
 
 

@@ -6,7 +6,7 @@ from pipeline_entities.constraints.default_constraints.default_static_constraint
 from pipeline_entities.constraints.default_constraints.default_static_constraints.min_predecessors_constraint import \
     MinPredecessorsConstraint
 
-barycentric_first_interpolation_core_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+barycentric_second_interpolation_core_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolant"},
 
     dynamic_constraints=[],

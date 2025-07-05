@@ -64,7 +64,7 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), final_pipeline_data.interpolation_interval))
         self.assertIsNone(final_pipeline_data.interpolation_values)
 
-        self.assertTrue(jnp.array_equal(jnp.array([-1, -0.5, 0, 0.5, 1]), final_pipeline_data.nodes))
+        self.assertTrue(jnp.array_equal(jnp.array([-1, -0.5, 0, 0.5, 1]), final_pipeline_data._nodes_))
 
         self.assertEqual({}, final_pipeline_data.additional_values)
 

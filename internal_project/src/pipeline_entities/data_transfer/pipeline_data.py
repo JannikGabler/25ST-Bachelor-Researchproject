@@ -2,6 +2,8 @@ from dataclasses import dataclass, field
 from typing import Optional, Any, Callable
 import jax.numpy as jnp
 
+from data_structures.interpolants.abstracts.interpolant import Interpolant
+
 
 @dataclass
 class PipelineData:
@@ -14,9 +16,11 @@ class PipelineData:
     interpolation_nodes: jnp.ndarray | None = None
     interpolation_values: jnp.ndarray | None = None
 
-    interpolant: jnp.ndarray | None = None
+    interpolant: Optional[Interpolant] = None
 
     additional_values: dict[str, Any] = field(default_factory=dict)
+
+
 
 
 
