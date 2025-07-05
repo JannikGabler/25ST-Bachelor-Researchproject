@@ -39,8 +39,8 @@ class MyTestCase(unittest.TestCase):
             data.data_type = "jax.numpy.float32"
             data.node_count = "5"
             data.interpolation_interval = "jax.numpy.array([-1, 1], dtype=jax.numpy.float32)"
-            data.single_function_expression = "\"sin(x) * cos(x)\""
-            data.multiple_function_expressions = "[((-1, 0), \"sin(x)\"), ((0, 1), \"cos(x)\")]"
+            data.function_expression = "\"sin(x) * cos(x)\""
+            data.piecewise_function_expression = "[((-1, 0), \"sin(x)\"), ((0, 1), \"cos(x)\")]"
             data.sympy_function_expression_simplification = "True"
             data.function_callable = f"{temp_file.stem}.test_function"
             data.interpolation_values = "jax.numpy.array([1, 2, 3, 4, 5], dtype=jax.numpy.float32)"
@@ -53,8 +53,8 @@ class MyTestCase(unittest.TestCase):
             self.assertEqual(jnp.float32, pipeline_input.data_type)
             self.assertEqual(5, pipeline_input.node_count)
             self.assertTrue(jnp.array_equal(jnp.array([-1, 1], dtype=jnp.float32), pipeline_input.interpolation_interval))
-            self.assertEqual("sin(x) * cos(x)", pipeline_input.single_function_expression)
-            self.assertEqual([((-1, 0), "sin(x)"), ((0, 1), "cos(x)")], pipeline_input.multiple_function_expressions)
+            self.assertEqual("sin(x) * cos(x)", pipeline_input.function_expression)
+            self.assertEqual([((-1, 0), "sin(x)"), ((0, 1), "cos(x)")], pipeline_input.piecewise_function_expression)
             self.assertEqual(True, pipeline_input.sympy_function_expression_simplification)
 
             callable_input: jnp.ndarray = jnp.linspace(-50000, 50000, 1000)
@@ -80,8 +80,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(jnp.float32, pipeline_input.data_type)
         self.assertEqual(5, pipeline_input.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1], dtype=jnp.float32), pipeline_input.interpolation_interval))
-        self.assertEqual(None, pipeline_input.single_function_expression)
-        self.assertEqual(None, pipeline_input.multiple_function_expressions)
+        self.assertEqual(None, pipeline_input.function_expression)
+        self.assertEqual(None, pipeline_input.piecewise_function_expression)
         self.assertEqual(None, pipeline_input.sympy_function_expression_simplification)
         self.assertEqual(None, pipeline_input.function_callable)
         self.assertEqual(None, pipeline_input.interpolation_values)
@@ -174,7 +174,7 @@ class MyTestCase(unittest.TestCase):
         data.data_type = "jax.numpy.float32"
         data.node_count = "5"
         data.interpolation_interval = "jax.numpy.array([-1, 1], dtype=jax.numpy.float32)"
-        data.single_function_expression = "[]" # wrong type
+        data.function_expression = "[]" # wrong type
 
         with self.assertRaises(TypeError):
             PipelineInput(data)
@@ -186,7 +186,7 @@ class MyTestCase(unittest.TestCase):
         data.data_type = "jax.numpy.float32"
         data.node_count = "5"
         data.interpolation_interval = "jax.numpy.array([-1, 1], dtype=jax.numpy.float32)"
-        data.multiple_function_expressions = "[(5, \"cos(x)\")]" # wrong type
+        data.piecewise_function_expression = "[(5, \"cos(x)\")]" # wrong type
 
         with self.assertRaises(TypeError):
             PipelineInput(data)

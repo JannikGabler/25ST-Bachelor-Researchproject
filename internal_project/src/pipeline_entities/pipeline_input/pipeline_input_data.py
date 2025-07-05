@@ -9,8 +9,8 @@ class PipelineInputData:
     node_count: str | None = None
     interpolation_interval: str | None = None
 
-    single_function_expression: str | None = None
-    multiple_function_expressions: str | None = None
+    function_expression: str | None = None
+    piecewise_function_expression: str | None = None
     sympy_function_expression_simplification: str | None = None
     function_callable: str | None = None
     interpolation_values: str | None = None
