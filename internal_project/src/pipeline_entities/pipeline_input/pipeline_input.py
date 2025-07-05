@@ -40,7 +40,7 @@ class PipelineInput:
     _multiple_function_expressions_: list[tuple[tuple[float, float], str]] | None
     _sympy_function_expression_simplification_: bool | None
     _function_callable_: Callable[[jnp.ndarray], jnp.ndarray] | None
-    _function_values_: jnp.ndarray | None
+    _interpolation_values_: jnp.ndarray | None
 
     _additional_directly_injected_values_: dict[str, Any]
     _additional_values_: dict[str, Any]
@@ -97,7 +97,7 @@ class PipelineInput:
 
     @property
     def function_values(self) -> jnp.ndarray | None:
-        return self._function_values_
+        return self._interpolation_values_
 
     @property
     def additional_directly_injected_values(self) -> dict[str, Any]:

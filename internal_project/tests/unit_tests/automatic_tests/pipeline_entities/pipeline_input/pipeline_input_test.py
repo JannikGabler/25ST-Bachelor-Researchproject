@@ -43,7 +43,7 @@ class MyTestCase(unittest.TestCase):
             data.multiple_function_expressions = "[((-1, 0), \"sin(x)\"), ((0, 1), \"cos(x)\")]"
             data.sympy_function_expression_simplification = "True"
             data.function_callable = f"{temp_file.stem}.test_function"
-            data.function_values = "jax.numpy.array([1, 2, 3, 4, 5], dtype=jax.numpy.float32)"
+            data.interpolation_values = "jax.numpy.array([1, 2, 3, 4, 5], dtype=jax.numpy.float32)"
             data.additional_values["test1"] = "Tree(None)"
             data.additional_directly_injected_values["test2"] = "math.pi"
 
@@ -62,7 +62,7 @@ class MyTestCase(unittest.TestCase):
             callable_results: jnp.ndarray = pipeline_input.function_callable(callable_input)
             self.assertTrue(jnp.array_equal(expected_callable_results, callable_results))
 
-            self.assertTrue(jnp.array_equal(jnp.array([1, 2, 3, 4, 5], dtype=jnp.float32), pipeline_input.function_values))
+            self.assertTrue(jnp.array_equal(jnp.array([1, 2, 3, 4, 5], dtype=jnp.float32), pipeline_input.interpolation_values))
             self.assertEqual({'test1': Tree(None)}, pipeline_input.additional_values)
             self.assertEqual({'test2': math.pi}, pipeline_input.additional_directly_injected_values)
 
@@ -84,7 +84,7 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(None, pipeline_input.multiple_function_expressions)
         self.assertEqual(None, pipeline_input.sympy_function_expression_simplification)
         self.assertEqual(None, pipeline_input.function_callable)
-        self.assertEqual(None, pipeline_input.function_values)
+        self.assertEqual(None, pipeline_input.interpolation_values)
 
         self.assertEqual({}, pipeline_input.additional_values)
         self.assertEqual({}, pipeline_input.additional_directly_injected_values)
@@ -221,7 +221,7 @@ class MyTestCase(unittest.TestCase):
         data.data_type = "jax.numpy.float32"
         data.node_count = "5"
         data.interpolation_interval = "jax.numpy.array([-1, 1], dtype=jax.numpy.float32)"
-        data.function_values = "[6, 8, 2]" # wrong type
+        data.interpolation_values = "[6, 8, 2]" # wrong type
 
         with self.assertRaises(TypeError):
             PipelineInput(data)
