@@ -1,5 +1,6 @@
 import jax
 
+from data_structures.interpolants.default_interpolants.chebyshev_interpolant import NewtonInterpolant
 from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.newton_interpolation_core_meta_info import \
     newton_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
@@ -43,7 +44,15 @@ class EquidistantNodeGenerator(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> None:
-        interpolant = self._compiled_jax_callable_()
+        weights = self._compiled_jax_callable_()
+        values = self._pipeline_data_.function_values
+
+        interpolant = NewtonInterpolant(
+            nodes=self._pipeline_data_.nodes,
+            values=values,
+            weights=weights
+        )
+
         self._pipeline_data_.interpolant = interpolant
 
 

@@ -19,8 +19,5 @@ class ChebyshevInterpolant(Interpolant):
         interpolated_value = node_polynomial * jnp.sum((self.weights / updated_diffs) * self.values)
         return jnp.where(jnp.any(bool_diffs), exact_value, interpolated_value)
 
-    def evaluate(self, x: float) -> jnp.ndarray:
-        return self._interpolate_single(x)
-
-    def vectorized_evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
+    def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
         return jax.vmap(self._interpolate_single)(x)
