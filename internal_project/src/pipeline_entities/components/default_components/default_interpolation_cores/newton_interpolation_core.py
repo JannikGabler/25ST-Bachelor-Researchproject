@@ -1,6 +1,6 @@
 import jax
 
-from data_structures.interpolants.default_interpolants.chebyshev_interpolant import NewtonInterpolant
+from data_structures.interpolants.default_interpolants.newton_interpolant import NewtonInterpolant
 from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.newton_interpolation_core_meta_info import \
     newton_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
