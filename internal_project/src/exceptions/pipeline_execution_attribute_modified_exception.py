@@ -7,7 +7,7 @@ from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_
     PipelineComponentInstantiationInfo
 
 
-class PipelineExecutionAttributeUnmodifiedException(Exception):
+class PipelineExecutionAttributeModifiedException(Exception):
     _causing_node_: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]
     _causing_attribute_name_: str
 
