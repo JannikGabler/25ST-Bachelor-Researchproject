@@ -4,20 +4,26 @@ import jax.numpy as jnp
 
 
 class NewtonInterpolant(Interpolant):
+    _weights_: jnp.ndarray
+    _values_: jnp.ndarray
+    _nodes_: jnp.ndarray
+
+
     def __init__(self, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
-        self.nodes = nodes
-        self.values = values
-        self.weights = weights
+        self._nodes_ = nodes
+        self._values_ = values
+        self._weights_ = weights
+
 
     def evaluate(self, x:jnp.ndarray) -> jnp.ndarray:
         # Ensure input x is at least 1D to allow vectorized evaluation
         evaluation_points = jnp.atleast_1d(x)
-        n = self.weights.size
+        n = self._weights_.size
 
         # Inner loop function implementing the nested form of the Newton polynomial, which corresponds to Horner's scheme for Newton form
         def horner_step(i, val):
             reverse_index = n - 1 - i
-            return val * (evaluation_points - self.nodes[reverse_index]) + self.weights[reverse_index]
+            return val * (evaluation_points - self._nodes_[reverse_index]) + self._weights_[reverse_index]
 
         # Initialize the array to hold the evaluated polynomial values
         polynomial_values = jnp.zeros_like(evaluation_points)
@@ -27,3 +33,13 @@ class NewtonInterpolant(Interpolant):
 
         # Return scalar if input was scalar, otherwise return array
         return polynomial_values if evaluation_points.ndim > 0 else polynomial_values.item()
+
+
+
+    def __repr__(self) -> str:
+        return f"NewtonInterpolant(weights={self._weights_}, values={self._values_}, nodes={self._nodes_})"
+
+
+
+    def __str__(self) -> str:
+        return self.__repr__()

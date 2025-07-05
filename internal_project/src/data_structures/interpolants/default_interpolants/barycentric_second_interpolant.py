@@ -3,11 +3,19 @@ import jax
 import jax.numpy as jnp
 
 
-class BarycentricType2Interpolant(Interpolant):
+class BarycentricSecondInterpolant(Interpolant):
+    _nodes_: jnp.ndarray
+    _values_: jnp.ndarray
+    _weights_: jnp.ndarray
+
+
+
     def __init__(self, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
-        self.nodes = nodes
-        self.values = values
-        self.weights = weights
+        self._nodes_ = nodes
+        self._values_ = values
+        self._weights_ = weights
+
+
 
     @jax.jit
     def _interpolate_single(self, x: float) -> jnp.ndarray:
@@ -24,7 +32,7 @@ class BarycentricType2Interpolant(Interpolant):
         """
 
         # Compute array of differences (x - x_j)
-        diffs = x - self.nodes
+        diffs = x - self._nodes_
 
         # Check if x exactly matches any interpolation node (True where difference is zero)
         exact_match = jnp.isclose(diffs, 0.0)
@@ -33,10 +41,19 @@ class BarycentricType2Interpolant(Interpolant):
         # Otherwise compute the barycentric interpolation using weights and differences
         return jnp.where(
             jnp.any(exact_match),
-            self.values[jnp.argmax(exact_match)],
-            jnp.sum((self.weights * self.values) / diffs) / jnp.sum(self.weights / diffs)
+            self._values_[jnp.argmax(exact_match)],
+            jnp.sum((self._weights_ * self._values_) / diffs) / jnp.sum(self._weights_ / diffs)
         )
 
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
         return jax.vmap(self._interpolate_single)(x)
 
+
+
+    def __repr__(self) -> str:
+        return f"BarycentricSecondInterpolant(weights={self._weights_}, values={self._values_}, nodes={self._nodes_})"
+
+
+
+    def __str__(self) -> str:
+        return self.__repr__()
