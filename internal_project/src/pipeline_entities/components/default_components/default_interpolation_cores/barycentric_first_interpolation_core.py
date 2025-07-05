@@ -1,6 +1,6 @@
 import jax
 
-from data_structures.interpolants.default_interpolants.barycentric_first_interpolant import BarycentricType1Interpolant
+from data_structures.interpolants.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
 from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
     barycentric_first_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
@@ -48,7 +48,7 @@ class EquidistantNodeGenerator(InterpolationCore):
 
         weights = self._compiled_jax_callable_()
 
-        interpolant = BarycentricType1Interpolant(
+        interpolant = BarycentricFirstInterpolant(
             nodes=pipeline_data.interpolation_nodes,
             values=pipeline_data.interpolation_values,
             weights=weights

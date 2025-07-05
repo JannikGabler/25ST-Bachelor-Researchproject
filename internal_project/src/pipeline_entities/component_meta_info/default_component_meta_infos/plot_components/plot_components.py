@@ -8,8 +8,6 @@ plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     dynamic_constraints=[],
 
     static_constraints=[AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("function_callable"),
-                        AttributeRequiredConstraint("nodes"), AttributeRequiredConstraint("interpolant")],
-
-    mixed_constraints=[]
+                        AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolant")],
 )
 

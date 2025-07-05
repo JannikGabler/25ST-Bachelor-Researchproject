@@ -3,11 +3,19 @@ import jax
 import jax.numpy as jnp
 
 
-class BarycentricType1Interpolant(Interpolant):
+class BarycentricFirstInterpolant(Interpolant):
+    _weights_: jnp.ndarray
+    _values_: jnp.ndarray
+    _nodes_: jnp.ndarray
+
+
+
     def __init__(self, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
-        self.nodes = nodes
-        self.values = values
-        self.weights = weights
+        self._nodes_ = nodes
+        self._values_ = values
+        self._weights_ = weights
+
+
 
     @jax.jit
     def _interpolate_single(self, x: float) -> jnp.ndarray:
@@ -24,14 +32,14 @@ class BarycentricType1Interpolant(Interpolant):
         """
 
         # Compute array of differences (x - x_j)
-        diffs = x - self.nodes
+        diffs = x - self._nodes_
 
         # Create Boolean array where each difference is compared to zero: True where x == x_j and False elsewhere
         bool_diffs = jnp.equal(diffs, 0.0)
 
         # Extract function value f_j at node where x == x_j (sum picks this single matching value)
         # If x does not equal any node, sum is zero and will be ignored later
-        exact_value = jnp.sum(jnp.where(bool_diffs, self.values, 0.0))
+        exact_value = jnp.sum(jnp.where(bool_diffs, self._values_, 0.0))
 
         # Replace zeros (where x == x_j) with 1.0 to avoid division by zero
         updated_diffs = jnp.where(bool_diffs, 1.0, diffs)
@@ -40,7 +48,7 @@ class BarycentricType1Interpolant(Interpolant):
         node_polynomial = jnp.prod(diffs)
 
         # Calculate the final value with the first form of the barycentric interpolation formula (Equation (5.9))
-        interpolated_value = node_polynomial * jnp.sum((self.weights / updated_diffs) * self.values)
+        interpolated_value = node_polynomial * jnp.sum((self._weights_ / updated_diffs) * self._values_)
 
         # Return exact function value if x matches a node otherwise return interpolated value
         return jnp.where(jnp.any(bool_diffs), exact_value, interpolated_value)
@@ -48,3 +56,13 @@ class BarycentricType1Interpolant(Interpolant):
 
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
         return jax.vmap(self._interpolate_single)(x)
+
+
+
+    def __repr__(self) -> str:
+        return f"BarycentricFirstInterpolant(weights={self._weights_}, values={self._values_}, nodes={self._nodes_})"
+
+
+
+    def __str__(self) -> str:
+        return self.__repr__()
