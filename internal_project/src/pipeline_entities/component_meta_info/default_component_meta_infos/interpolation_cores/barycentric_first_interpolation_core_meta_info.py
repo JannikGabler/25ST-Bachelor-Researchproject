@@ -7,7 +7,7 @@ barycentric_first_interpolation_core_meta_info: ComponentMetaInfo = ComponentMet
 
     dynamic_constraints=[],
 
-    static_constraints=[AttributeRequiredConstraint("nodes")],
+    static_constraints=[AttributeRequiredConstraint("nodes"), AttributeRequiredConstraint("function_values")],
 
     mixed_constraints=[]
 )

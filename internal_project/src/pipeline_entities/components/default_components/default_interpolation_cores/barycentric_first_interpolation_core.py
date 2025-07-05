@@ -1,5 +1,6 @@
 import jax
 
+from data_structures.interpolants.default_interpolants.chebyshev_interpolant import ChebyshevInterpolant
 from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
     barycentric_first_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
@@ -31,6 +32,7 @@ class EquidistantNodeGenerator(InterpolationCore):
         super().__init__(pipeline_data)
 
         nodes = pipeline_data.nodes
+        self.function_values = pipeline_data.function_values
 
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
 
@@ -41,7 +43,15 @@ class EquidistantNodeGenerator(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> None:
-        interpolant = self._compiled_jax_callable_()
+        weights = self._compiled_jax_callable_()
+        values = self._pipeline_data_.function_values
+
+        interpolant = ChebyshevInterpolant(
+            nodes=self._pipeline_data_.nodes,
+            values=values,
+            weights=weights
+        )
+
         self._pipeline_data_.interpolant = interpolant
 
 

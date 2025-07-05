@@ -1,6 +1,7 @@
 from typing import Callable
 
 import jax
+import matplotlib.pyplot as plt
 
 from data_structures.interpolants.abstracts.interpolant import Interpolant
 from pipeline_entities.component_meta_info.default_component_meta_infos.plot_components.plot_components import \
@@ -30,14 +31,10 @@ class EquidistantNodeGenerator(InterpolationCore):
     def __init__(self, pipeline_data: PipelineData) -> None:
         super().__init__(pipeline_data)
 
-        interpolation_interval = pipeline_data.interpolation_interval
-        function_callable = pipeline_data.function_callable
-        nodes = pipeline_data.nodes
-        interpolant = pipeline_data.interpolant
-
-
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
-
+        self.interpolation_interval = pipeline_data.interpolation_interval
+        self.function_callable = pipeline_data.function_callable
+        self.nodes = pipeline_data.nodes
+        self.interpolant = pipeline_data.interpolant
 
 
 
@@ -45,21 +42,25 @@ class EquidistantNodeGenerator(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> None:
-        interpolant = self._compiled_jax_callable_()
-        self._pipeline_data_.interpolant = interpolant
+        # Erzeuge ein fein aufgelöstes Gitter für das Intervall:
+        x_plot = jnp.linspace(self.interpolation_interval[0], self.interpolation_interval[1], 500)
+
+        # Berechne Funktionswerte:
+        y_true = self.function_callable(x_plot)
+
+        # Berechne Interpolant-Werte:
+        y_interp = self.interpolant.vectorized_evaluate(x_plot)
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(x_plot, y_true, label="Original function")
+        plt.plot(x_plot, y_interp, label="Interpolant")
+        plt.scatter(self.nodes, self.function_callable(self.nodes), color='red', label="Nodes")
+        plt.legend()
+        plt.title("Interpolant Plot")
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.grid(True)
+        plt.show()
 
 
 
-    #######################
-    ### Private methods ###
-    #######################
-    def _create_compiled_callable_(self, interpolation_interval: jnp.ndarray, function_callable:Callable[[jnp.ndarray], jnp.ndarray], nodes: jnp.ndarray, interpolant: Interpolant):
-
-        def _internal_perform_action_() -> jnp.ndarray:
-          "TODO"
-
-        return (
-            jax.jit(_internal_perform_action_)       # → XLA-compatible HLO
-                .lower()    # → Low-Level-IR
-                .compile()  # → executable Binary
-        )
