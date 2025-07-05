@@ -279,7 +279,41 @@ class PipelineManager:
                 return True
 
         return False
+    
+    
+    def __repr__(self) -> str:
+        # 1) Grab your DAG and flatten it however you like (here: topological order)
+        dag = self._pipeline_.pipeline_configuration.components
+        nodes = list(dag.topological_traversal())
 
+        # 2) Build the “entries” as "<component_name> <component_id>"
+        entries = []
+        for node in nodes:
+            comp_id   = getattr(node.value.component, "component_id",   "error reading id!")
+            comp_name = getattr(node.value, "component_name", "error reading name!")
+            entries.append(f"{comp_name} {comp_id}")
+
+        # 3) Decide on title and compute widths
+        title = "Pipeline"
+        max_entry_len = max((len(e) for e in entries), default=0)
+        content_width = max(len(title), max_entry_len)
+        full_width    = content_width + 4   # 2 spaces + 2 border chars
+
+        # 4) Build the header line with ‘Pipeline’ centered among ‘=’
+        left_eq  = (full_width - len(title) - 2) // 2
+        right_eq = full_width - len(title) - 2 - left_eq
+
+        lines: list[str] = []
+        lines.append("=" * left_eq + f" {title} " + "=" * right_eq)
+
+        # 5) Add each entry, centered
+        for e in entries:
+            lines.append(f"= {e.center(content_width)} =")
+
+        # 6) Bottom border
+        lines.append("=" * full_width)
+
+        return "\n".join(lines)
 
 
     # def _get_pipeline_data_for_node_(self, node: TreeNode[PipelineComponentInfo]) -> PipelineData:
