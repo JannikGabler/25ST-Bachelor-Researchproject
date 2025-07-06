@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import re
 
 from pipeline_entities.component_meta_info.default_component_meta_infos.plot_components.plot_components import \
     plot_component_meta_info
@@ -47,7 +48,8 @@ class InterpolantPlotComponent(InterpolationCore):
                 continue
 
             y_interp = interpolant.evaluate(x_eval)
-            name = type(interpolant).__name__.replace("Interpolant", "")
+            raw_name = type(interpolant).__name__.replace("Interpolant", "")
+            name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
 
             plt.plot(
                 x_eval,
