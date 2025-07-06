@@ -33,9 +33,11 @@ e
         super().__init__(pipeline_data, additional_execution_data)
         data: PipelineData = pipeline_data[0]
 
-        nodes: jnp.ndarray = data.interpolation_nodes
+        if data.data_type is not None:
+            data.interpolation_nodes = data.interpolation_nodes.astype(data.data_type)
+            data.interpolation_values = data.interpolation_values.astype(data.data_type)
 
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
+        self._compiled_jax_callable_ = self._create_compiled_callable_(data.interpolation_nodes)
 
 
 

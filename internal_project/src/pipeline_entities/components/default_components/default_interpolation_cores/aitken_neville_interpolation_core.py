@@ -25,6 +25,11 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
+        data: PipelineData = pipeline_data[0]
+
+        if data.data_type is not None:
+            data.interpolation_nodes = data.interpolation_nodes.astype(data.data_type)
+            data.interpolation_values = data.interpolation_values.astype(data.data_type)
 
 
 

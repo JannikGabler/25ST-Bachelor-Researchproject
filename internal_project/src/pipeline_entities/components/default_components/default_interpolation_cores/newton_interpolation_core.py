@@ -36,6 +36,10 @@ class NewtonInterpolationCore(InterpolationCore):
         nodes: jnp.ndarray = data.interpolation_nodes
         interpolation_values: jnp.ndarray = data.interpolation_values
 
+        if data.data_type is not None:
+            nodes = nodes.astype(data.data_type)
+            interpolation_values = interpolation_values.astype(data.data_type)
+
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, interpolation_values)
 
 
