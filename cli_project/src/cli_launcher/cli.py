@@ -51,8 +51,8 @@ def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInp
 
     pcd_path = Path(args.pipeline_config)
     pid_path = Path(args.pipeline_input)
-    pcd = PipelineConfigurationFileManager.load_from_file(pcd_path)
-    pid = PipelineInputFileManager.load_from_file(pid_path)
+    pcd: PipelineConfigurationData = PipelineConfigurationFileManager.load_from_file(pcd_path)
+    pid:PipelineInputData = PipelineInputFileManager.load_from_file(pid_path)
 
     # send to main thread
     out_q.put((pcd, pid))
@@ -76,13 +76,21 @@ def main():
     # stays on main thread
     pipeline_config = PipelineConfiguration(pipeline_config_data)
     pipeline_input = PipelineInput(pipeline_input_data)
-    pipeline = PipelineBuilder.build(pipeline_config, pipeline_input)
+    pipeline: Pipeline = PipelineBuilder.build(pipeline_config, pipeline_input)
     manager = PipelineManager(pipeline)
+
+    print("\nInterpolation Pipeline (Modules):")
+    print(manager) # representation of pipeline manager prints its pipeline
 
     print("executing pipeline…")
     manager.execute_all()
     end_time = time.perf_counter()
 
-    print("pipeline execution finished!")
-    print("Result at /0/0/0/:", manager._pipeline_data_dict_["/0/0/0/"])
+    print("pipeline execution finished!\n")
+    print("Results:")
+    for report in manager._component_execution_reports_.values():
+        print(f"    ###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
+        print(f"    {report}")
+        print()
+    print()
     print(f"Total time: {end_time - start_time:.3f}s")
