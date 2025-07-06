@@ -46,7 +46,7 @@ class NewtonInterpolationCore(InterpolationCore):
     def perform_action(self) -> PipelineData:
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        weights = self._compiled_jax_callable_()   # TODO: add type
+        weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = NewtonInterpolant(
             nodes=pipeline_data.interpolation_nodes,

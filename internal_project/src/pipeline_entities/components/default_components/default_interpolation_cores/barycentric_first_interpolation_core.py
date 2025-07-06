@@ -33,7 +33,7 @@ e
         super().__init__(pipeline_data, additional_execution_data)
         data: PipelineData = pipeline_data[0]
 
-        nodes = data.interpolation_nodes
+        nodes: jnp.ndarray = data.interpolation_nodes
 
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
 
@@ -46,7 +46,7 @@ e
     def perform_action(self) -> PipelineData:
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        weights = self._compiled_jax_callable_()
+        weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = BarycentricFirstInterpolant(
             nodes=pipeline_data.interpolation_nodes,
