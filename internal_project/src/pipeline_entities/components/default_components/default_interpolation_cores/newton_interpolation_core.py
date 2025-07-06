@@ -15,7 +15,6 @@ from pipeline_entities.data_transfer.pipeline_data import PipelineData
 class NewtonInterpolationCore(InterpolationCore):
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
-    These coefficients can then be used to evaluate the interpolation polynomial efficiently in Newton form.
 
     Returns:
          coefficients: 1D array of coefficients computed via divided differences.
