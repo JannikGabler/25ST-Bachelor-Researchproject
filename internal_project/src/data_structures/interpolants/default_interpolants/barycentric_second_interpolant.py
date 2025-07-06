@@ -17,7 +17,6 @@ class BarycentricSecondInterpolant(Interpolant):
 
 
 
-    @jax.jit
     def _interpolate_single(self, x: float) -> jnp.ndarray:
         """
         Helper function for barycentric_type2_interpolate:
@@ -48,7 +47,7 @@ class BarycentricSecondInterpolant(Interpolant):
 
 
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
-        return jax.vmap(self._interpolate_single)(x)
+        return jax.jit(jax.vmap(lambda x_i: self._interpolate_single(x_i)))(x)
 
 
 
