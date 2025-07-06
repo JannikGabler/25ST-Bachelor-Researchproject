@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
+from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
@@ -83,3 +84,15 @@ pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_inpu
 pipeline_manager: PipelineManager = PipelineManager(pipeline)
 
 pipeline_manager.execute_all()
+
+
+pipeline_manager: PipelineManager = PipelineManager(pipeline)
+
+while not pipeline_manager.is_completely_executed:
+    report: PipelineComponentExecutionReport = pipeline_manager.execute_next_component()
+    node_name: str = report.component_instantiation_info.component_name
+    node_id: str = report.component_instantiation_info.component.component_id
+
+    print(f"###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
+    print(report)
+    print("\n\n")

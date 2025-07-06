@@ -37,7 +37,7 @@ class PipelineManager:
     ### Constructor ###
     ###################
     def __init__(self, pipeline: Pipeline):
-        self._pipeline_ = pipeline
+        self._pipeline_ = deepcopy(pipeline)
 
         components_dag: DirectionalAcyclicGraph[PipelineComponentInstantiationInfo] = self._pipeline_.pipeline_configuration.components
 
@@ -55,18 +55,26 @@ class PipelineManager:
 
 
 
-    def execute_next_component(self) -> None:
+    def execute_next_component(self) -> PipelineComponentExecutionReport:
         node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = self._execution_stack_.popleft()
-        self._init_component_execution_record_(node_in_own_dag)
-        pipeline_data, additional_info = self._get_input_for_node_(node_in_own_dag)
+        pipeline_data, additional_execution_data = self._setup_node_execution_(node_in_own_dag)
+        pipeline_component: PipelineComponent = self._init_node_component_(node_in_own_dag, pipeline_data, additional_execution_data)
+        result_data: PipelineData = self._execute_node_component_(pipeline_component, node_in_own_dag)
+        self._finish_up_node_execution(node_in_own_dag, result_data)
+        return deepcopy(self._component_execution_reports_[id(node_in_own_dag)])
 
-        PipelineManager._validate_node_component_constraints_(pipeline_data, additional_info)
 
-        pipeline_component: PipelineComponent = self._init_node_component_(node_in_own_dag, pipeline_data, additional_info)
-        result_pipeline_data: PipelineData = self._execute_node_component_(pipeline_component, node_in_own_dag)
-        self._component_execution_reports_[id(node_in_own_dag)].component_output = result_pipeline_data
 
-        self._validate_node_component_changes_(result_pipeline_data, node_in_own_dag)
+    def get_component_execution_report(self, pipeline_component_name: str) -> PipelineComponentExecutionReport:
+        pipeline_configuration: PipelineConfiguration = self._pipeline_.pipeline_configuration
+        node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = pipeline_configuration.get_component_node_by_component_name(pipeline_component_name)
+
+        return deepcopy(self._component_execution_reports_[id(node)])
+
+
+
+    def get_all_component_execution_report(self) -> list[PipelineComponentExecutionReport]:
+        return deepcopy(list(self._component_execution_reports_.values()))
 
 
 
@@ -77,11 +85,66 @@ class PipelineManager:
     def is_completely_executed(self) -> bool:
         return not self._execution_stack_
 
+    @property
+    def pipeline(self) -> Pipeline:
+        return deepcopy(self._pipeline_)
+
+
+
+    ##########################
+    ### Overridden methods ###
+    ##########################
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, PipelineManager):
+            return False
+        else:
+            return self._pipeline_ == other._pipeline_
+
+
+
+    def __str__(self) -> str:
+        return (f"PipelineManager(pipeline_configuration_name={repr(self._pipeline_.pipeline_configuration.name)}, "
+                f"pipeline_input_name={repr(self._pipeline_.pipeline_input.name)}, amount_of_nodes_left_to_execute={len(self._execution_stack_)})")
+
+
+
+    def __repr__(self) -> str:
+        return (f"PipelineManager(pipeline={repr(self._pipeline_)}, execution_stack={repr(self._execution_stack_)},"
+                f"component_execution_reports={repr(self._component_execution_reports_)})")
+
 
 
     #######################
     ### Private methods ###
     #######################
+
+    ### Node Execution ###
+
+    def _execute_node_component_(self, pipeline_component: PipelineComponent,
+                                 node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> PipelineData:
+
+        execution_start: float = time.perf_counter()
+
+        result_pipeline_data: PipelineData = pipeline_component.perform_action()
+
+        execution_end: float = time.perf_counter()
+
+        self._component_execution_reports_[id(node_in_own_dag)].component_execution_time = execution_end - execution_start
+        return result_pipeline_data
+
+
+
+    ### Node execution setup ###
+
+    def _setup_node_execution_(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
+        self._init_component_execution_record_(node_in_own_dag)
+        pipeline_data, additional_info = self._get_input_for_node_(node_in_own_dag)
+
+        PipelineManager._validate_node_component_constraints_(pipeline_data, additional_info)
+
+        return pipeline_data, additional_info
+
+
     def _init_component_execution_record_(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> None:
         execution_report: PipelineComponentExecutionReport = PipelineComponentExecutionReport()
         execution_report.component_instantiation_info = node_in_own_dag.value
@@ -90,12 +153,24 @@ class PipelineManager:
 
 
 
+    ### Node execution finish up ###
+
+    def _finish_up_node_execution(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
+                                  result_data: PipelineData) -> None:
+
+        self._component_execution_reports_[id(node_in_own_dag)].component_output = result_data
+
+        self._validate_node_component_changes_(result_data, node_in_own_dag)
+
+
+
+    ### Input generation for node execution ###
+
     def _get_input_for_node_(self, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
         if len(node.predecessors) == 0:
             return self._create_new_input_for_entry_node_(node)
         else:
             return self._create_input_for_non_entry_node_(node)
-
 
 
     def _create_new_input_for_entry_node_(self, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
@@ -110,7 +185,6 @@ class PipelineManager:
 
         new_pipeline_data: PipelineData = PipelineData()
         return [new_pipeline_data], additional_component_execution_data
-
 
 
     # TODO: split up (functional decomposition)
@@ -137,11 +211,12 @@ class PipelineManager:
 
 
 
+    ### Constraint validation after node execution ###
+
     @staticmethod
     def _validate_node_component_constraints_(pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         PipelineManager._validate_dynamic_node_component_constraints_(pipeline_data, additional_execution_data)
         #self._validate_mixed_node_component_constraints_(node, pipeline_data, additional_execution_info)
-
 
 
     @staticmethod
@@ -155,7 +230,6 @@ class PipelineManager:
                     f"{repr(node.value.component_name)} with id {repr(node.value.component.component_id)} was violated.", node, dynamic_constraint)
 
 
-
     # TODO: delete
     # def _validate_mixed_node_component_constraints_(self, node: DirectionalAcyclicGraphNode[PipelineComponentInfo], pipeline_data: list[PipelineData],
     #                                                   additional_execution_info: AdditionalComponentExecutionData) -> None:
@@ -166,7 +240,6 @@ class PipelineManager:
     #         if not mixed_constraint.evaluate(pipeline_data, self._pipeline_.pipeline_input, node, self._pipeline_.pipeline_configuration):
     #             raise PipelineConstraintViolationException(f"The mixed constraint '{mixed_constraint}' of the component"
     #                 f"'{node.value.component_id}' at the path '{node.path}' was violated.", node, mixed_constraint)
-
 
 
     def _init_node_component_(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
@@ -188,21 +261,6 @@ class PipelineManager:
         return pipeline_component
 
 
-
-    def _execute_node_component_(self, pipeline_component: PipelineComponent,
-                                 node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> PipelineData:
-
-        execution_start: float = time.perf_counter()
-
-        result_pipeline_data: PipelineData = pipeline_component.perform_action()
-
-        execution_end: float = time.perf_counter()
-
-        self._component_execution_reports_[id(node_in_own_dag)].component_execution_time = execution_end - execution_start
-        return result_pipeline_data
-
-
-
     def _validate_node_component_changes_(self, result_pipeline_data: PipelineData,
                                           node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> None:
 
@@ -214,7 +272,6 @@ class PipelineManager:
                 PipelineManager._validate_that_component_did_modify_attribute_(attribute_name, result_pipeline_data, node_in_own_dag)
             else:
                 self._validate_that_component_did_not_modify_attribute_(attribute_name, result_pipeline_data, node_in_own_dag)
-
 
 
     @staticmethod
@@ -233,7 +290,6 @@ class PipelineManager:
                     f"The component {repr(node_value.component_name)} with the id {repr(node_value.component.component_id)} "
                     f"did not modify the attribute {repr(attribute_name)} of the result PipelineData even though the component"
                     "should.", node_in_own_dag, attribute_name)
-
 
 
     def _validate_that_component_did_not_modify_attribute_(self, attribute_name: str, result_pipeline_data: PipelineData,
@@ -259,7 +315,6 @@ class PipelineManager:
             f"The component {repr(node_value.component_name)} with the id {repr(node_value.component.component_id)} did "
             f"modify the attribute {repr(attribute_name)} of the result PipelineData even though the component shouldn't "
             f"have.", node_in_own_dag, attribute_name)
-
 
 
     @staticmethod
