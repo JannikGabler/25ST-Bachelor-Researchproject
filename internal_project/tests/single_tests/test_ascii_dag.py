@@ -1,4 +1,4 @@
-from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
+from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils 
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
         4: "4 newton interpolation"
     }
 
-    ascii_graph = PipelineManager._ascii_dag(None, adj, labels)
+    ascii_graph = DirectionalAcyclicGraphUtils.ascii_dag(adj, labels)
     print(ascii_graph)
 
 
