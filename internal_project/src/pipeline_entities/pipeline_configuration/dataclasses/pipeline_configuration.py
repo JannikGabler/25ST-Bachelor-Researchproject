@@ -82,6 +82,23 @@ class PipelineConfiguration:
     ######################
     ### Public methods ###
     ######################
+    def get_all_component_names(self) -> list[str]:
+        return [node.value.component_name for node in self._components_]
+
+
+
+    def get_component_node_by_component_name(self, component_name: str) -> DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]:
+        for node in self._components_:
+            if node.value.component_name == component_name:
+                return node
+
+        raise NoSuchPipelineComponentError(f"There is no pipeline component in this pipeline configuration with the name {repr(component_name)}.")
+
+
+
+    #########################
+    ### Getters & setters ###
+    #########################
     @property
     def name(self) -> str:
         return self._name_
