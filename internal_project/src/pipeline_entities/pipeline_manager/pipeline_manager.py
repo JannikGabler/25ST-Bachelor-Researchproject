@@ -6,6 +6,7 @@ from dataclasses import fields
 
 from data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
 from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 from exceptions.pipeline_constraint_violation_exception import PipelineConstraintViolationException
 from exceptions.pipeline_execution_attribute_modified_exception import PipelineExecutionAttributeModifiedException
 from exceptions.pipeline_execution_attribute_unmodified_exception import PipelineExecutionAttributeUnmodifiedException
@@ -333,8 +334,30 @@ class PipelineManager:
                     result_pipeline_data.additional_values[attribute_name]:
                 return True
 
-        return False
+        return False    
 
+
+    def __repr__(self) -> str:
+        dag   = self._pipeline_.pipeline_configuration.components
+        nodes = list(dag.topological_traversal())
+
+        adj = {}
+        labels = {}
+        for node in nodes:
+            inst = node.value
+            comp = inst.component
+
+            comp_id = getattr(comp, "component_id", "error reading id!")
+            comp_name = getattr(inst, "component_name", "error reading name!")
+
+            adj[comp_id] = [
+                getattr(succ.value.component, "component_id", "error reading id!")
+                for succ in node.successors
+            ]
+            labels[comp_id] = f"{comp_name} {comp_id}"
+
+        # 3) delegate to your ASCII‐drawing helper
+        return DirectionalAcyclicGraphUtils.ascii_dag(adj, labels)
 
 
     # def _get_pipeline_data_for_node_(self, node: TreeNode[PipelineComponentInfo]) -> PipelineData:
