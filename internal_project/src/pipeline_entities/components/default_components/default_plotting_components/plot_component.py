@@ -40,7 +40,7 @@ class InterpolantPlotComponent(InterpolationCore):
             plt.scatter(nodes, f(nodes), color='red', s=50, label="Interpolation Nodes", zorder=10)
 
         colors = ['blue', 'green', 'orange', 'purple', 'brown']
-        linestyles = ['-', '--', '-.', ':']
+        # linestyles = ['-', '--', '-.', ':']
 
         for i, data in enumerate(all_data):
             interpolant = data.interpolant
@@ -56,7 +56,8 @@ class InterpolantPlotComponent(InterpolationCore):
                 y_interp,
                 label=f"{name} Interpolant",
                 color=colors[i % len(colors)],
-                linestyle=linestyles[i % len(linestyles)],
+                linestyle='-',
+                # linestyle=linestyles[i % len(linestyles)],
                 linewidth=2
             )
 
