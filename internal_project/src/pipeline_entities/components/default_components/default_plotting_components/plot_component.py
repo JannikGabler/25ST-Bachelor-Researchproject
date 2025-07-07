@@ -58,7 +58,7 @@ class InterpolantPlotComponent(InterpolationCore):
                 color=colors[i % len(colors)],
                 linestyle='-',
                 # linestyle=linestyles[i % len(linestyles)],
-                linewidth=2
+                linewidth=1.8
             )
 
         plt.title("Interpolants vs. Original Function")
