@@ -14,7 +14,7 @@ class AttributeRequiredConstraint(StaticConstraint):
     ##############################
     ### Attributs of instances ###
     ##############################
-    __attribute_name__: str
+    _attribute_name_: str
 
 
 
@@ -25,7 +25,7 @@ class AttributeRequiredConstraint(StaticConstraint):
         if not any(field.name == attribute_name for field in fields(PipelineData)):
             raise AttributeError(f"The class 'PipelineData' has no attribute with the name '{attribute_name}'")
 
-        self.__attribute_name__ = attribute_name
+        self._attribute_name_ = attribute_name
 
 
 
@@ -43,17 +43,17 @@ class AttributeRequiredConstraint(StaticConstraint):
         if not isinstance(other, AttributeRequiredConstraint):   # Covers None
             return False
         else:
-            return self.__attribute_name__ == other.__attribute_name__
+            return self._attribute_name_ == other._attribute_name_
 
 
 
     def __hash__(self):
-        return hash(self.__attribute_name__)
+        return hash(self._attribute_name_)
 
 
 
     def __repr__(self) -> str:
-        return f"AttributRequiredConstraint<attribute_name='{self.__attribute_name__}'>"
+        return f"AttributRequiredConstraint<attribute_name='{self._attribute_name_}'>"
 
 
 
@@ -63,7 +63,7 @@ class AttributeRequiredConstraint(StaticConstraint):
     def _is_attribute_for_component_guaranteed_set_(self, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> bool:
         attributes_modifying: set[str] = node.value.component.component_meta_info.attributes_modifying
 
-        if self.__attribute_name__ in attributes_modifying:
+        if self._attribute_name_ in attributes_modifying:
             return True
         if not node.predecessors:
             return False

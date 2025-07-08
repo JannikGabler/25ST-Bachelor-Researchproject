@@ -8,10 +8,16 @@ from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputDa
 
 
 class InputKeyRequiredConstraint(DynamicConstraint):
+    ##############################
+    ### Attributs of instances ###
+    ##############################
     _key_: str
 
 
 
+    ###################
+    ### Constructor ###
+    ###################
     def __init__(self, key: str) -> None:
         if key.startswith("_") and key.endswith("_"):
             self._key_ = key[1:-1]
@@ -20,6 +26,9 @@ class InputKeyRequiredConstraint(DynamicConstraint):
 
 
 
+    ##########################
+    ### Overridden methods ###
+    ##########################
     def evaluate(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> bool:
         pipeline_input: PipelineInput = additional_execution_data.pipeline_input
 
@@ -31,3 +40,18 @@ class InputKeyRequiredConstraint(DynamicConstraint):
 
 
 
+    def __eq__(self, other):
+        if not isinstance(other, InputKeyRequiredConstraint):   # Covers None
+            return False
+        else:
+            return self._key_ == other._key_
+
+
+
+    def __hash__(self):
+        return hash(self._key_)
+
+
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(key='{self._key_}')"

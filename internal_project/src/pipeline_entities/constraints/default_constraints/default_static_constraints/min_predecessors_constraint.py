@@ -10,7 +10,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     ##############################
     ### Attributs of instances ###
     ##############################
-    __min_amount__: int
+    _min_amount_: int
 
 
 
@@ -18,7 +18,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     ### Constructor ###
     ###################
     def __init__(self, min_amount: int):
-        self.__min_amount__ = min_amount
+        self._min_amount_ = min_amount
 
 
 
@@ -28,7 +28,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
-        return len(own_node.predecessors) >= self.__min_amount__
+        return len(own_node.predecessors) >= self._min_amount_
 
 
 
@@ -36,15 +36,15 @@ class MinPredecessorsConstraint(StaticConstraint):
         if not isinstance(other, MinPredecessorsConstraint):   # Covers None
             return False
         else:
-            return self.__min_amount__ == other.__min_amount__
+            return self._min_amount_ == other._min_amount_
 
 
 
     def __hash__(self):
-        return hash(self.__min_amount__)
+        return hash(self._min_amount_)
 
 
 
     def __repr__(self) -> str:
-        return f"MinPredecessorsConstraint(min_amount='{self.__min_amount__}')"
+        return f"MinPredecessorsConstraint(min_amount='{self._min_amount_}')"
 
