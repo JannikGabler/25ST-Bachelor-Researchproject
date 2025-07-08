@@ -12,10 +12,10 @@ from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
 @pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
-class EquidistantNodeGenerator(InterpolationCore):
+class BarycentricFirstInterpolationCore(InterpolationCore):
     """
     Computes the barycentric weights for the first form of the barycentric interpolation formula.
-
+e
     Returns:
         1D array containing the barycentric weights.
     """
@@ -33,9 +33,11 @@ class EquidistantNodeGenerator(InterpolationCore):
         super().__init__(pipeline_data, additional_execution_data)
         data: PipelineData = pipeline_data[0]
 
-        nodes = data.interpolation_nodes
+        if data.data_type is not None:
+            data.interpolation_nodes = data.interpolation_nodes.astype(data.data_type)
+            data.interpolation_values = data.interpolation_values.astype(data.data_type)
 
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
+        self._compiled_jax_callable_ = self._create_compiled_callable_(data.interpolation_nodes)
 
 
 
@@ -46,7 +48,7 @@ class EquidistantNodeGenerator(InterpolationCore):
     def perform_action(self) -> PipelineData:
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        weights = self._compiled_jax_callable_()
+        weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = BarycentricFirstInterpolant(
             nodes=pipeline_data.interpolation_nodes,

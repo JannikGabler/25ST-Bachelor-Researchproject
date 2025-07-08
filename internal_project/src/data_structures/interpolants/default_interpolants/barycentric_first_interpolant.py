@@ -3,6 +3,7 @@ import jax
 import jax.numpy as jnp
 
 
+
 class BarycentricFirstInterpolant(Interpolant):
     _weights_: jnp.ndarray
     _values_: jnp.ndarray
@@ -17,7 +18,6 @@ class BarycentricFirstInterpolant(Interpolant):
 
 
 
-    @jax.jit
     def _interpolate_single(self, x: float) -> jnp.ndarray:
         """
             Helper function for barycentric_type1_interpolate:
@@ -54,8 +54,9 @@ class BarycentricFirstInterpolant(Interpolant):
         return jnp.where(jnp.any(bool_diffs), exact_value, interpolated_value)
 
 
+
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
-        return jax.vmap(self._interpolate_single)(x)
+        return jax.jit(jax.vmap(lambda x_i: self._interpolate_single(x_i)))(x)
 
 
 
@@ -66,3 +67,12 @@ class BarycentricFirstInterpolant(Interpolant):
 
     def __str__(self) -> str:
         return self.__repr__()
+
+
+
+    def __eq__(self, other):
+        if not isinstance(other, BarycentricFirstInterpolant):
+            return False
+        else:
+            return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
+

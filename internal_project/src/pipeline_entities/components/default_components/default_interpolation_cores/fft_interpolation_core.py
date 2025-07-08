@@ -1,8 +1,8 @@
 import jax
 
-from data_structures.interpolants.default_interpolants.newton_interpolant import NewtonInterpolant
-from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.newton_interpolation_core_meta_info import \
-    newton_interpolation_core_meta_info
+from data_structures.interpolants.default_interpolants.fft_interpolant import FastFourierTransformationInterpolant
+from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.fft_interpolation_core_meta_info import \
+    fft_interpolation_core_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
@@ -11,13 +11,10 @@ from pipeline_entities.data_transfer.additional_component_execution_data import 
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 
-@pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
-class NewtonInterpolationCore(InterpolationCore):
+@pipeline_component(id="fft interpolation", type=InterpolationCore, meta_info=fft_interpolation_core_meta_info)
+class FFTInterpolationCore(InterpolationCore):
     """
-    Computes the coefficients of the Newton interpolation polynomial using divided differences.
-
-    Returns:
-         coefficients: 1D array of coefficients computed via divided differences.
+    Computes the Fourier weights for trigonometric interpolation using FFT.
     """
     ###############################
     ### Attributes of instances ###
@@ -35,12 +32,14 @@ class NewtonInterpolationCore(InterpolationCore):
 
         nodes: jnp.ndarray = data.interpolation_nodes
         interpolation_values: jnp.ndarray = data.interpolation_values
+        interpolation_interval: jnp.ndarray = data.interpolation_interval
 
         if data.data_type is not None:
             nodes = nodes.astype(data.data_type)
             interpolation_values = interpolation_values.astype(data.data_type)
+            interpolation_interval = interpolation_interval.astype(data.data_type)
 
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, interpolation_values)
+        self._compiled_jax_callable_ = self._create_compiled_callable_(interpolation_values)
 
 
 
@@ -52,9 +51,10 @@ class NewtonInterpolationCore(InterpolationCore):
 
         weights: jnp.ndarray = self._compiled_jax_callable_()
 
-        interpolant = NewtonInterpolant(
+        interpolant = FastFourierTransformationInterpolant(
             nodes=pipeline_data.interpolation_nodes,
-            weights=weights
+            weights=weights,
+            interval=pipeline_data.interpolation_interval
         )
 
         pipeline_data.interpolant = interpolant
@@ -66,31 +66,11 @@ class NewtonInterpolationCore(InterpolationCore):
     ### Private methods ###
     #######################
     @staticmethod
-    def _create_compiled_callable_(nodes: jnp.ndarray, interpolation_values: jnp.ndarray) -> callable:
+    def _create_compiled_callable_(interpolation_values: jnp.ndarray) -> callable:
 
         def _internal_perform_action_() -> jnp.ndarray:
-            # Number of interpolation points
-            n = nodes.size
-
-            # Initialize coefficients array with function values
-            coefficients = interpolation_values.copy()
-
-            # Compute divided differences of increasing order
-            def outer_loop(j, coef_outer):
-                # Update entries for current order of divided differences
-                def inner_loop(i, coef_inner):
-                    numerator = coef_outer[i] - coef_outer[i - 1]
-                    denominator = nodes[i] - nodes[i - j]
-                    return coef_inner.at[i].set(numerator / denominator)
-
-                # Apply the inner loop to update coefficients for the current order
-                coef_outer = jax.lax.fori_loop(j, n, inner_loop, coef_outer)
-                return coef_outer
-
-            # Apply the outer loop to compute all orders of divided differences
-            coefficients = jax.lax.fori_loop(1, n, outer_loop, coefficients)
-
-            return coefficients
+            # Get the weights
+            return jnp.fft.fft(interpolation_values) / interpolation_values.size
 
         return (
             jax.jit(_internal_perform_action_)       # → XLA-compatible HLO

@@ -17,7 +17,6 @@ class BarycentricSecondInterpolant(Interpolant):
 
 
 
-    @jax.jit
     def _interpolate_single(self, x: float) -> jnp.ndarray:
         """
         Helper function for barycentric_type2_interpolate:
@@ -45,8 +44,10 @@ class BarycentricSecondInterpolant(Interpolant):
             jnp.sum((self._weights_ * self._values_) / diffs) / jnp.sum(self._weights_ / diffs)
         )
 
+
+
     def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
-        return jax.vmap(self._interpolate_single)(x)
+        return jax.jit(jax.vmap(lambda x_i: self._interpolate_single(x_i)))(x)
 
 
 
@@ -57,3 +58,11 @@ class BarycentricSecondInterpolant(Interpolant):
 
     def __str__(self) -> str:
         return self.__repr__()
+
+
+
+    def __eq__(self, other):
+        if not isinstance(other, BarycentricSecondInterpolant):
+            return False
+        else:
+            return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
