@@ -10,7 +10,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     ##############################
     ### Attributs of instances ###
     ##############################
-    __max_amount__: int
+    _max_amount_: int
 
 
 
@@ -18,7 +18,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     ### Constructor ###
     ###################
     def __init__(self, max_amount: int):
-        self.__max_amount__ = max_amount
+        self._max_amount_ = max_amount
 
 
 
@@ -28,7 +28,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
-        return len(own_node.predecessors) <= self.__max_amount__
+        return len(own_node.predecessors) <= self._max_amount_
 
 
 
@@ -36,15 +36,15 @@ class MaxPredecessorsConstraint(StaticConstraint):
         if not isinstance(other, MaxPredecessorsConstraint):   # Covers None
             return False
         else:
-            return self.__max_amount__ == other.__max_amount__
+            return self._max_amount_ == other._max_amount_
 
 
 
     def __hash__(self):
-        return hash(self.__max_amount__)
+        return hash(self._max_amount_)
 
 
 
     def __repr__(self) -> str:
-        return f"MaxPredecessorsConstraint(max_amount='{self.__max_amount__}')"
+        return f"MaxPredecessorsConstraint(max_amount={self._max_amount_})"
 
