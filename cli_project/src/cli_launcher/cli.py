@@ -81,7 +81,7 @@ def main():
     manager = PipelineManager(pipeline)
 
     print("\nInterpolation Pipeline (Modules):")
-    print(pipeline) # representation of pipeline manager prints its pipeline
+    print(pipeline)
 
     print("executing pipeline…")
     manager.execute_all()
