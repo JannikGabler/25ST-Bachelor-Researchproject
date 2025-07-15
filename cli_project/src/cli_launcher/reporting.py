@@ -53,11 +53,16 @@ def format_report(report: PipelineComponentExecutionReport) -> str:
     underline = '=' * table_width
     centered_title = title.center(table_width)
 
+    ##########################
+    # Assembly of the output #
+    ##########################
+
     lines: list[str] = [underline, centered_title, underline, ""]
 
     for l in timing_lines:
         lines.append(l)
     lines.append("") # add blank line for better readability
+    lines.append("Output (PipelineData):")
 
     # Start of Table
     lines.append("Pipeline Data:")
