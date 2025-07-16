@@ -4,8 +4,8 @@
 # from data_structures.tree.tree_node import TreeNode
 #
 # if TYPE_CHECKING:
-#     from pipeline_entities.constraints.abstracts.dynamic_constraint import DynamicConstraint
-#     from pipeline_entities.constraints.abstracts.mixed_constraint import MixedConstraint
+#     from pipeline_entities.constraints.pipeline_component.dynamic_constraint import DynamicConstraint
+#     from pipeline_entities.constraints.pipeline_component.mixed_constraint import MixedConstraint
 #     from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 #
 #

@@ -1,13 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
-from data_structures.tree.tree_node import TreeNode
+from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 
 if TYPE_CHECKING:
-    from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+    from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
         PipelineComponentInstantiationInfo
-    from pipeline_entities.constraints.abstracts.constraint import Constraint
+    from pipeline_entities.pipeline.component_entities.constraints.abstracts.constraint import Constraint
 
 
 class PipelineConstraintViolationException(Exception):

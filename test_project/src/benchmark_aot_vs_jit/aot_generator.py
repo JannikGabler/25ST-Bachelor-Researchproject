@@ -20,7 +20,7 @@ class AOTGenerator:
         self.__data__ = data
 
         # ──────────────────────────────────────────────────────────────
-        # 1.  Fixe, **statische** Parameter für den Kernel
+        # 1. Fixe, **statische** Parameter für den Kernel
         #    (ändern sich nach der Initialisierung nicht mehr)
         # ──────────────────────────────────────────────────────────────
         node_count: int = self.__data__.node_count

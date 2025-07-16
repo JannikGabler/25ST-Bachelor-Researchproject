@@ -3,8 +3,8 @@ from pathlib import Path
 
 from exceptions.not_instantiable_error import NotInstantiableError
 from file_handling.ini_handling.ini_file_manager import INIFileManager
-from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 
 
 class PipelineInputFileManager:
