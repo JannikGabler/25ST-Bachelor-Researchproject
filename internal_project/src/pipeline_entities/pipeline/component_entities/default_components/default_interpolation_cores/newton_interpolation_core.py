@@ -12,10 +12,9 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
-class EquidistantNodeGenerator(InterpolationCore):
+class NewtonInterpolationCore(InterpolationCore):
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
-    These coefficients can then be used to evaluate the interpolation polynomial efficiently in Newton form.
 
     Returns:
          coefficients: 1D array of coefficients computed via divided differences.
@@ -37,6 +36,10 @@ class EquidistantNodeGenerator(InterpolationCore):
         nodes: jnp.ndarray = data.interpolation_nodes
         interpolation_values: jnp.ndarray = data.interpolation_values
 
+        if data.data_type is not None:
+            nodes = nodes.astype(data.data_type)
+            interpolation_values = interpolation_values.astype(data.data_type)
+
         self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, interpolation_values)
 
 
@@ -47,12 +50,11 @@ class EquidistantNodeGenerator(InterpolationCore):
     def perform_action(self) -> PipelineData:
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        weights = self._compiled_jax_callable_()   # TODO: add type
+        divided_differences: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = NewtonInterpolant(
             nodes=pipeline_data.interpolation_nodes,
-            values=pipeline_data.interpolation_values,
-            divided_differences=weights
+            divided_differences=divided_differences
         )
 
         pipeline_data.interpolant = interpolant

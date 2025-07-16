@@ -11,7 +11,7 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 
 
-@pipeline_component(id="Barycentric Second Form Interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
+@pipeline_component(id="barycentric2 interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
 class BarycentricSecondInterpolationCore(InterpolationCore):
     """
     Computes the barycentric weights for the second form of the barycentric interpolation formula.
@@ -33,10 +33,11 @@ class BarycentricSecondInterpolationCore(InterpolationCore):
         super().__init__(pipeline_data, additional_execution_data)
         data: PipelineData = pipeline_data[0]
 
-        nodes = data.interpolation_nodes
-        self.function_values = data.interpolation_values
+        if data.data_type is not None:
+            data.interpolation_nodes = data.interpolation_nodes.astype(data.data_type)
+            data.interpolation_values = data.interpolation_values.astype(data.data_type)
 
-        self._compiled_jax_callable_ = self._create_compiled_callable_(nodes)
+        self._compiled_jax_callable_ = self._create_compiled_callable_(data.interpolation_nodes)
 
 
 
@@ -46,7 +47,7 @@ class BarycentricSecondInterpolationCore(InterpolationCore):
     def perform_action(self) -> PipelineData:
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
-        weights = self._compiled_jax_callable_()
+        weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = BarycentricSecondInterpolant(
             nodes=pipeline_data.interpolation_nodes,
