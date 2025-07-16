@@ -36,7 +36,7 @@ class NewtonInterpolant(Interpolant):
 
 
     def __repr__(self) -> str:
-        return f"NewtonInterpolant(divided_differences={self._divided_differences_}, values={self._values_}, nodes={self._nodes_})"
+        return f"NewtonInterpolant(divided_differences={self._divided_differences_}, nodes={self._nodes_})"
 
 
 
@@ -49,4 +49,4 @@ class NewtonInterpolant(Interpolant):
         if not isinstance(other, NewtonInterpolant):
             return False
         else:
-            return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
+            return jnp.array_equal(self._divided_differences_, other._divided_differences_) and jnp.array_equal(self._nodes_, other._nodes_)

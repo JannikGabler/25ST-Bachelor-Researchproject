@@ -3,7 +3,7 @@ from typing import Callable
 import jax
 import jax.numpy as jnp
 
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.evaluation_components.interpolation_values_evaluator_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.evaluation_components.interpolation_values_evaluator_meta_info import \
     interpolation_values_evaluator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import EvaluatorComponent
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component

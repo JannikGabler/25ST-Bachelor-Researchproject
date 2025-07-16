@@ -1,6 +1,7 @@
-from data_structures.interpolants.abstracts.interpolant import Interpolant
 import jax
 import jax.numpy as jnp
+
+from interpolants.abstracts.interpolant import Interpolant
 
 
 class AitkenNevilleInterpolant(Interpolant):

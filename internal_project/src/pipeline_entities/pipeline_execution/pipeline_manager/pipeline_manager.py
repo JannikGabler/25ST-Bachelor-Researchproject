@@ -12,10 +12,10 @@ from exceptions.pipeline_execution_attribute_unmodified_exception import Pipelin
 from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component import PipelineComponent
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.dynamic_constraint import DynamicConstraint
+from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline.data_classes.pipeline import Pipeline
 from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
 from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
@@ -73,7 +73,7 @@ class PipelineManager:
 
 
 
-    def get_all_component_execution_report(self) -> list[PipelineComponentExecutionReport]:
+    def get_all_component_execution_reports(self) -> list[PipelineComponentExecutionReport]:
         return deepcopy(list(self._component_execution_reports_.values()))
 
 

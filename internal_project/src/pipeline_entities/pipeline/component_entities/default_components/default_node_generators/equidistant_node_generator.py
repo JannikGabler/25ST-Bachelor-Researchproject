@@ -1,6 +1,6 @@
 import jax
 
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.node_generators.equidistant_node_generator_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.node_generators.equidistant_node_generator_meta_info import \
     equidistant_node_generator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.node_generator import NodeGenerator
 import jax.numpy as jnp

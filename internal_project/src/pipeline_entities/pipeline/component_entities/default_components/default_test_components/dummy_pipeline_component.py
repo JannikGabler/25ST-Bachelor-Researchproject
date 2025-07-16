@@ -1,4 +1,4 @@
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.test_components.dummy_pipeline_component_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.test_components.dummy_pipeline_component_meta_info import \
     dummy_pipeline_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.node_generator import NodeGenerator
 

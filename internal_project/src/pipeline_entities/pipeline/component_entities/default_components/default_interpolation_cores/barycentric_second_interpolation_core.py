@@ -1,7 +1,7 @@
 import jax
 
 from interpolants.default_interpolants.barycentric_second_interpolant import BarycentricSecondInterpolant
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
     barycentric_second_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 import jax.numpy as jnp
