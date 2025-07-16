@@ -3,14 +3,14 @@ import textwrap
 import unittest
 from pathlib import Path
 
-from pipeline.components.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
-from pipeline.components.default_components.default_node_generators.first_type_chebyshev_node_generator import \
+from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import \
+    PipelineComponentInfo
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.first_type_chebyshev_node_generator import \
     FirstTypeChebyshevNodeGenerator
-from pipeline.components.default_components.default_node_generators.second_type_chebyshev_node_generator import \
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.second_type_chebyshev_node_generator import \
     SecondTypeChebyshevNodeGenerator
-from pipeline.components.dynamic_management.component_registry import ComponentRegistry
-from pipeline.components.enums.component_type import ComponentType
-from pipeline.component_infos.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline.component_entities.component_registry.component_registry import ComponentRegistry
 
 
 class MyTestCase(unittest.TestCase):
@@ -45,11 +45,11 @@ class MyTestCase(unittest.TestCase):
     def test_register_component_from_file_1(self):
         file_content: bytes = textwrap.dedent("""\
                                 import jax
-                                from pipeline.components.abstracts.node_generator import NodeGenerator
+                                from pipeline.components.pipeline_component.node_generator import NodeGenerator
                                 import jax.numpy as jnp
                                 
-                                from pipeline.components.abstracts.pipeline_component import pipeline_component
-                                from pipeline.components.enums.component_type import ComponentType
+                                from pipeline.component_entities.pipeline_component.pipeline_component import pipeline_component
+                                from pipeline.component_entities.enums.component_type import ComponentType
                                 
                                 
                                 @pipeline_component(id="Test1")
@@ -81,11 +81,11 @@ class MyTestCase(unittest.TestCase):
     def test_register_component_from_file_2(self):
         file_content: bytes = textwrap.dedent("""\
                                 import jax
-                                from pipeline.components.abstracts.node_generator import NodeGenerator
+                                from pipeline.component_entities.pipeline_component.node_generator import NodeGenerator
                                 import jax.numpy as jnp
 
-                                from pipeline.components.abstracts.pipeline_component import pipeline_component
-                                from pipeline.components.enums.component_type import ComponentType
+                                from pipeline.component_entities.pipeline_component.pipeline_component import pipeline_component
+                                from pipeline.component_entities.enums.component_type import ComponentType
 
 
                                 @pipeline_component(id="Test2")
@@ -117,11 +117,11 @@ class MyTestCase(unittest.TestCase):
     def test_register_component_from_folder(self):
         file_content_1: bytes = textwrap.dedent("""\
                                 import jax
-                                from pipeline.components.abstracts.node_generator import NodeGenerator
+                                from pipeline.component_entities.pipeline_component.node_generator import NodeGenerator
                                 import jax.numpy as jnp
 
-                                from pipeline.components.abstracts.pipeline_component import pipeline_component
-                                from pipeline.components.enums.component_type import ComponentType
+                                from pipeline.component_entities.pipeline_component.pipeline_component import pipeline_component
+                                from pipeline.component_entities.enums.component_type import ComponentType
 
 
                                 @pipeline_component(id="Test31")
@@ -134,11 +134,11 @@ class MyTestCase(unittest.TestCase):
 
         file_content_2: bytes = textwrap.dedent("""\
                                 import jax
-                                from pipeline.components.abstracts.node_generator import NodeGenerator
+                                from pipeline.component_entities.pipeline_component.node_generator import NodeGenerator
                                 import jax.numpy as jnp
 
-                                from pipeline.components.abstracts.pipeline_component import pipeline_component
-                                from pipeline.components.enums.component_type import ComponentType
+                                from pipeline.component_entities.pipeline_component.pipeline_component import pipeline_component
+                                from pipeline.component_entities.enums.component_type import ComponentType
 
 
                                 @pipeline_component(id="Test32")

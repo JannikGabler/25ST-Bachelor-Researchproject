@@ -6,10 +6,10 @@ from pathlib import Path
 
 import jax.numpy as jnp
 
-from data_structures.tree.tree import Tree
+from general_data_structures.tree.tree import Tree
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
-from pipeline.pipeline_input.pipeline_input import PipelineInput
-from pipeline.pipeline_input.pipeline_input_data import PipelineInputData
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 
 
 class MyTestCase(unittest.TestCase):

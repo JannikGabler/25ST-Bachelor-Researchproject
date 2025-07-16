@@ -4,7 +4,7 @@
 # from data_structures.tree.tree_node import TreeNode
 #
 # if TYPE_CHECKING:
-#     from pipeline_entities.constraints.abstracts.static_constraint import StaticConstraint
+#     from pipeline_entities.constraints.pipeline_component.static_constraint import StaticConstraint
 #     from pipeline_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 #
 #

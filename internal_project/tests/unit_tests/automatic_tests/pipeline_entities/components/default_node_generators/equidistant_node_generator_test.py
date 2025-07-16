@@ -1,8 +1,8 @@
 import unittest
 import jax.numpy as jnp
 
-from pipeline_entities.components.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
-from pipeline_entities.data_transfer.pipeline_data import PipelineData
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
+from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from utils.jax_utils import JaxUtils
 
 
