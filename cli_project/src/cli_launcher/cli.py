@@ -5,16 +5,18 @@ import queue
 import time
 from pathlib import Path
 
+from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
+    PipelineConfigurationFileManager
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import \
+    PipelineConfigurationData
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from pipeline_entities.pipeline.pipeline import Pipeline
+from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
+from pipeline_entities.pipeline_execution.pipeline_manager.pipeline_manager import PipelineManager
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
-from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import PipelineConfigurationFileManager
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
-from pipeline_entities.pipeline.pipeline import Pipeline
-from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
-from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
 from cli_launcher.reporting import format_all_reports
 
 def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInputData]]"):
@@ -89,5 +91,5 @@ def main():
 
     print("pipeline execution finished!\n")
     print("Results:")
-    print(format_all_reports(manager._component_execution_reports_.values()))
+    print(format_all_reports(manager.get_all_component_execution_reports()))
     print(f"Total time: {end_time - start_time:.3f}s")
