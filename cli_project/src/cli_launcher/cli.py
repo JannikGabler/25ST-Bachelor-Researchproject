@@ -15,6 +15,7 @@ from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputDa
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
+from cli_launcher.reporting import format_all_reports
 
 def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInputData]]"):
     """
@@ -88,9 +89,5 @@ def main():
 
     print("pipeline execution finished!\n")
     print("Results:")
-    for report in manager._component_execution_reports_.values():
-        print(f"    ###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
-        print(f"    {report}")
-        print()
-    print()
+    print(format_all_reports(manager._component_execution_reports_.values()))
     print(f"Total time: {end_time - start_time:.3f}s")

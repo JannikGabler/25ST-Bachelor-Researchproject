@@ -335,7 +335,6 @@ class PipelineManager:
 
         return False
 
-
     # def _get_pipeline_data_for_node_(self, node: TreeNode[PipelineComponentInfo]) -> PipelineData:
     #     component_tree: Tree[PipelineComponentInfo] = self._pipeline_.pipeline_configuration.components
     #     root_node: TreeNode[PipelineComponentInfo] = component_tree.root_node
