@@ -4,82 +4,89 @@ from typing import Any
 from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
-def format_report(report: PipelineComponentExecutionReport) -> str:
+def _extract_title(report: PipelineComponentExecutionReport) -> str:
+    """
+    Build title string from component name and ID.
+    """
     info = report.component_instantiation_info
-    data = report.component_output
+    return f"{info.component_name} {info.component.component_id}"
 
-    comp_name = info.component_name
-    comp_id = info.component.component_id
-    title = f"{comp_name} {comp_id}"
+def _extract_timing(report: PipelineComponentExecutionReport) -> list[str]:
+    """
+    Extract initialization and execution times in milliseconds.
+    """
+    lines: list[str] = []
+    if report.component_init_time is not None:
+        lines.append(f"Initialization time: {report.component_init_time * 1000:.3f} ms")
+    if report.component_execution_time is not None:
+        lines.append(f"Execution time: {report.component_execution_time * 1000:.3f} ms")
+    return lines
 
-    # timings
-    init_t = report.component_init_time
-    exec_t = report.component_execution_time
-    timing_lines = []
-    if init_t is not None:
-        timing_lines.append(f"Initialization time: {init_t * 1000:.3f} ms")
-    if exec_t is not None:
-        timing_lines.append(f"Execution time: {exec_t * 1000:.3f} ms")
+def _prepare_rows(data: PipelineData | None) -> list[tuple[str, list[str]]]:
+    """
+    Convert PipelineData fields into (field_name, [value_lines]).
+    Include only non-None fields.
+    """
+    rows: list[tuple[str, list[str]]] = [] # list of tuples: (field_name, list of summary lines)
+    if data is None:
+        return [("<no output>", [" "])]
+    for field_name, _ in data.__dataclass_fields__.items():
+        val = getattr(data, field_name)
+        if val is None:
+            continue
+        if isinstance(val, jnp.ndarray):
+            summary = str(val)
+        elif isinstance(val, (dict, list, tuple)):
+            summary = repr(val)
+        else:
+            summary = str(val)
+        rows.append((field_name, summary.splitlines()))
+    return rows
 
-    rows: list[tuple[str, list[str]]] = []  # list of tuples: (field_name, list of summary lines)
-    if data is not None:
-        for field_name, field_def in data.__dataclass_fields__.items():
-            val = getattr(data, field_name)
-            if val is None:
-                continue
-            if isinstance(val, jnp.ndarray):
-                summary_str = str(val)
-            elif isinstance(val, (dict, list, tuple)):
-                summary_str = repr(val)
-            else:
-                summary_str = str(val)
-            summary_lines = summary_str.splitlines()
-            rows.append((field_name, summary_lines))
-    else:
-        rows.append(("<no output>", [" "]))
-
-    # column widths
-    left_header = "Field"
-    right_header = "Value"
+def _compute_column_widths(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[int, int]:
+    """
+    Determine the widths for the 2 columns.
+    """
     left_width = max(len(left_header), *(len(r[0]) for r in rows))
-    right_width = max(len(right_header), *(len(line) for r in rows for line in r[1]))
+    right_width = max(len(right_header), *(len(line) for _, lines in rows for line in lines))
+    return left_width, right_width
 
-    # table borders
-    sep_line = f"+{'-' * (left_width + 2)}+{'-' * (right_width + 2)}+"
-    header_fmt = f"| {{:{left_width}}} | {{:{right_width}}} |"
-
-    # full width for title underline
-    table_width = len(sep_line)
-    underline = '=' * table_width
-    centered_title = title.center(table_width)
-
-    ##########################
-    # Assembly of the output #
-    ##########################
-
-    lines: list[str] = [underline, centered_title, underline, ""]
-
-    for l in timing_lines:
-        lines.append(l)
-    lines.append("") # add blank line for better readability
-    lines.append("Output (PipelineData):")
-
-    # Start of Table
-    lines.append("Pipeline Data:")
-    lines.append(sep_line)
-    lines.append(header_fmt.format(left_header, right_header))
-    lines.append(sep_line)
-
-    # data rows
-    for field_name, summary_lines in rows:
-        for i, txt in enumerate(summary_lines):
+def _format_table(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[list[str], int]:
+    """
+    Render the table as ASCII lines given rows and column widths.
+    """
+    left_width, right_width = _compute_column_widths(rows, left_header, right_header)
+    sep = f"+{'-' * (left_width + 2)}+{'-' * (right_width + 2)}+"
+    fmt = f"| {{:{left_width}}} | {{:{right_width}}} |"
+    lines: list[str] = [sep, fmt.format(left_header, right_header), sep]
+    for name, value_lines in rows:
+        for i, line in enumerate(value_lines):
             if i == 0:
-                lines.append(header_fmt.format(field_name, txt))
+                lines.append(fmt.format(name, line))
             else:
-                lines.append(header_fmt.format('', txt))
-        lines.append(sep_line)
+                lines.append(fmt.format('', line))
+        lines.append(sep)
+    return lines, len(sep)
 
-    return '\n'.join(lines)
+def format_report(report: PipelineComponentExecutionReport) -> str:
+    title = _extract_title(report)
+    timing = _extract_timing(report)
+
+    # Table
+    left_header, right_header = "Field", "Value"
+
+    rows = _prepare_rows(report.component_output)
+    table, width = _format_table(rows, left_header, right_header)
+    underline = '=' * width
+    centered_title = title.center(width)
+
+    output: list[str] = [underline, centered_title, underline, '']
+    if timing:
+        output.extend(timing + [''])
+    output.append("Output (PipelineData):")
+    output.extend(table)
+
+    return '\n'.join(output) # list[str] => str (one line per string in the list)
 
 def format_all_reports(reports: list[PipelineComponentExecutionReport]) -> str:
     return "\n\n\n".join(format_report(r) for r in reports)
