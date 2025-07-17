@@ -18,7 +18,7 @@ from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
 from cli_launcher.reporting import format_all_reports
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
 
-def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInputData]]"):
+def _cli_worker(out_q: "queue.Queue[tuple[Path, PipelineConfigurationData, PipelineInputData]]"):
     """
     Parses args, shows trust warning, loads the .ini files, then puts the parsed data on out_q.
     """
@@ -108,7 +108,8 @@ def _cli_worker(out_q: "queue.Queue[tuple[PipelineConfigurationData, PipelineInp
     pid:PipelineInputData = PipelineInputFileManager.load_from_file(pid_path)
 
     # send to main thread
-    out_q.put((pcd, pid))
+    directory = Path(args.directory) if args.directory else None    # TODO: directory will be None when files are passed individually
+    out_q.put((directory, pcd, pid))
 
 def main():
     print("setting up internal logic...")
@@ -120,9 +121,10 @@ def main():
     t.start()
 
     # wait for the CLI thread to finish loading configs
-    pipeline_config_data, pipeline_input_data = config_queue.get()
+    directory, pipeline_config_data, pipeline_input_data = config_queue.get()
 
-    # DynamicModuleLoader.load_directory()
+    if directory:
+        DynamicModuleLoader.load_directory(directory)
 
     start_time = time.perf_counter()
 
