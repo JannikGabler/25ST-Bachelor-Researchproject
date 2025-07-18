@@ -8,9 +8,9 @@ from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputDa
 
 
 class InputKeyRequiredConstraint(DynamicConstraint):
-    ##############################
-    ### Attributs of instances ###
-    ##############################
+    ###############################
+    ### Attributes of instances ###
+    ###############################
     _key_: str
 
 

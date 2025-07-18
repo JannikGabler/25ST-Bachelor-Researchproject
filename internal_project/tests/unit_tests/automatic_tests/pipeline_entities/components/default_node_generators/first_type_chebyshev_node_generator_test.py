@@ -1,10 +1,10 @@
 import unittest
 import jax.numpy as jnp
 
-from pipeline_entities.components.abstracts.pipeline_component import PipelineComponent
-from pipeline_entities.components.default_components.default_node_generators.first_type_chebyshev_node_generator import \
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component import PipelineComponent
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.first_type_chebyshev_node_generator import \
     FirstTypeChebyshevNodeGenerator
-from pipeline_entities.data_transfer.pipeline_data import PipelineData
+from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from utils.jax_utils import JaxUtils
 
 

@@ -1,9 +1,7 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 
-from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
-from data_structures.tree.tree_node import TreeNode
-from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import \
+from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
 
 
