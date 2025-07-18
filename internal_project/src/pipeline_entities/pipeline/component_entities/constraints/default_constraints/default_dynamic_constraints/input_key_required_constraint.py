@@ -8,9 +8,9 @@ from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data imp
 
 
 class InputKeyRequiredConstraint(DynamicConstraint):
-    ##############################
-    ### Attributs of instances ###
-    ##############################
+    ###############################
+    ### Attributes of instances ###
+    ###############################
     _key_: str
 
 
