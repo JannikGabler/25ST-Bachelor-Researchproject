@@ -36,9 +36,9 @@ class NewtonInterpolant(Interpolant):
     ##########################
     def _get_internal_evaluate_function_(self) -> callable:
         if self._is_data_type_overridden_:
-            return self._internal_evaluate_with_data_type_overriding
+            return self._internal_evaluate_with_data_type_overriding_
         else:
-            return self._internal_evaluate_without_data_type_overriding
+            return self._internal_evaluate_without_data_type_overriding_
 
 
 
@@ -70,7 +70,7 @@ class NewtonInterpolant(Interpolant):
     #######################
     ### Private methods ###
     #######################
-    def _internal_evaluate_without_data_type_overriding(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
+    def _internal_evaluate_without_data_type_overriding_(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
         n = self._divided_differences_.size
         initial_accumulator = jnp.zeros_like(evaluation_points)
 
@@ -83,9 +83,9 @@ class NewtonInterpolant(Interpolant):
 
 
 
-    def _internal_evaluate_with_data_type_overriding(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
+    def _internal_evaluate_with_data_type_overriding_(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
         n = self._divided_differences_.size
-        initial_accumulator: jnp.ndarray = jnp.zeros_like(evaluation_points, dtype=self._required_data_type_)
+        initial_accumulator: jnp.ndarray = jnp.zeros_like(evaluation_points) # Already has the right dtype
         nodes: jnp.ndarray = self._nodes_.astype(self._required_data_type_)
         divided_differences: jnp.ndarray = self._divided_differences_.astype(self._required_data_type_)
 

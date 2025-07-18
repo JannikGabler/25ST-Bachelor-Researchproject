@@ -38,9 +38,9 @@ class BarycentricSecondInterpolant(Interpolant):
     ##########################
     def _get_internal_evaluate_function_(self) -> callable:
         if self._is_data_type_overridden_:
-            return self._internal_evaluate_with_data_type_overriding
+            return self._internal_evaluate_with_data_type_overriding_
         else:
-            return self._internal_evaluate_without_data_type_overriding
+            return self._internal_evaluate_without_data_type_overriding_
 
 
 
@@ -73,7 +73,7 @@ class BarycentricSecondInterpolant(Interpolant):
     #######################
     ### Private methods ###
     #######################
-    def _internal_evaluate_without_data_type_overriding(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
+    def _internal_evaluate_without_data_type_overriding_(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
         def _evaluate_single_(point):
             differences: jnp.ndarray = point - self._nodes_
 
@@ -91,7 +91,7 @@ class BarycentricSecondInterpolant(Interpolant):
 
 
 
-    def _internal_evaluate_with_data_type_overriding(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
+    def _internal_evaluate_with_data_type_overriding_(self, evaluation_points: jnp.ndarray) -> jnp.ndarray:
         nodes: jnp.ndarray = self._nodes_.astype(self._required_data_type_)
         values: jnp.ndarray = self._values_.astype(self._required_data_type_)
         weights: jnp.ndarray = self._weights_.astype(self._required_data_type_)

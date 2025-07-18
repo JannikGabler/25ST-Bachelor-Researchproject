@@ -32,7 +32,7 @@ class Interpolant(ABC):
     ######################
     ### Public methods ###
     ######################
-    def recompile(self, amount_of_evaluation_points: int, overwritten_data_type: jnp.dtype | None) -> None:
+    def recompile(self, amount_of_evaluation_points: int, overwritten_data_type: jnp.dtype | None = None) -> None:
         self._required_evaluation_points_shape_ = (amount_of_evaluation_points,)
         self._required_data_type_ = self._calc_required_data_type_(overwritten_data_type)
         self._is_data_type_overridden_ = overwritten_data_type is not None

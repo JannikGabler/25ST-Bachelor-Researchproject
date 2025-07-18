@@ -47,6 +47,7 @@ class InterpolantPlotComponent(InterpolationCore):
             if interpolant is None:
                 continue
 
+            interpolant.recompile(len(x_eval))
             y_interp = interpolant.evaluate(x_eval)
             raw_name = type(interpolant).__name__.replace("Interpolant", "")
             name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
