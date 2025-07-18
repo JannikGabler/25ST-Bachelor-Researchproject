@@ -7,7 +7,7 @@ from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
 
 @dataclass
 class PipelineData:
-    data_type: type | None = None
+    data_type: jnp.dtype | None = None
     node_count: int | None = None
     interpolation_interval: jnp.ndarray | None = None
     evaluation_points: jnp.ndarray | None = None
