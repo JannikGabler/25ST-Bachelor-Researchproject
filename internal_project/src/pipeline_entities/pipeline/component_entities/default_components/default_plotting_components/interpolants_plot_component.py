@@ -63,7 +63,7 @@ class InterpolantsPlotComponent(InterpolationCore):
                 linewidth=1.8
             )
 
-        plt.title("Interpolants vs. Original Function")
+        plt.title("Interpolants")
         plt.xlabel("x")
         plt.ylabel("f(x)")
         plt.legend()
