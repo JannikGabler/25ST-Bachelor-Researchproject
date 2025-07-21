@@ -1,39 +1,52 @@
-from data_structures.interpolants.abstracts.interpolant import Interpolant
-import jax
 import jax.numpy as jnp
 
+from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
 
-class FastFourierTransformationInterpolant(Interpolant):
-    _weights_: jnp.ndarray
-    _nodes_: jnp.ndarray
-    _interval_: jnp.ndarray
-
-
-
-    def __init__(self, nodes: jnp.ndarray, weights: jnp.ndarray, interval: jnp.ndarray):
-        self._nodes_ = nodes
-        self._weights_ = weights
-        self._interval_ = interval
-
+# TODO
+class FastFourierTransformationInterpolant(CompilableInterpolant):
+    """
+    TODO
+    """
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    # TODO
 
 
-    def evaluate(self, x: jnp.ndarray) -> jnp.ndarray:
-        pass
+    ###################
+    ### Constructor ###
+    ###################
+    # TODO
+
+
+
+    ##########################
+    ### Overridden methods ###
+    ##########################
+    def _get_internal_evaluate_function_(self, **kwargs) -> callable:
+        pass # TODO
 
 
 
     def __repr__(self) -> str:
-        return f"FFTInterpolant(weights={self._weights_}, nodes={self._nodes_})"
-
+        pass # TODO
 
 
     def __str__(self) -> str:
-        return self.__repr__()
+        pass # TODO
+
+
+
+    def __hash__(self) -> int:
+        pass # TODO
 
 
 
     def __eq__(self, other):
-        if not isinstance(other, FastFourierTransformationInterpolant):
-            return False
-        else:
-            return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
+        pass # TODO
+
+
+
+    #######################
+    ### Private methods ###
+    #######################

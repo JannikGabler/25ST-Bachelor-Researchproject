@@ -1,6 +1,7 @@
 from enum import Enum
 
 class ConstraintType(Enum):
-    DYNAMIC = 1
-    STATIC = 2
-    MIXED = 3
+    PRE_DYNAMIC = 1
+    POST_DYNAMIC = 2
+    STATIC = 3
+    #MIXED = 4

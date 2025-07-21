@@ -10,4 +10,4 @@ class PipelineComponentInstantiationInfo:
 
     component: PipelineComponentInfo
 
-    component_specific_arguments: dict[str, Any]
+    overridden_attributes: dict[str, Any]

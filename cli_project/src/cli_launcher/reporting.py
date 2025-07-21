@@ -1,8 +1,10 @@
-from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 import jax.numpy as jnp
+
 from typing import Any
-from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
-from pipeline_entities.data_transfer.pipeline_data import PipelineData
+
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
+    PipelineComponentExecutionReport
+
 
 def format_report(report: PipelineComponentExecutionReport) -> str:
     info = report.component_instantiation_info

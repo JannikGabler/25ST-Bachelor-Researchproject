@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import math
 import types
 import typing
@@ -8,10 +11,10 @@ import jax
 import jax.numpy as jnp
 import numpy
 
+from exceptions.prohibited_attribute_override_exception import ProhibitedAttributeOverrideException
 from general_data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
 from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from general_data_structures.tree.tree_node import TreeNode
-from exceptions.evaluation_error import EvaluationError
 from exceptions.pipeline_constraint_violation_exception import PipelineConstraintViolationException
 from exceptions.type_annotation_error import TypeAnnotationError
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
@@ -22,12 +25,17 @@ from packaging.version import Version
 
 from general_data_structures.tree.tree import Tree
 from exceptions.no_such_pipeline_component_error import NoSuchPipelineComponentError
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
 from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
+from utils.python_eval_utils import PythonEvalUtils
 from utils.typing_utils import TypingUtils
 
-from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+if TYPE_CHECKING:
+    from pipeline_entities.pipeline.component_entities.component_meta_info.dataclasses.component_meta_info import \
+        ComponentMetaInfo
+    from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import \
+        PipelineComponentInfo
 
 
 class PipelineConfiguration:
@@ -62,7 +70,8 @@ class PipelineConfiguration:
 
         self._components_.freeze()
 
-        self._check_for_constraint_violations_()
+        self._check_for_static_constraint_violations_()
+        self._check_for_prohibited_override_()
 
 
 
@@ -169,7 +178,7 @@ class PipelineConfiguration:
         transformed_field_name: str = f"_{field_name}_"
 
         if field_value:
-            parsed_value: Any = self._try_expression_evaluation_(field_value, field_name, eval_name_space)
+            parsed_value: Any = PythonEvalUtils.try_expression_evaluation(field_value, eval_name_space)
             setattr(self, transformed_field_name, parsed_value)
         else:
             setattr(self, transformed_field_name, None)
@@ -180,32 +189,23 @@ class PipelineConfiguration:
         self._additional_values_ = {}
 
         for key, value in input_data.additional_values.items():
-            parsed_value: Any = self._try_expression_evaluation_(value, key, eval_name_space)
+            parsed_value: Any = PythonEvalUtils.try_expression_evaluation(value, eval_name_space)
             self._additional_values_[key] = parsed_value
 
 
 
     def _parse_components_value_(self, input_data: PipelineConfigurationData, eval_name_space: dict[str, Any]) -> None:
         if input_data.components is None:
-            raise ValueError(f"The attribute 'components' of the given '{input_data.__class__.__name__}' is not set although it's required to be set for parsing into '{self.__class__.__name__}'.")
+            raise ValueError(f"The attribute 'components' of the given '{input_data.__class__.__name__}' is not set "
+                             f"although it's required to be set for parsing into '{self.__class__.__name__}'.")
 
-        components = PipelineConfiguration._try_expression_evaluation_(input_data.components, "components", eval_name_space)
+        components = PythonEvalUtils.try_expression_evaluation(input_data.components, eval_name_space)
 
         if not isinstance(components, DirectionalAcyclicGraph):
             raise TypeError(f"The attribute '{self.__class__.__name__}.components' of this instance was initialized with a wrong type. "
                             f"Expected is 'DirectionalAcyclicGraph[tuple[str, str, dict[str, str]]' but got '{type(components)}'.")
 
         self._components_ = self._map_input_components_dag_into_internal_components_dag_(components)
-
-
-
-    @staticmethod
-    def _try_expression_evaluation_(expression: str, field_name: str, name_space: dict[str, Any]) -> Any:
-        try:
-            # Security node: __builtins__ are available by default! Might be a security issue (-> define custom safe build ins).
-            return eval(expression, {}, name_space)
-        except Exception as e:
-            raise EvaluationError(f"Error while evaluating {repr(expression)}.")
 
 
 
@@ -278,7 +278,13 @@ class PipelineConfiguration:
         component_info: PipelineComponentInfo = ComponentRegistry.get_component(node_value[1])
 
         if component_info:
-            return PipelineComponentInstantiationInfo(node_value[0], component_info, node_value[2])
+            evaluated_overridden_attributes: dict[str, object] = {}
+
+            for attribute_name, attribute_value in node_value[2].items():
+                value: object = PythonEvalUtils.try_expression_evaluation(attribute_value, PipelineConfiguration._parsing_eval_namespace_)
+                evaluated_overridden_attributes[attribute_name] = value
+
+            return PipelineComponentInstantiationInfo(node_value[0], component_info, evaluated_overridden_attributes)
         else:
             raise NoSuchPipelineComponentError(f"There is no Pipeline component registered with the ID '{node_value[1]}'.")
 
@@ -302,16 +308,31 @@ class PipelineConfiguration:
 
 
 
-    def _check_for_constraint_violations_(self) -> None:
+    def _check_for_static_constraint_violations_(self) -> None:
         for node in self._components_:
             component_info: PipelineComponentInfo = node.value.component
 
             for static_constraint in component_info.component_meta_info.static_constraints:
                 if not static_constraint.evaluate(node, self):
-                    raise PipelineConstraintViolationException(f"The static constraint '{static_constraint}' of the component "
-                       f"'{node.value.component_name}' with id '{component_info.component_id}' was violated.", node, static_constraint)
+                    raise PipelineConstraintViolationException(f"The static constraint '{static_constraint}' was "
+                       f"violated. The violation occurred in the component with the name {repr(node.value.component_name)} "
+                       f"and id {repr(component_info.component_id)}.", node, static_constraint)
 
         return None
+
+
+
+    def _check_for_prohibited_override_(self) -> None:
+        for node in self._components_:
+            instantiation_info: PipelineComponentInstantiationInfo = node.value
+            meta_info: ComponentMetaInfo = node.value.component.component_meta_info
+
+            for attribute_name in instantiation_info.overridden_attributes.keys():
+                if attribute_name not in meta_info.attributes_allowed_to_be_overridden:
+                    raise ProhibitedAttributeOverrideException(f"The attribute {repr(attribute_name)} was overridden "
+                       f"in the component {repr(instantiation_info.component_name)} with the component id "
+                       f"{repr(instantiation_info.component.component_id)}, but the component id does not allow this override.")
+
 
 
 

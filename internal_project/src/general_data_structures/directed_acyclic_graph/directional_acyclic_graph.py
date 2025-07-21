@@ -104,7 +104,7 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
 
 
-    def death_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+    def depth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         stack: deque[DirectionalAcyclicGraphNode[T]] = deque(self._entry_nodes_)
         traversed_nodes: set[int] = set()
 

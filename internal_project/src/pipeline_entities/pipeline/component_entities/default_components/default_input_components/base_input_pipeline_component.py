@@ -1,4 +1,4 @@
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.input_components.base_input_pipeline_component_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.input_components.base_input_pipeline_component_meta_info import \
     base_input_pipeline_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.input_pipeline_component import InputPipelineComponent
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
@@ -16,6 +16,7 @@ class BaseInputPipelineComponent(InputPipelineComponent):
         pipeline_data.data_type = pipeline_input.data_type
         pipeline_data.node_count = pipeline_input.node_count
         pipeline_data.interpolation_interval = pipeline_input.interpolation_interval
+        pipeline_data.interpolant_evaluation_points = pipeline_input.interpolant_evaluation_points
 
         for key, value in pipeline_input.additional_directly_injected_values.items():
             pipeline_data.additional_values[key] = value

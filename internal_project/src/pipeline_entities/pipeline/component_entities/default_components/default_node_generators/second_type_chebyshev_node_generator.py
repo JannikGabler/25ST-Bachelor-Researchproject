@@ -2,7 +2,7 @@ import jax
 
 from jax import numpy as jnp
 
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.node_generators.second_type_chebyshev_node_generator_meta_info import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.node_generators.second_type_chebyshev_node_generator_meta_info import \
     second_type_chebyshev_node_generator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.node_generator import NodeGenerator
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component

@@ -2,7 +2,7 @@ import unittest
 import jax.numpy as jnp
 
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline.data_classes.pipeline import Pipeline
+from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
 from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData

@@ -1,8 +1,10 @@
-from pipeline_entities.pipeline.component_entities.component_meta_info.default_component_meta_infos.input_components.function_callable_input_component_meta_info import \
-    function_callable_input_component_meta_info
-from pipeline_entities.pipeline.component_entities.default_component_types.input_pipeline_component import InputPipelineComponent
-from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.input_components.function_callable_input_component_meta_info import \
+    function_callable_input_component_meta_info
+from pipeline_entities.pipeline.component_entities.default_component_types.input_pipeline_component import \
+    InputPipelineComponent
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import \
+    pipeline_component
 
 
 @pipeline_component(id="function callable input", type=InputPipelineComponent, meta_info=function_callable_input_component_meta_info)

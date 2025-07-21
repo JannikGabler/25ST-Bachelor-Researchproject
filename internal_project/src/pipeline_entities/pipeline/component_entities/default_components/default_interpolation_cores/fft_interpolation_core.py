@@ -1,14 +1,15 @@
 import jax
-
-from data_structures.interpolants.default_interpolants.fft_interpolant import FastFourierTransformationInterpolant
-from pipeline_entities.component_meta_info.default_component_meta_infos.interpolation_cores.fft_interpolation_core_meta_info import \
-    fft_interpolation_core_meta_info
-from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
-from pipeline_entities.components.decorators.pipeline_component import pipeline_component
-from pipeline_entities.data_transfer.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.data_transfer.pipeline_data import PipelineData
+from interpolants.default_interpolants.fft_interpolant import FastFourierTransformationInterpolant
+from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.fft_interpolation_core_meta_info import \
+    fft_interpolation_core_meta_info
+from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import \
+    pipeline_component
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
+    AdditionalComponentExecutionData
 
 
 @pipeline_component(id="fft interpolation", type=InterpolationCore, meta_info=fft_interpolation_core_meta_info)
