@@ -16,6 +16,7 @@ class BaseInputPipelineComponent(InputPipelineComponent):
         pipeline_data.data_type = pipeline_input.data_type
         pipeline_data.node_count = pipeline_input.node_count
         pipeline_data.interpolation_interval = pipeline_input.interpolation_interval
+        pipeline_data.interpolant_evaluation_points = pipeline_input.interpolant_evaluation_points
 
         for key, value in pipeline_input.additional_directly_injected_values.items():
             pipeline_data.additional_values[key] = value
