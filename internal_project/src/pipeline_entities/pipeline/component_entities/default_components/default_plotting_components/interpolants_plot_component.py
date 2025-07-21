@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import re
 
 from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.plot_components import \
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
     plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 import jax.numpy as jnp

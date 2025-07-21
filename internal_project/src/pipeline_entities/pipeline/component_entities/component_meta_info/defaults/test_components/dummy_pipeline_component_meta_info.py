@@ -4,7 +4,11 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.dataclass
 dummy_pipeline_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying=set(),
 
-    dynamic_constraints=[],
+    attributes_allowed_to_be_overridden=set(),
+
+    pre_dynamic_constraints=[],
+
+    post_dynamic_constraints=[],
 
     static_constraints=[],
 )

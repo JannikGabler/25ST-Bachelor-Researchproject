@@ -1,6 +1,8 @@
 from pipeline_entities.pipeline.component_entities.component_meta_info.dataclasses.component_meta_info import ComponentMetaInfo
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.post_dynamic_constraints.pipeline_data_dtype_required_post_constraint import \
     PipelineDataDtypeRequiredPostConstraint
+from pipeline_entities.pipeline.component_entities.constraints.default_constraints.pre_dynamic_constraints.pipeline_data_dtype_required_pre_constraint import \
+    PipelineDataDtypeRequiredPreConstraint
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.attribute_required_constraint import \
     AttributeRequiredConstraint
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.max_predecessors_constraint import \
@@ -8,17 +10,17 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import \
     MinPredecessorsConstraint
 
+interpolant_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+    attributes_modifying={"interpolant_values"},
 
-interpolation_values_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
-    attributes_modifying={"interpolation_values"},
-
-    attributes_allowed_to_be_overridden={"data_type", "function_callable", "interpolation_nodes"},
+    attributes_allowed_to_be_overridden={"interpolant_evaluation_points", "interpolant", "data_type",
+                                         "use_compensation"},
 
     pre_dynamic_constraints=[],
 
-    post_dynamic_constraints=[PipelineDataDtypeRequiredPostConstraint("interpolation_values")],
+    post_dynamic_constraints=[PipelineDataDtypeRequiredPostConstraint("interpolant_values")],
 
-    static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("function_callable"),
-                        AttributeRequiredConstraint("interpolation_nodes"),
+    static_constraints=[AttributeRequiredConstraint("interpolant_evaluation_points"),
+                        AttributeRequiredConstraint("interpolant"), AttributeRequiredConstraint("data_type"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
 )
