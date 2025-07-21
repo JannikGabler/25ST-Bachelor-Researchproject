@@ -1,9 +1,12 @@
 import jax.numpy as jnp
 
-from interpolants.abstracts.interpolant import Interpolant
+from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
 
 # TODO
-class FastFourierTransformationInterpolant(Interpolant):
+class FastFourierTransformationInterpolant(CompilableInterpolant):
+    """
+    TODO
+    """
     ###############################
     ### Attributes of instances ###
     ###############################
@@ -20,13 +23,7 @@ class FastFourierTransformationInterpolant(Interpolant):
     ##########################
     ### Overridden methods ###
     ##########################
-    def _get_internal_evaluate_function_(self) -> callable:
-        pass # TODO
-
-    def _is_data_type_overriding_required_(self) -> bool:
-        pass # TODO
-
-    def _get_data_type_for_no_overriding_(self) -> jnp.dtype:
+    def _get_internal_evaluate_function_(self, **kwargs) -> callable:
         pass # TODO
 
 
@@ -36,6 +33,11 @@ class FastFourierTransformationInterpolant(Interpolant):
 
 
     def __str__(self) -> str:
+        pass # TODO
+
+
+
+    def __hash__(self) -> int:
         pass # TODO
 
 

@@ -174,7 +174,7 @@ class DirectionalAcyclicGraphUtils:
     def _populate_in_degree_and_id_lookup_dicts_(argument: DirectionalAcyclicGraph[T] | DirectionalAcyclicGraphNode[T],
                                                  in_degree: dict[int, int], node_lookup: dict[int, DirectionalAcyclicGraphNode[T]]) -> None:
 
-        for node in argument.death_first_traversal():
+        for node in argument.depth_first_traversal():
             node_id = id(node)
             in_degree[node_id] = len(node.predecessors)
             node_lookup[node_id] = node

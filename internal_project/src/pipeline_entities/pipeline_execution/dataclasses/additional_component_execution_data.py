@@ -10,6 +10,8 @@ from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import P
 
 @dataclass(frozen=True)
 class AdditionalComponentExecutionData:
+    overridden_attributes: dict[str, object]
+
     pipeline_configuration: PipelineConfiguration
     pipeline_input: PipelineInput
 
