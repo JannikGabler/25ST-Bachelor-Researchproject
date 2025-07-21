@@ -20,16 +20,13 @@ class AttributeRequiredConstraint(StaticConstraint):
     ### Constructor ###
     ###################
     def __init__(self, attribute_name: str):
-        if not any(field.name == attribute_name for field in fields(PipelineData)):
-            raise AttributeError(f"The class 'PipelineData' has no attribute with the name '{attribute_name}'")
-
         self._attribute_name_ = attribute_name
 
 
 
-    ##########################
-    ### Overridden methods ###
-    ##########################
+    ######################
+    ### Public methods ###
+    ######################
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
@@ -37,11 +34,19 @@ class AttributeRequiredConstraint(StaticConstraint):
 
 
 
-    def __eq__(self, other):
-        if not isinstance(other, AttributeRequiredConstraint):   # Covers None
-            return False
-        else:
-            return self._attribute_name_ == other._attribute_name_
+    def get_error_message(self) -> str | None:
+        return "TODO" # TODO
+
+
+
+    ##########################
+    ### Overridden methods ###
+    ##########################
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(attribute_name={repr(self._attribute_name_)})"
+
+    def __str__(self):
+        return self.__repr__()
 
 
 
@@ -50,8 +55,11 @@ class AttributeRequiredConstraint(StaticConstraint):
 
 
 
-    def __repr__(self) -> str:
-        return f"AttributRequiredConstraint<attribute_name='{self._attribute_name_}'>"
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):   # Covers None
+            return False
+        else:
+            return self._attribute_name_ == other._attribute_name_
 
 
 

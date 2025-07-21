@@ -22,9 +22,9 @@ class MinPredecessorsConstraint(StaticConstraint):
 
 
 
-    ##########################
-    ### Overridden methods ###
-    ##########################
+    ######################
+    ### Public methods ###
+    ######################
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
@@ -32,11 +32,19 @@ class MinPredecessorsConstraint(StaticConstraint):
 
 
 
-    def __eq__(self, other):
-        if not isinstance(other, MinPredecessorsConstraint):   # Covers None
-            return False
-        else:
-            return self._min_amount_ == other._min_amount_
+    def get_error_message(self) -> str | None:
+        return "TODO" # TODO
+
+
+
+    ##########################
+    ### Overridden methods ###
+    ##########################
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(min_amount={repr(self._min_amount_)})"
+
+    def __str__(self):
+        return self.__repr__()
 
 
 
@@ -45,6 +53,17 @@ class MinPredecessorsConstraint(StaticConstraint):
 
 
 
-    def __repr__(self) -> str:
-        return f"MinPredecessorsConstraint(min_amount='{self._min_amount_}')"
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):   # Covers None
+            return False
+        else:
+            return self._min_amount_ == other._min_amount_
+
+
+
+
+
+
+
+
 

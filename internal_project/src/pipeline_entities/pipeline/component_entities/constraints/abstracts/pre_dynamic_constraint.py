@@ -11,11 +11,11 @@ from pipeline_entities.pipeline.component_entities.constraints.abstracts.constra
 from pipeline_entities.pipeline.component_entities.constraints.enums.constraint_type import ConstraintType
 
 
-class DynamicConstraint(Constraint, ABC):
+class PreDynamicConstraint(Constraint, ABC):
     ##########################
     ### Attributs of class ###
     ##########################
-    __constraint_type__: ConstraintType = ConstraintType.DYNAMIC
+    __constraint_type__: ConstraintType = ConstraintType.PRE_DYNAMIC
 
 
 

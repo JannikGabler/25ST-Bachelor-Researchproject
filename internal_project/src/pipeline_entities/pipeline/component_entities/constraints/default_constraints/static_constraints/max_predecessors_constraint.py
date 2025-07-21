@@ -22,9 +22,9 @@ class MaxPredecessorsConstraint(StaticConstraint):
 
 
 
-    ##########################
-    ### Overridden methods ###
-    ##########################
+    ######################
+    ### Public methods ###
+    ######################
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
@@ -32,11 +32,19 @@ class MaxPredecessorsConstraint(StaticConstraint):
 
 
 
-    def __eq__(self, other):
-        if not isinstance(other, MaxPredecessorsConstraint):   # Covers None
-            return False
-        else:
-            return self._max_amount_ == other._max_amount_
+    def get_error_message(self) -> str | None:
+        return "TODO" # TODO
+
+
+
+    ##########################
+    ### Overridden methods ###
+    ##########################
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(max_amount={repr(self._max_amount_)})"
+
+    def __str__(self):
+        return self.__repr__()
 
 
 
@@ -45,6 +53,17 @@ class MaxPredecessorsConstraint(StaticConstraint):
 
 
 
-    def __repr__(self) -> str:
-        return f"MaxPredecessorsConstraint(max_amount={self._max_amount_})"
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):   # Covers None
+            return False
+        else:
+            return self._max_amount_ == other._max_amount_
+
+
+
+
+
+
+
+
 

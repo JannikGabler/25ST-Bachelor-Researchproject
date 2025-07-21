@@ -24,6 +24,6 @@ class Freezable(ABC):
     #######################
     def __setattr__(self, name: str, value: any) -> None:
         if self._frozen_:
-            raise FrozenInstanceError(f"Cannot modify attribute '{name}'.")
+            raise FrozenInstanceError(f"Cannot modify attribute {repr(name)}.")
         else:
             super().__setattr__(name, value)
