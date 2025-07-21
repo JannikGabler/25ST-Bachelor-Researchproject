@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import re
 
+from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.plot_components import \
     plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
@@ -11,7 +12,7 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=plot_component_meta_info)
-class InterpolantPlotComponent(InterpolationCore):
+class InterpolantsPlotComponent(InterpolationCore):
     """
     Creates plots for any number of interpolation methods.
     """
@@ -47,8 +48,8 @@ class InterpolantPlotComponent(InterpolationCore):
             if interpolant is None:
                 continue
 
-            interpolant.recompile(len(x_eval))
-            y_interp = interpolant.evaluate(x_eval)
+            compiled_interpolant: CompiledInterpolant = interpolant.compile(len(x_eval), data.data_type)
+            y_interp = compiled_interpolant.evaluate(x_eval)
             raw_name = type(interpolant).__name__.replace("Interpolant", "")
             name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
 
