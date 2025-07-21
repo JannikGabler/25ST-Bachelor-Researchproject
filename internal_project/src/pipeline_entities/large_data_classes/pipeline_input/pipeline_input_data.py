@@ -15,6 +15,8 @@ class PipelineInputData:
     function_callable: str | None = None
     interpolation_values: str | None = None
 
+    interpolant_evaluation_points: str | None = None
+
     additional_directly_injected_values: dict[str, str] = field(default_factory=dict)
     additional_values: dict[str, str] = field(default_factory=dict)
 

@@ -1,13 +1,16 @@
+import jax.numpy as jnp
+from jax.typing import DTypeLike
+
 from dataclasses import dataclass, field
 from typing import Optional, Any, Callable
-import jax.numpy as jnp
+
 
 from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
 
 
 @dataclass
 class PipelineData:
-    data_type: jnp.dtype | None = None
+    data_type: DTypeLike | None = None
     node_count: int | None = None
     interpolation_interval: jnp.ndarray | None = None
     interpolant_evaluation_points: jnp.ndarray | None = None
