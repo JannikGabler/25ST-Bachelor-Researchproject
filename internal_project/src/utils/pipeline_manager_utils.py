@@ -47,9 +47,11 @@ class PipelineManagerUtils:
 
 
     @classmethod
-    def reverse_attribute_overrides(cls, output_data: PipelineData, old_attributes: dict[str, object]) -> None:
+    def reverse_attribute_overrides(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
+                                    output_data: PipelineData, old_attributes: dict[str, object]) -> None:
         for attribute_name, old_value in old_attributes.items():
-            cls._override_attribute_(attribute_name, old_value, [output_data])
+            if attribute_name not in node.value.component.component_meta_info.attributes_modifying:
+                cls._override_attribute_(attribute_name, old_value, [output_data])
 
 
 

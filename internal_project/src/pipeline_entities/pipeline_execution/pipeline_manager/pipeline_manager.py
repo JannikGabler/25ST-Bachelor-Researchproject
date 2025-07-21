@@ -181,7 +181,7 @@ class PipelineManager:
     def _finish_up_node_execution(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                                   result_data: PipelineData, old_attributes: dict[str, object]) -> None:
 
-        PipelineManagerUtils.reverse_attribute_overrides(result_data, old_attributes)
+        PipelineManagerUtils.reverse_attribute_overrides(node_in_own_dag, result_data, old_attributes)
 
         self._component_execution_reports_[id(node_in_own_dag)].component_output = result_data
 
