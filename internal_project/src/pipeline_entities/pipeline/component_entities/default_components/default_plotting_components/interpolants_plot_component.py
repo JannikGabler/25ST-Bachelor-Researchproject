@@ -70,6 +70,7 @@ class InterpolantsPlotComponent(InterpolationCore):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+        plt.close()
 
         return reference_data
 

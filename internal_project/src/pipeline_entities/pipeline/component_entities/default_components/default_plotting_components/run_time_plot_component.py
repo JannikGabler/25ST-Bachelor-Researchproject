@@ -55,22 +55,24 @@ class RunTimePlotComponent(InterpolationCore):
         plt.bar(x, init_times, width, color='skyblue')
         plt.xlabel("Interpolation Methods")
         plt.ylabel("Init Time (s)")
-        plt.title("Initialization Time of Interpolation Methods")
+        plt.title("Initialization Time of the Interpolation Methods")
         plt.xticks(ticks=x, labels=method_names, rotation=45)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         plt.show()
+        plt.close()
 
         # Plot for execution time
         plt.figure(figsize=(12, 6))
         plt.bar(x, exec_times, width, color='steelblue')
         plt.xlabel("Interpolation Methods")
         plt.ylabel("Execution Time (s)")
-        plt.title("Execution Time of Interpolation Methods")
+        plt.title("Execution Time of the Interpolation Methods")
         plt.xticks(ticks=x, labels=method_names, rotation=45)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         plt.show()
+        plt.close()
 
 
         return interpolant_reports[0].component_output if interpolant_reports else self._pipeline_data_[0]

@@ -61,6 +61,7 @@ class InterpolantsPlotComponent(InterpolationCore):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+        plt.close()
 
         # Relative Error Plots
         plt.figure(figsize=(10, 6))
@@ -94,5 +95,6 @@ class InterpolantsPlotComponent(InterpolationCore):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+        plt.close()
 
         return reference_data
