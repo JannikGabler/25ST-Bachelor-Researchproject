@@ -54,7 +54,7 @@ class InterpolantsPlotComponent(InterpolationCore):
                 linewidth=1.8
             )
 
-        plt.title("Absolute Errors of Interpolants")
+        plt.title("Absolute Errors of the Interpolants")
         plt.xlabel("x")
         plt.ylabel("Absolute Error |f(x) - p(x)|")
         plt.legend()
@@ -87,7 +87,7 @@ class InterpolantsPlotComponent(InterpolationCore):
                 linewidth=1.8
             )
 
-        plt.title("Relative Errors of Interpolants")
+        plt.title("Relative Errors of the Interpolants")
         plt.xlabel("x")
         plt.ylabel("Relative Error |f(x) - p(x)| / |f(x)|")
         plt.legend()

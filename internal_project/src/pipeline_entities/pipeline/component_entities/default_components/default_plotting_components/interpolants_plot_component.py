@@ -14,7 +14,7 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 @pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=plot_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
     """
-    Creates plots for any number of interpolation methods.
+    Plots the interpolation curves and the original function on a given interpolation interval.
     """
 
     ######################
