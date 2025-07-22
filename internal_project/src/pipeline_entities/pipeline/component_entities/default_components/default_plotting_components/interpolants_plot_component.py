@@ -63,7 +63,7 @@ class InterpolantsPlotComponent(InterpolationCore):
                 linewidth=1.8
             )
 
-        plt.title("Original Function and Interpolation Curves")
+        plt.title(f"Original Function and Interpolation Curves on [{interval[0]}, {interval[1]}]")
         plt.xlabel("x")
         plt.ylabel("f(x)")
         plt.legend()
