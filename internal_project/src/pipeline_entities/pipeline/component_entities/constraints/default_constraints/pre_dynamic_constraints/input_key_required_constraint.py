@@ -12,6 +12,7 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _key_: str
+    _error_message_: str | None = None
 
 
 
@@ -23,6 +24,7 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
             self._key_ = key[1:-1]
         else:
             self._key_ = key
+        self._error_message_ = None
 
 
 
@@ -34,14 +36,17 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
 
         if any(field.name == self._key_ for field in fields(PipelineInputData)):
             transformed_key = f"_{self._key_}_"
-            return getattr(pipeline_input, transformed_key) is not None
+            result = getattr(pipeline_input, transformed_key) is not None
         else:
-            return self._key_ in pipeline_input.additional_values or self._key_ in pipeline_input.additional_directly_injected_values
+            result = self._key_ in pipeline_input.additional_values or self._key_ in pipeline_input.additional_directly_injected_values
 
+        self._error_message_ = None if result else f"Required input key '{self._key_}' is missing or None."
+
+        return result
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

@@ -13,6 +13,8 @@ class AttributeRequiredConstraint(StaticConstraint):
     ### Attributs of instances ###
     ##############################
     _attribute_name_: str
+    _error_message_: str | None = None
+
 
 
 
@@ -21,6 +23,7 @@ class AttributeRequiredConstraint(StaticConstraint):
     ###################
     def __init__(self, attribute_name: str):
         self._attribute_name_ = attribute_name
+        self._error_message_ = None
 
 
 
@@ -30,12 +33,16 @@ class AttributeRequiredConstraint(StaticConstraint):
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
-        return self._is_attribute_for_component_guaranteed_set_(own_node)
-
+        if self._is_attribute_for_component_guaranteed_set_(own_node) :
+            self._error_message_ = None
+            return True
+        else:
+            self._error_message_ = f"Required attribute '{self._attribute_name_}' is not guaranteed to be set."
+            return False
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

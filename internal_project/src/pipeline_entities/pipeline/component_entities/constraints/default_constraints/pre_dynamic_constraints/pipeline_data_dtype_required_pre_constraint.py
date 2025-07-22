@@ -13,6 +13,7 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _attribute_name_: str
+    _error_message_: str | None = None
 
 
 
@@ -21,6 +22,7 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
     ###################
     def __init__(self, attribute_name: str) -> None:
         self._attribute_name_ = attribute_name
+        self._error_message_ = None
 
 
 
@@ -33,20 +35,27 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
                 value: object = getattr(data, self._attribute_name_)
 
                 if not isinstance(value, jnp.ndarray) or value.dtype != data.data_type:
+                    self._error_message_ = (
+                        f"Required attribute '{self._attribute_name_}' must be an array with matching data type, "
+                        f"but got {type(value)} with dtype {getattr(value, 'dtype', None)}."
+                    )
                     return False
             else:
                 if (not self._attribute_name_ in data.additional_values
                     or not isinstance(data.additional_values[self._attribute_name_], jnp.ndarray)
                     or data.additional_values[self._attribute_name_].dtype != data.data_type):
-
+                    self._error_message_ = (
+                        f"Required attribute '{self._attribute_name_}' must be an array with matching data type."
+                    )
                     return False
 
+        self._error_message_ = None
         return True
 
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

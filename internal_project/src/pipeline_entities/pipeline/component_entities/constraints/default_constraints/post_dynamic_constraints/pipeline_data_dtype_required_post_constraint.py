@@ -13,6 +13,7 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _attribute_name_: str
+    _error_message_: str | None = None
 
 
 
@@ -21,6 +22,7 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
     ###################
     def __init__(self, attribute_name: str) -> None:
         self._attribute_name_ = attribute_name
+        self._error_message_ = None
 
 
 
@@ -33,16 +35,19 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
         if any(field.name == self._attribute_name_ for field in fields(PipelineData)):
             value: object = getattr(output_data, self._attribute_name_)
 
-            return isinstance(value, jnp.ndarray) and value.dtype == output_data.data_type
+            result = isinstance(value, jnp.ndarray) and value.dtype == output_data.data_type
         else:
-            return (self._attribute_name_ in output_data.additional_values
+            result = (self._attribute_name_ in output_data.additional_values
                     and isinstance(output_data.additional_values[self._attribute_name_], jnp.ndarray)
                     and output_data.additional_values[self._attribute_name_].dtype == output_data.data_type)
+
+        self._error_message_ = None if result else f"Required attribute '{self._attribute_name_}' must be an array with matching data type."
+        return result
 
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 
