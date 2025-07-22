@@ -74,5 +74,5 @@ class RunTimePlotComponent(InterpolationCore):
         plt.show()
         plt.close()
 
-
-        return interpolant_reports[0].component_output if interpolant_reports else self._pipeline_data_[0]
+        # print(self._pipeline_data_[0].__dict__)
+        return self._pipeline_data[0]

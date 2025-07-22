@@ -59,7 +59,7 @@ class BarycentricSecondChebyshevInterpolant(CompilableInterpolant):
 
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, BarycentricSecondInterpolant):
+        if not isinstance(other, BarycentricSecondChebyshevInterpolant):
             return False
         else:
             return (jnp.array_equal(self._nodes_, other._nodes_).item()
