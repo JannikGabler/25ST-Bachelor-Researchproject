@@ -4,14 +4,14 @@ from typing import Any
 from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
-def _extract_title(report: PipelineComponentExecutionReport) -> str:
+def _title(report: PipelineComponentExecutionReport) -> str:
     """
     Build title string from component name and ID.
     """
     info = report.component_instantiation_info
     return f"{info.component_name} {info.component.component_id}"
 
-def _extract_timing(report: PipelineComponentExecutionReport) -> list[str]:
+def _times(report: PipelineComponentExecutionReport) -> list[str]:
     """
     Extract initialization and execution times in milliseconds.
     """
@@ -69,8 +69,8 @@ def _format_table(rows: list[tuple[str, list[str]]], left_header: str, right_hea
     return lines, len(sep)
 
 def format_report(report: PipelineComponentExecutionReport) -> str:
-    title = _extract_title(report)
-    timing = _extract_timing(report)
+    title = _title(report)
+    times = _times(report)
 
     # Table
     left_header, right_header = "Field", "Value"
@@ -81,8 +81,8 @@ def format_report(report: PipelineComponentExecutionReport) -> str:
     centered_title = title.center(width)
 
     output: list[str] = [underline, centered_title, underline, '']
-    if timing:
-        output.extend(timing + [''])
+    if times:
+        output.extend(times + [''])
     output.append("Output (PipelineData):")
     output.extend(table)
 
