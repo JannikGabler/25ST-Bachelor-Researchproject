@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import re
 
 from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
-    plot_component_meta_info
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.error_plot_component_meta_info import \
+    error_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
@@ -11,7 +11,7 @@ from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_c
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 
 
-@pipeline_component(id="error plotter", type=InterpolationCore, meta_info=plot_component_meta_info)
+@pipeline_component(id="error plotter", type=InterpolationCore, meta_info=error_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
     """
     Plots absolute and relative interpolation errors for all interpolants.
@@ -60,6 +60,8 @@ class InterpolantsPlotComponent(InterpolationCore):
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
+        if self._additional_execution_info_.overridden_attributes["ylogscale"] is True:
+            plt.yscale("log")
         plt.show()
         plt.close()
 
@@ -94,6 +96,8 @@ class InterpolantsPlotComponent(InterpolationCore):
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
+        if self._additional_execution_info_.overridden_attributes["ylogscale"] is True:
+            plt.yscale("log")
         plt.show()
         plt.close()
 

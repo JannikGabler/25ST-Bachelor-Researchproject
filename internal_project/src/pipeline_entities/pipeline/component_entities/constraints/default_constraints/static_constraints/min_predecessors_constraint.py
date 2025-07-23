@@ -11,7 +11,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     ### Attributs of instances ###
     ##############################
     _min_amount_: int
-    _error_message_: str | None = None
+    _error_message_: str | None
 
 
 

@@ -11,7 +11,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     ### Attributs of instances ###
     ##############################
     _max_amount_: int
-    _error_message_: str | None = None
+    _error_message_: str | None
 
 
 

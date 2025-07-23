@@ -3,7 +3,7 @@ import re
 
 from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
-    plot_component_meta_info
+    interpolants_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 import jax.numpy as jnp
 
@@ -11,7 +11,7 @@ from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_c
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 
 
-@pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=plot_component_meta_info)
+@pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
     """
     Plots the interpolation curves and the original function on a given interpolation interval.
@@ -74,5 +74,6 @@ class InterpolantsPlotComponent(InterpolationCore):
 
         return reference_data
 
+        #TODO: Grenze setzen für Plot der Interpolanten
 
 

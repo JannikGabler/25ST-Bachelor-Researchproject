@@ -24,6 +24,7 @@ class CompilableInterpolant(ABC):
     ###############################
     ### Attributes of instances ###
     ###############################
+    _name_: str | None
     _data_type_: DTypeLike
 
 

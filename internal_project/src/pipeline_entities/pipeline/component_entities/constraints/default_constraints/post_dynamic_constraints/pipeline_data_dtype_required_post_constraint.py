@@ -13,7 +13,7 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _attribute_name_: str
-    _error_message_: str | None = None
+    _error_message_: str | None
 
 
 

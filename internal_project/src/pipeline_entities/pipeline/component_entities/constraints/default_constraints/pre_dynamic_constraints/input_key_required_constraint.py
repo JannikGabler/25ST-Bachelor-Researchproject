@@ -12,7 +12,7 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _key_: str
-    _error_message_: str | None = None
+    _error_message_: str | None
 
 
 
