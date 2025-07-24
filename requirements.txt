@@ -6,7 +6,7 @@ jaxlib>=0.6.2
 orthax>=0.2.4
 
 # Further mathematical libraries
-numpy>=2.3.1
+numpy<2.3
 scipy>=1.16.0
 sympy>=1.14.0
 
@@ -22,3 +22,7 @@ packaging>=25.0
 
 #Jupyter notebook
 notebook>=7.4.3
+
+# CLI
+-e cli_project
+-e internal_project
