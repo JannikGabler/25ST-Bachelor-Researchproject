@@ -4,6 +4,12 @@ from typing import Any
 from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
+def _info() -> str:
+    return "" \
+    "#############################################################################################################################################################################################\n" \
+    "# INFO: Only new/changed outputs are shown in the tables per component. If not specified otherwise, a field that isn't in a component's table has the same value as the previous component. #\n" \
+    "#############################################################################################################################################################################################\n"
+
 def _title(report: PipelineComponentExecutionReport) -> str:
     """
     Build title string from component name and ID.
@@ -22,7 +28,7 @@ def _times(report: PipelineComponentExecutionReport) -> list[str]:
         lines.append(f"Execution time: {report.component_execution_time * 1000:.3f} ms")
     return lines
 
-def _prepare_rows(data: PipelineData | None) -> list[tuple[str, list[str]]]:
+def _rows(data: PipelineData | None, previous: list[tuple[str, list[str]]] | None = None) -> list[tuple[str, list[str]]]:
     """
     Convert PipelineData fields into (field_name, [value_lines]).
     Include only non-None fields.
@@ -40,22 +46,26 @@ def _prepare_rows(data: PipelineData | None) -> list[tuple[str, list[str]]]:
             summary = repr(val)
         else:
             summary = str(val)
-        rows.append((field_name, summary.splitlines()))
+        result_tuple = (field_name, summary.splitlines())
+        if (previous is None) or (not result_tuple in previous):
+            rows.append(result_tuple)
     return rows
 
-def _compute_column_widths(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[int, int]:
-    """
-    Determine the widths for the 2 columns.
-    """
-    left_width = max(len(left_header), *(len(r[0]) for r in rows))
-    right_width = max(len(right_header), *(len(line) for _, lines in rows for line in lines))
-    return left_width, right_width
-
-def _format_table(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[list[str], int]:
+def _table(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[list[str], int]:
     """
     Render the table as ASCII lines given rows and column widths.
     """
-    left_width, right_width = _compute_column_widths(rows, left_header, right_header)
+    if not rows:
+        return (out := ["<Nothing new>"], len(out[0]))
+
+    # Column widths
+    left_width  = len(left_header)
+    right_width = len(right_header)
+    for name, value_lines in rows:
+        left_width  = max(left_width, len(name))
+        for line in value_lines:
+            right_width = max(right_width, len(line))
+
     sep = f"+{'-' * (left_width + 2)}+{'-' * (right_width + 2)}+"
     fmt = f"| {{:{left_width}}} | {{:{right_width}}} |"
     lines: list[str] = [sep, fmt.format(left_header, right_header), sep]
@@ -68,25 +78,45 @@ def _format_table(rows: list[tuple[str, list[str]]], left_header: str, right_hea
         lines.append(sep)
     return lines, len(sep)
 
-def format_report(report: PipelineComponentExecutionReport) -> str:
+def format_report(report: PipelineComponentExecutionReport, previous_rows: list[tuple[str, list[str]]] | None = None) -> tuple[str, list[tuple[str, list[str]]]]:
+    """
+    Formats the report of one component as a string
+    :param report: The PipelineComponentExecutionReport of a single component
+    :param previous_rows: The rows containing the output of the previous report
+    :returns tuple[str, list[tuple[str, list[str]]]]: the formatted report as a string and the rows that the report (and its predecessors) already covered
+    """
     title = _title(report)
     times = _times(report)
 
     # Table
     left_header, right_header = "Field", "Value"
 
-    rows = _prepare_rows(report.component_output)
-    table, width = _format_table(rows, left_header, right_header)
-    underline = '=' * width
-    centered_title = title.center(width)
+    rows = _rows(report.component_output, previous_rows) if previous_rows else _rows(report.component_output)
+    table, width = _table(rows, left_header, right_header)
 
-    output: list[str] = [underline, centered_title, underline, '']
+    title_underline_width = max(len(title) + 4, width)
+    title_underline = '=' * title_underline_width
+    centered_title = title.center(title_underline_width)
+
+    output: list[str] = [title_underline, centered_title, title_underline, '']
     if times:
         output.extend(times + [''])
     output.append("Output (PipelineData):")
     output.extend(table)
 
-    return '\n'.join(output) # list[str] => str (one line per string in the list)
+    if previous_rows is None:
+        output_rows = rows[:]
+    else:
+        previous_rows.extend(rows)
+        output_rows = previous_rows
+    return ('\n'.join(output), output_rows) # list[str] => str (one line per string in the list)
 
 def format_all_reports(reports: list[PipelineComponentExecutionReport]) -> str:
-    return "\n\n\n".join(format_report(r) for r in reports)
+    info = _info()
+    previous_rows = None
+    formatted_reports = [info]
+    for report in reports:
+        formatted_report, rows = format_report(report, previous_rows)
+        formatted_reports.append(formatted_report)
+        previous_rows = rows
+    return "\n\n\n".join(formatted_reports)
