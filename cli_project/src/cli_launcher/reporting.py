@@ -1,14 +1,18 @@
 from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 import jax.numpy as jnp
+import inspect
 from typing import Any
 from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
 
 def _info() -> str:
     return "" \
-    "#############################################################################################################################################################################################\n" \
-    "# INFO: Only new/changed outputs are shown in the tables per component. If not specified otherwise, a field that isn't in a component's table has the same value as the previous component. #\n" \
-    "#############################################################################################################################################################################################\n"
+    "#####################################################################################################\n" \
+    "#                                                                                                   #\n" \
+    "# INFO: Only new/changed outputs are shown in the tables per component. If not specified otherwise, #\n" \
+    "# a field that isn't in a component's table has the same value as the previous component.           #\n" \
+    "#                                                                                                   #\n" \
+    "#####################################################################################################\n"
 
 def _title(report: PipelineComponentExecutionReport) -> str:
     """
@@ -40,12 +44,20 @@ def _rows(data: PipelineData | None, previous: list[tuple[str, list[str]]] | Non
         val = getattr(data, field_name)
         if val is None:
             continue
-        if isinstance(val, jnp.ndarray):
-            summary = str(val)
-        elif isinstance(val, (dict, list, tuple)):
-            summary = repr(val)
-        else:
-            summary = str(val)
+        found = False
+        if callable(val): # for functions (lambdas), e.g. function_callable
+            try:
+                summary = inspect.getsource(val).strip()
+                found = True
+            except (OSError, TypeError):
+                pass
+        if not found:
+            if isinstance(val, jnp.ndarray):
+                summary = str(val)
+            elif isinstance(val, (dict, list, tuple)):
+                summary = repr(val)
+            else:
+                summary = str(val)
         result_tuple = (field_name, summary.splitlines())
         if (previous is None) or (not result_tuple in previous):
             rows.append(result_tuple)
