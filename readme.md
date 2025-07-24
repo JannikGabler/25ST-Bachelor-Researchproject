@@ -1,10 +1,15 @@
 # Interpolation Pipeline
 
+## Set up the project
+
+1. Clone this project
+2. Create venv `python -m venv .venv` and activate `source .venv/bin/activate`
+3. Install the requirements `pip install -r requirements.txt` *(This will install cli_project and internal_project in editable mode, as well as all other dependencies)*
+
 ## CLI usage
 
-1. Install the local cli package with `pip install -e cli_project` *(editable mode while in development)*
-2. Create `pipeline_configuration.ini` and `pipeline_input.ini` files and note their filepaths
-3. To run the pipeline, execute `interpolation_pipeline` with the following arguments:
+1. Create `pipeline_configuration.ini` and `pipeline_input.ini` files and note their filepaths
+2. To run the pipeline, execute `interpolation_pipeline` with the following arguments:
     - **Option 1:** Specify pipeline configuration and input seperately.
         - `-pc <filepath>` or `--pipeline-configuration <filepath>` for the pipeline configuration
         - `-pi <filepath>` or `--pipeline-input <filepath>` for the pipeline input
