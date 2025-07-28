@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: internal-project
+Version: 0.1.0
+Summary: Internal project containing all modules and main program structure
+Requires-Python: >=3.13.5
