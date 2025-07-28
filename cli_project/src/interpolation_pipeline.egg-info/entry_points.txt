@@ -1,2 +1,2 @@
 [console_scripts]
-interpolation_pipeline = cli_launcher.cli:main
+interpolation_pipeline = main:main

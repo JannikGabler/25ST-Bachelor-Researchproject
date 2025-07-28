@@ -18,6 +18,7 @@ from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
 from cli_launcher.reporting import format_all_reports
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
 
+
 def _cli_worker(out_q: "queue.Queue[tuple[Path, PipelineConfigurationData, PipelineInputData]]"):
     """
     Parses args, shows trust warning, loads the .ini files, then puts the parsed data on out_q.
