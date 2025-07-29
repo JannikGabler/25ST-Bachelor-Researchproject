@@ -61,8 +61,8 @@ class SecondTypeChebyshevNodeGenerator(NodeGenerator):
             do_rescale = jnp.logical_or(interpolation_interval[0] != -1, interpolation_interval[1] != 1)
 
             def rescale_nodes():
-                old_length = 2
-                new_length = interpolation_interval[1] - interpolation_interval[0]
+                old_length = jnp.asarray(2, dtype=data_type)
+                new_length = jnp.asarray(interpolation_interval[1] - interpolation_interval[0], dtype=data_type)
                 length_ratio = new_length / old_length
 
                 rescaled_nodes = jnp.multiply(nodes, length_ratio)
