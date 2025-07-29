@@ -12,11 +12,12 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="error plotter", type=InterpolationCore, meta_info=error_component_meta_info)
-class InterpolantsPlotComponent(InterpolationCore):
+class ErrorPlotComponent(InterpolationCore):
     def perform_action(self) -> PipelineData:
         all_data = self._pipeline_data_
         reference_data = next((d for d in all_data if d.function_callable is not None), all_data[0])
 
+        nodes = reference_data.interpolation_nodes
         interval = reference_data.interpolation_interval
         f = reference_data.function_callable
 
@@ -32,7 +33,6 @@ class InterpolantsPlotComponent(InterpolationCore):
 
         for error_type in ["absolute", "relative"]:
             plt.figure(figsize=(10, 6))
-            has_non_positive = False
 
             for i, data in enumerate(all_data):
                 interpolant = data.interpolant
@@ -43,31 +43,38 @@ class InterpolantsPlotComponent(InterpolationCore):
                 x_eval = jnp.linspace(interval[0], interval[1], 500).astype(compiled_interpolant.used_data_type)
                 x_eval = x_eval.reshape(compiled_interpolant.required_evaluation_points_shape)
 
+                raw_name = type(interpolant).__name__.replace("Interpolant", "")
+                name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
+
                 try:
                     y_interp = compiled_interpolant.evaluate(x_eval)
                 except Exception:
+                    print(f"[SKIP] {name}: Evaluation failed (exception).")
                     continue
 
-                abs_err = jnp.abs(y_true - y_interp)
+                is_finite = jnp.isfinite(y_interp)
+                if not jnp.any(is_finite):
+                    print(f"[SKIP] {name}: All values are NaN or Inf.")
+                    continue
+
+                y_interp = y_interp[is_finite]
+                x_eval_finite = x_eval[is_finite]
+                y_ref = y_true[is_finite]
+
+                abs_err = jnp.abs(y_ref - y_interp)
 
                 if error_type == "relative":
-                    err = abs_err / jnp.where(jnp.abs(y_true) < EPSILON, EPSILON, jnp.abs(y_true))
+                    err = abs_err / jnp.where(jnp.abs(y_ref) < EPSILON, EPSILON, jnp.abs(y_ref))
                 else:
                     err = abs_err
 
                 valid_mask = ~(jnp.isnan(err) | jnp.isinf(err))
-
                 if not jnp.any(valid_mask):
+                    print(f"[SKIP] {name}: All error values are NaN or Inf.")
                     continue
 
-                if ylog_value is True and jnp.any(err[valid_mask] <= 0):
-                    has_non_positive = True
-
-                raw_name = type(interpolant).__name__.replace("Interpolant", "")
-                name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
-
                 plt.plot(
-                    x_eval[valid_mask], err[valid_mask],
+                    x_eval_finite[valid_mask], err[valid_mask],
                     label=f"{name} Interpolant",
                     color=colors[i % len(colors)],
                     linewidth=1.8
@@ -89,11 +96,10 @@ class InterpolantsPlotComponent(InterpolationCore):
             plt.grid(True)
             plt.tight_layout()
 
-            if self._additional_execution_info_.overridden_attributes["ylogscale"] is True:
+            if ylog_value is True:
                 plt.yscale("log")
 
             plt.show()
             plt.close()
 
         return reference_data
-

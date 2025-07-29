@@ -44,29 +44,26 @@ class InterpolantsPlotComponent(InterpolationCore):
             x_eval = jnp.linspace(interval[0], interval[1], 500).astype(compiled_interpolant.used_data_type)
             x_eval = x_eval.reshape(compiled_interpolant.required_evaluation_points_shape)
 
-            try:
-                y_interp = compiled_interpolant.evaluate(x_eval)
-            except Exception as e:
-                print(f"[ERROR] Evaluation failed for {type(interpolant).__name__} with dtype {x_eval.dtype}: {e}")
-                continue
-
-            is_finite = jnp.isfinite(y_interp)
-
-            if not jnp.any(is_finite):
-                print(f"[WARN] All values are NaN or Inf for {type(interpolant).__name__}, skipping plot.")
-                print(f"First 10 computed y_interp values: {y_interp[:10]}")
-                print(f"Indices with NaN or Inf: {jnp.where(~is_finite)[0]}")
-                continue
-
-            x_eval_valid = x_eval[is_finite]
-            y_interp_valid = y_interp[is_finite]
-
             raw_name = type(interpolant).__name__.replace("Interpolant", "")
             name = re.sub(r'(?<!^)(?=[A-Z])', ' ', raw_name)
 
+            try:
+                y_interp = compiled_interpolant.evaluate(x_eval)
+            except Exception:
+                print(f"[SKIP] {name}: Evaluation failed (exception).")
+                continue
+
+            is_finite = jnp.isfinite(y_interp)
+            if not jnp.any(is_finite):
+                print(f"[SKIP] {name}: All values are NaN or Inf.")
+                continue
+
+            x_plot_filtered = x_eval[is_finite]
+            y_plot_filtered = y_interp[is_finite]
+
             plt.plot(
-                x_eval_valid,
-                y_interp_valid,
+                x_plot_filtered,
+                y_plot_filtered,
                 label=f"{name} Interpolant",
                 color=colors[i % len(colors)],
                 linestyle='-',
@@ -76,7 +73,7 @@ class InterpolantsPlotComponent(InterpolationCore):
         if y_true is not None:
             max_value = float(jnp.max(y_true))
             min_value = float(jnp.min(y_true))
-            difference = 7*(max_value - min_value)
+            difference = 7 * (max_value - min_value)
             plt.ylim(min_value - difference, max_value + difference)
         else:
             plt.ylim(-1, 1)
