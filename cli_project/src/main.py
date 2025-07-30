@@ -1,6 +1,6 @@
 import colorama
 
-from cli_launcher.new_cli import CLI
+from cli_launcher.cli import CLI
 
 
 def main() -> None:

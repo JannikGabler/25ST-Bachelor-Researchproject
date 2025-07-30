@@ -1,10 +1,14 @@
-import matplotlib.pyplot as plt
+import os
+import subprocess
+import sys
+import tempfile
 import re
+import jax.numpy as jnp
+import matplotlib.pyplot as plt
 
 from pipeline_entities.component_meta_info.default_component_meta_infos.plot_components.plot_components import \
     plot_component_meta_info
 from pipeline_entities.components.abstracts.interpolation_core import InterpolationCore
-import jax.numpy as jnp
 
 from pipeline_entities.components.decorators.pipeline_component import pipeline_component
 from pipeline_entities.data_transfer.pipeline_data import PipelineData
@@ -16,10 +20,19 @@ class InterpolantPlotComponent(InterpolationCore):
     Creates plots for any number of interpolation methods.
     """
 
+
+
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        self._compute_plot_()
+        self._show_plot_in_subprocess_()
+        return self._pipeline_data_[0]
+
+
+
+    def _compute_plot_(self) -> None:
         all_data = self._pipeline_data_
 
         reference_data = next((d for d in all_data if d.function_callable is not None), all_data[0])
@@ -67,9 +80,33 @@ class InterpolantPlotComponent(InterpolationCore):
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
+
+
+    @staticmethod
+    def _show_plot_in_subprocess_() -> None:
+        # --- temporäre PNG-Datei speichern ---
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as f:
+            plot_path = f.name
+            plt.savefig(plot_path)
+            plt.close()
+
+        # --- Skriptpfad und Subprozess starten ---
+        script_path = os.path.abspath(__file__)
+        subprocess.Popen([sys.executable, script_path, "--show-image", plot_path])
+
+
+
+
+if __name__ == "__main__":
+    if len(sys.argv) >= 3 and sys.argv[1] == "--show-image":
+        image_path = sys.argv[2]
+        import matplotlib.pyplot as plt
+        import matplotlib.image as mpimg
+
+        img = mpimg.imread(image_path)
+        plt.imshow(img)
+        plt.axis('off')
+        plt.title("Interpolant Plot")
         plt.show()
-
-        return reference_data
-
 
 

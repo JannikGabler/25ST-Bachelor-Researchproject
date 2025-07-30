@@ -16,3 +16,6 @@ second_type_chebyshev_node_generator_meta_info: ComponentMetaInfo = ComponentMet
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
 )
 
+
+
+
