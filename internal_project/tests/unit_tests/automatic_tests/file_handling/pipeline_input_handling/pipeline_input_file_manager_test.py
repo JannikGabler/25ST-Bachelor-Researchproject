@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 
 
 class LoadFromFile(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 
-from data_structures.tree.tree import Tree
-from data_structures.tree.tree_node import TreeNode
+from general_data_structures.tree.tree import Tree
+from general_data_structures.tree.tree_node import TreeNode
 
 
 class MyTestCase(unittest.TestCase):

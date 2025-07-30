@@ -1,0 +1,2 @@
+[console_scripts]
+interpolation_pipeline = cli_launcher.cli:main

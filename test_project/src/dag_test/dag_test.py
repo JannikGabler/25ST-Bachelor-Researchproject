@@ -4,15 +4,16 @@ import tempfile
 from pathlib import Path
 
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
-from pipeline_entities.pipeline.pipeline import Pipeline
-from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
-from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from pipeline_entities.pipeline.data_classes.pipeline import Pipeline
+from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
+from pipeline_entities.pipeline_execution.pipeline_manager.pipeline_manager import PipelineManager
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 
 InternalLogicSetupManager.setup()
@@ -83,3 +84,15 @@ pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_inpu
 pipeline_manager: PipelineManager = PipelineManager(pipeline)
 
 pipeline_manager.execute_all()
+
+
+pipeline_manager: PipelineManager = PipelineManager(pipeline)
+
+while not pipeline_manager.is_completely_executed:
+    report: PipelineComponentExecutionReport = pipeline_manager.execute_next_component()
+    node_name: str = report.component_instantiation_info.component_name
+    node_id: str = report.component_instantiation_info.component.component_id
+
+    print(f"###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
+    print(report)
+    print("\n\n")
