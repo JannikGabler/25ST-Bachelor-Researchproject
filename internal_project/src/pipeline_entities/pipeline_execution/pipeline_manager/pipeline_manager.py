@@ -186,7 +186,3 @@ class PipelineManager:
         self._component_execution_reports_[id(node_in_own_dag)].component_output = result_data
 
         PipelineComponentExecutionValidationUtils.validate_after_node_execution(node_in_own_dag, self._pipeline_, self._component_execution_reports_)
-
-
-
-

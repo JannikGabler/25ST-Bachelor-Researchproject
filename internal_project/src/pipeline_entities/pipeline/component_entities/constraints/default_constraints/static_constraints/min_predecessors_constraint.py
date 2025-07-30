@@ -11,6 +11,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     ### Attributs of instances ###
     ##############################
     _min_amount_: int
+    _error_message_: str | None
 
 
 
@@ -19,6 +20,7 @@ class MinPredecessorsConstraint(StaticConstraint):
     ###################
     def __init__(self, min_amount: int):
         self._min_amount_ = min_amount
+        self._error_message_ = None
 
 
 
@@ -28,12 +30,20 @@ class MinPredecessorsConstraint(StaticConstraint):
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
-        return len(own_node.predecessors) >= self._min_amount_
+        if len(own_node.predecessors) >= self._min_amount_:
+            self._error_message_ = None
+            return True
+        else:
+            self._error_message_ = (
+                f"Too few predecessors: found {len(own_node.predecessors)}, "
+                f"but the minimum required number is {self._min_amount_}."
+            )
+            return False
 
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

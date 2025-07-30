@@ -12,6 +12,7 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _key_: str
+    _error_message_: str | None
 
 
 
@@ -23,6 +24,7 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
             self._key_ = key[1:-1]
         else:
             self._key_ = key
+        self._error_message_ = None
 
 
 
@@ -34,14 +36,42 @@ class InputKeyRequiredConstraint(PreDynamicConstraint):
 
         if any(field.name == self._key_ for field in fields(PipelineInputData)):
             transformed_key = f"_{self._key_}_"
-            return getattr(pipeline_input, transformed_key) is not None
-        else:
-            return self._key_ in pipeline_input.additional_values or self._key_ in pipeline_input.additional_directly_injected_values
+            value = getattr(pipeline_input, transformed_key, None)
 
+            if value is None:
+                self._error_message_ = (
+                    f"Required input field '{transformed_key}' is present but has value None."
+                )
+                return False
+
+        else:
+
+            if self._key_ in pipeline_input.additional_values:
+                if pipeline_input.additional_values[self._key_] is None:
+                    self._error_message_ = (
+                        f"Key '{self._key_}' found in 'additional_values', but its value is None."
+                    )
+                    return False
+
+            elif self._key_ in pipeline_input.additional_directly_injected_values:
+                if pipeline_input.additional_directly_injected_values[self._key_] is None:
+                    self._error_message_ = (
+                        f"Key '{self._key_}' found in 'additional_directly_injected_values', but its value is None."
+                    )
+                    return False
+
+            else:
+                self._error_message_ = (
+                    f"Required input key '{self._key_}' is missing from both 'additional_values' and 'additional_directly_injected_values'."
+                )
+                return False
+
+        self._error_message_ = None
+        return True
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

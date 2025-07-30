@@ -2,7 +2,7 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.dataclass
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.attribute_required_constraint import \
     AttributeRequiredConstraint
 
-interpolants_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+run_time_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolant"},  ###REMOVE THIS LATER AND WRITE "set()" INSTEAD, THIS IS ONLY A TEMPORARY SOLUTION###
 
     attributes_allowed_to_be_overridden=set(),

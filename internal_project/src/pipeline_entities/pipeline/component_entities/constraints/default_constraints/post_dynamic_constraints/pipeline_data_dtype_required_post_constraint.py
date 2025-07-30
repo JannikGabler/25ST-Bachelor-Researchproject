@@ -13,6 +13,7 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _attribute_name_: str
+    _error_message_: str | None
 
 
 
@@ -21,6 +22,7 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
     ###################
     def __init__(self, attribute_name: str) -> None:
         self._attribute_name_ = attribute_name
+        self._error_message_ = None
 
 
 
@@ -31,18 +33,49 @@ class PipelineDataDtypeRequiredPostConstraint(PostDynamicConstraint):
                  output_data: PipelineData) -> bool:
 
         if any(field.name == self._attribute_name_ for field in fields(PipelineData)):
-            value: object = getattr(output_data, self._attribute_name_)
+            value = getattr(output_data, self._attribute_name_)
 
-            return isinstance(value, jnp.ndarray) and value.dtype == output_data.data_type
+            if not isinstance(value, jnp.ndarray):
+                self._error_message_ = (
+                    f"Attribute '{self._attribute_name_}' exists but is not a jax.numpy array. "
+                    f"Got type: {type(value)}."
+                )
+                return False
+
+            if value.dtype != output_data.data_type:
+                self._error_message_ = (
+                    f"Attribute '{self._attribute_name_}' is a jax.numpy array but has dtype {value.dtype}, "
+                    f"expected {output_data.data_type}."
+                )
+                return False
+
         else:
-            return (self._attribute_name_ in output_data.additional_values
-                    and isinstance(output_data.additional_values[self._attribute_name_], jnp.ndarray)
-                    and output_data.additional_values[self._attribute_name_].dtype == output_data.data_type)
+
+            if self._attribute_name_ not in output_data.additional_values:
+                self._error_message_ = f"Attribute '{self._attribute_name_}' is missing in additional_values."
+                return False
+
+            if not isinstance(output_data.additional_values[self._attribute_name_], jnp.ndarray):
+                self._error_message_ = (
+                    f"Additional value '{self._attribute_name_}' is not a jax.numpy array. "
+                    f"Got type: {type(output_data.additional_values[self._attribute_name_])}."
+                )
+                return False
+
+            if output_data.additional_values[self._attribute_name_].dtype != output_data.data_type:
+                self._error_message_ = (
+                    f"Additional value '{self._attribute_name_}' is a jax.numpy array but has dtype {output_data.additional_values[self._attribute_name_].dtype}, "
+                    f"expected {output_data.data_type}."
+                )
+                return False
+
+        self._error_message_ = None
+        return True
 
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

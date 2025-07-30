@@ -2,7 +2,8 @@ import jax.numpy as jnp
 
 from jax.typing import DTypeLike
 
-from interpolants.default_interpolants.barycentric_second_interpolant import BarycentricSecondInterpolant
+from interpolants.default_interpolants.barycentric_second_chebyshev_interpolant import \
+    BarycentricSecondChebyshevInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
     barycentric_second_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \
@@ -32,7 +33,7 @@ class BarycentricSecondChebyshevInterpolationCore(AOTCInterpolationCore):
 
         weights: jnp.ndarray = self._compiled_jax_callable_()
 
-        interpolant = BarycentricSecondInterpolant(
+        interpolant = BarycentricSecondChebyshevInterpolant(
             nodes=pipeline_data.interpolation_nodes,
             values=pipeline_data.interpolation_values,
             weights=weights

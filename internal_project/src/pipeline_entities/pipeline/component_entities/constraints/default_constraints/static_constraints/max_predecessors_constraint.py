@@ -11,6 +11,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     ### Attributs of instances ###
     ##############################
     _max_amount_: int
+    _error_message_: str | None
 
 
 
@@ -19,6 +20,7 @@ class MaxPredecessorsConstraint(StaticConstraint):
     ###################
     def __init__(self, max_amount: int):
         self._max_amount_ = max_amount
+        self._error_message_ = None
 
 
 
@@ -28,12 +30,19 @@ class MaxPredecessorsConstraint(StaticConstraint):
     def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
                  pipeline_configuration: PipelineConfiguration) -> bool:
 
-        return len(own_node.predecessors) <= self._max_amount_
-
+        if len(own_node.predecessors) <= self._max_amount_:
+            self._error_message_ = None
+            return True
+        else:
+            self._error_message_ = (
+                f"Too many predecessors: found {len(own_node.predecessors)}, "
+                f"but the maximum allowed number is {self._max_amount_}."
+            )
+            return False
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 

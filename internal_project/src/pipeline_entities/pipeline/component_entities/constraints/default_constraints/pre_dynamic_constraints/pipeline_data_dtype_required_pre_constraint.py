@@ -13,6 +13,7 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
     ### Attributes of instances ###
     ###############################
     _attribute_name_: str
+    _error_message_: str | None
 
 
 
@@ -21,6 +22,7 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
     ###################
     def __init__(self, attribute_name: str) -> None:
         self._attribute_name_ = attribute_name
+        self._error_message_ = None
 
 
 
@@ -30,23 +32,50 @@ class PipelineDataDtypeRequiredPreConstraint(PreDynamicConstraint):
     def evaluate(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> bool:
         for data in pipeline_data:
             if any(field.name == self._attribute_name_ for field in fields(PipelineData)):
-                value: object = getattr(data, self._attribute_name_)
+                value: object = getattr(data, self._attribute_name_, None)
 
-                if not isinstance(value, jnp.ndarray) or value.dtype != data.data_type:
+                if not isinstance(value, jnp.ndarray):
+                    self._error_message_ = (
+                        f"Attribute '{self._attribute_name_}' in PipelineData must be a jnp.ndarray, "
+                        f"but got type '{type(value).__name__}'."
+                    )
                     return False
+
+                if value.dtype != data.data_type:
+                    self._error_message_ = (
+                        f"The dtype of attribute '{self._attribute_name_}' does not match the expected pipeline data type. "
+                        f"Expected: {data.data_type}, got: {value.dtype}."
+                    )
+                    return False
+
             else:
-                if (not self._attribute_name_ in data.additional_values
-                    or not isinstance(data.additional_values[self._attribute_name_], jnp.ndarray)
-                    or data.additional_values[self._attribute_name_].dtype != data.data_type):
-
+                if self._attribute_name_ not in data.additional_values:
+                    self._error_message_ = (
+                        f"Required attribute '{self._attribute_name_}' not found in 'additional_values'."
+                    )
                     return False
 
+                if not isinstance(data.additional_values[self._attribute_name_], jnp.ndarray):
+                    self._error_message_ = (
+                        f"Attribute '{self._attribute_name_}' in 'additional_values' must be a jnp.ndarray, "
+                        f"but got type '{type(data.additional_values[self._attribute_name_]).__name__}'."
+                    )
+                    return False
+
+                if data.additional_values[self._attribute_name_].dtype != data.data_type:
+                    self._error_message_ = (
+                        f"The dtype of attribute '{self._attribute_name_}' in 'additional_values' does not match the expected pipeline data type. "
+                        f"Expected: {data.data_type}, got: {data.additional_values[self._attribute_name_].dtype}."
+                    )
+                    return False
+
+        self._error_message_ = None
         return True
 
 
 
     def get_error_message(self) -> str | None:
-        return "TODO" # TODO
+        return self._error_message_
 
 
 
