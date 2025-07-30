@@ -13,6 +13,7 @@ sympy>=1.14.0
 # Visualisation
 matplotlib>=3.10.3
 colorama>=0.4.6
+rich >= 14.1.0
 
 # Testing
 pytest>=8.3.5

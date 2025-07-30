@@ -8,14 +8,16 @@ from cli_launcher.reporting import format_all_reports
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import \
+    PipelineConfigurationData
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from pipeline_entities.pipeline.pipeline import Pipeline
-from pipeline_entities.pipeline_builder.pipeline_builder import PipelineBuilder
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.pipeline_configuration.dataclasses.pipeline_configuration_data import PipelineConfigurationData
-from pipeline_entities.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.pipeline_input.pipeline_input_data import PipelineInputData
-from pipeline_entities.pipeline_manager.pipeline_manager import PipelineManager
+from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
+    PipelineComponentExecutionReport
+from pipeline_entities.pipeline_execution.pipeline_manager.pipeline_manager import PipelineManager
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 from utilities.rich_utilities import RichUtilities
 from utilities.user_output_utilities import UserOutputUtilities
@@ -204,12 +206,12 @@ class CLI:
 
     @classmethod
     def _perform_security_prompt_(cls) -> None:
-        RichUtilities.open_panel("Security warning")#, color=Fore.YELLOW) # TODO
+        RichUtilities.open_panel("Security warning")
         RichUtilities.write_lines_in_panel(
             "Loading custom pipelines may execute arbitrary code. "
             "Only load files and directory from trusted sources!\n"
-            "Would you like to proceed? [y/n]", style="yellow")#,
-            #color=Fore.YELLOW)  #TODO
+            "Would you like to proceed? [y/n]", style="yellow")
+
         RichUtilities.close_panel()
 
         if RichUtilities.get_yes_no_input() is False:
@@ -239,7 +241,7 @@ class CLI:
 
         path: Path = self.pipeline_config_file
         with open(path, "r", encoding="utf-8") as f:
-            RichUtilities.write_lines_in_panel(f.read())#, level=2)
+            RichUtilities.write_lines_in_panel(f.read(), indent_level=1)
 
         RichUtilities.write_lines_in_panel("\nParsing .ini format (PipelineConfigurationData)...")
 
@@ -260,7 +262,7 @@ class CLI:
 
         path: Path = self.pipeline_input_file
         with open(path, "r", encoding="utf-8") as f:
-            RichUtilities.write_lines_in_panel(f.read())#, level=2)
+            RichUtilities.write_lines_in_panel(f.read(), indent_level=1)
 
         RichUtilities.write_lines_in_panel("\nParsing .ini format (PipelineInputData)...")
 
@@ -305,7 +307,7 @@ class CLI:
     def _print_results_(cls, pipeline_manager: PipelineManager) -> None:
         RichUtilities.open_panel("Results")
 
-        execution_reports: list[PipelineComponentExecutionReport] = pipeline_manager.get_all_component_execution_report()
+        execution_reports: list[PipelineComponentExecutionReport] = pipeline_manager.get_all_component_execution_reports()
         output: str = format_all_reports(execution_reports)
 
         RichUtilities.write_lines_in_panel(output)
