@@ -12,7 +12,7 @@ class JaxUtils:
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError("The class 'JaxUtils' can not be instantiated.")
+        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} can not be instantiated.")
 
 
 

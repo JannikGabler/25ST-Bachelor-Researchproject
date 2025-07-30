@@ -14,7 +14,7 @@ class TypingUtils:
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError("The class 'TypingUtils' cannot be instantiated.")
+        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
 
 
 

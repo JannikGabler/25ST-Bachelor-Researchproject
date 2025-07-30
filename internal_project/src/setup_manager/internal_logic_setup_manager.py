@@ -1,5 +1,5 @@
 from exceptions.not_instantiable_error import NotInstantiableError
-from pipeline_entities.components.dynamic_management.component_registry import ComponentRegistry
+from pipeline_entities.pipeline.component_entities.component_registry.component_registry import ComponentRegistry
 
 
 class InternalLogicSetupManager:

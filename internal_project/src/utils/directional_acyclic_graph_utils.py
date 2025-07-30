@@ -5,8 +5,8 @@ from copy import copy
 from typing import TypeVar, Generator, Any
 
 if TYPE_CHECKING:
-    from data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
-    from data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+    from general_data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
+    from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 
 
 from exceptions.not_instantiable_error import NotInstantiableError
@@ -296,7 +296,7 @@ class DirectionalAcyclicGraphUtils:
     def _populate_in_degree_and_id_lookup_dicts_(argument: DirectionalAcyclicGraph[T] | DirectionalAcyclicGraphNode[T],
                                                  in_degree: dict[int, int], node_lookup: dict[int, DirectionalAcyclicGraphNode[T]]) -> None:
 
-        for node in argument.death_first_traversal():
+        for node in argument.depth_first_traversal():
             node_id = id(node)
             in_degree[node_id] = len(node.predecessors)
             node_lookup[node_id] = node
