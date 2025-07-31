@@ -13,7 +13,27 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 @pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
-    COLORS = ['black', 'blue', 'green', 'orange', 'purple', 'brown']
+    COLORS = [
+        "black",
+        "#66c2a5",  # grünlich
+        "#fc8d62",  # orange
+        "#8da0cb",  # bläulich
+        "#e78ac3",  # pink
+        "#a6d854",  # hellgrün
+        "#ffd92f",  # gelb
+        "#e5c494",  # beige
+        "#b3b3b3"  # grau
+    ]
+    LINESTYLES = [
+        #'-',  # durchgezogen (solid)
+        '--',  # gestrichelt (dashed)
+        '-.',  # strich-punkt (dashdot)
+        ':',  # gepunktet (dotted)
+        (0, (1, 1)),  # sehr feine Punkte
+        (0, (5, 5)),  # lange Striche mit Lücken
+        (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
+    ]
+
     AMOUNT_OF_EVALUATION_POINTS = 50
 
 
@@ -67,7 +87,7 @@ class InterpolantsPlotComponent(InterpolationCore):
         x_intervals, y_intervals, inf_indices = cls._split_up_function_values_(x_array, function_values)
 
         for x_interval, y_interval in zip(x_intervals, y_intervals):
-            plt.plot(x_interval, y_interval, label="Original Function", linewidth=2.5, color=cls.COLORS[0], zorder=1)
+            plt.plot(x_interval, y_interval, label="Original Function", linewidth=4, color=cls.COLORS[0], alpha=0.6, zorder=1)
 
         for inf_index in inf_indices:
             value: jnp.ndarray = function_values[inf_index]
@@ -91,7 +111,8 @@ class InterpolantsPlotComponent(InterpolationCore):
                 plt.plot([], [], label=f"{data.interpolant.name}", color=self.COLORS[i+1])
 
                 for j, (x_interval, y_interval) in enumerate(zip(x_intervals, y_intervals)):
-                    plt.plot(x_interval, y_interval, linewidth=2.5, color=self.COLORS[i+1], zorder=1)
+                    plt.plot(x_interval, y_interval, linewidth=2, color=self.COLORS[i+1 % len(self.COLORS)],
+                        linestyle=self.LINESTYLES[i % len(self.LINESTYLES)] ,zorder=2)
 
                 for inf_index in inf_indices:
                     value: jnp.ndarray = function_values[inf_index]
