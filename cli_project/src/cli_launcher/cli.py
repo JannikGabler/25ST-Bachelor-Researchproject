@@ -58,6 +58,7 @@ class CLI:
         self._print_results_(pipeline_manager)
 
         RichUtilities.close_panel()
+        input("Press enter to exit.")
 
 
 

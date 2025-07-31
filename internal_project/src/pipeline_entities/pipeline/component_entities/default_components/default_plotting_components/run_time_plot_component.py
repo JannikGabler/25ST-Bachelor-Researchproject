@@ -59,8 +59,7 @@ class RunTimePlotComponent(InterpolationCore):
         plt.xticks(ticks=x, labels=method_names, rotation=45)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
-        plt.show()
-        plt.close()
+        plt.show(block=False)
 
         # Plot for execution time
         plt.figure(figsize=(12, 6))
@@ -71,8 +70,7 @@ class RunTimePlotComponent(InterpolationCore):
         plt.xticks(ticks=x, labels=method_names, rotation=45)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
-        plt.show()
-        plt.close()
+        plt.show(block=False)
 
         # print(self._pipeline_data_[0].__dict__)
         return self._pipeline_data[0]

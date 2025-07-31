@@ -99,7 +99,6 @@ class ErrorPlotComponent(InterpolationCore):
             if ylog_value is True:
                 plt.yscale("log")
 
-            plt.show()
-            plt.close()
+            plt.show(block=False)
 
         return reference_data

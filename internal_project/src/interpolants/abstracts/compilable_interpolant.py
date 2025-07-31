@@ -29,6 +29,11 @@ class CompilableInterpolant(ABC):
 
 
 
+    def __init__(self, name: str) -> None:
+        self._name_ = name
+
+
+
     ######################
     ### Public methods ###
     ######################
@@ -43,6 +48,15 @@ class CompilableInterpolant(ABC):
 
         return CompiledInterpolant(compiled_jax_callable, shape, data_type)
 
+
+
+
+    # TODO
+
+
+    @property
+    def name(self) -> str:
+        return self._name_
 
 
     #######################

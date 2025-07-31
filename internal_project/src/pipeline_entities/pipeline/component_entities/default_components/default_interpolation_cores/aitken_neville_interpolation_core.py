@@ -36,7 +36,7 @@ class AitkenNevilleInterpolationCore(AOTCInterpolationCore):
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
         coefficients: jnp.ndarray = self._compiled_jax_callable_()
-        interpolant = AitkenNevilleInterpolant(coefficients)
+        interpolant = AitkenNevilleInterpolant("Aitken-Neville", coefficients)
 
         pipeline_data.interpolant = interpolant
         return pipeline_data

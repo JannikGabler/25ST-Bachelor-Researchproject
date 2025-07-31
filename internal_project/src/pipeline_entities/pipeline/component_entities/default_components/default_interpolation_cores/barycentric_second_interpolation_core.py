@@ -40,6 +40,7 @@ class BarycentricSecondInterpolationCore(AOTCInterpolationCore):
         weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = BarycentricSecondInterpolant(
+            name="Barycentric2",
             nodes=pipeline_data.interpolation_nodes,
             values=pipeline_data.interpolation_values,
             weights=weights

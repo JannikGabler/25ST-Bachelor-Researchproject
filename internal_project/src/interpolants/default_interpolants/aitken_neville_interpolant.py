@@ -20,7 +20,8 @@ class AitkenNevilleInterpolant(CompilableInterpolant):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, coefficients: jnp.ndarray):
+    def __init__(self, name: str, coefficients: jnp.ndarray):
+        super().__init__(name)
         self._coefficients_ = coefficients
 
 

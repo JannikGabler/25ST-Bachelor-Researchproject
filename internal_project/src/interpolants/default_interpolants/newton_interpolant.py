@@ -21,8 +21,8 @@ class NewtonInterpolant(CompilableInterpolant):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, nodes: jnp.ndarray, divided_differences: jnp.ndarray):
-        super().__init__()
+    def __init__(self, name: str, nodes: jnp.ndarray, divided_differences: jnp.ndarray):
+        super().__init__(name)
 
         if nodes.shape != divided_differences.shape:
             raise InvalidArgumentException("The shapes of the given nodes and divided_differences arrays differ, although"
