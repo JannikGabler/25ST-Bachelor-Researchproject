@@ -137,7 +137,7 @@ on:
   pull_request:
 
 jobs:
-  cache-dependencies:
+  caching-job:
     runs-on: ubuntu-latest
     outputs:
       venv-path: ${{ steps.set-venv.outputs.path }}
@@ -170,9 +170,9 @@ jobs:
           pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-  test:
+  test-job-internal_logic:
     runs-on: ubuntu-latest
-    needs: cache-dependencies
+    needs: caching-job
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -214,4 +214,46 @@ jobs:
             echo "All tests passed!"
           fi
 
+  test-job-cli:
+    runs-on: ubuntu-latest
+    needs: caching-job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+
+      - name: Restore virtual environment
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            venv-
+
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}/internal_project
+        run: |
+          source .venv/bin/activate
+          set +e
+          FAILED_TESTS=()
+          for test_file in $(find internal_project/tests -name "*.py"); do
+            echo "Running $test_file"
+            python -m unittest "$test_file"
+            if [ $? -ne 0 ]; then
+              FAILED_TESTS+=("$test_file")
+            fi
+          done
+          if [ ${#FAILED_TESTS[@]} -ne 0 ]; then
+            echo "==== Failed Tests ===="
+            for test in "${FAILED_TESTS[@]}"; do
+              echo "$test"
+            done
+            exit 1
+          else
+            echo "All tests passed!"
+          fi
