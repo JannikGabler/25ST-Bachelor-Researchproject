@@ -58,10 +58,10 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/internal_project
         run: |
+          set +e  # Fehler sollen die Schleife nicht abbrechen
           FAILED_TESTS=()
-          TEST_FILES=( $(find internal_project/tests -name "*.py") )
 
-          for test_file in "${TEST_FILES[@]}"; do
+          for test_file in $(find internal_project/tests -name "*.py"); do
             echo "Running $test_file"
             python -m unittest "$test_file"
             if [ $? -ne 0 ]; then
@@ -69,8 +69,8 @@ jobs:
             fi
           done
 
+          echo ""
           if [ ${#FAILED_TESTS[@]} -ne 0 ]; then
-            echo ""
             echo "==== Failed Tests ===="
             for test in "${FAILED_TESTS[@]}"; do
               echo "$test"
@@ -79,4 +79,3 @@ jobs:
           else
             echo "All tests passed!"
           fi
-
