@@ -6,7 +6,7 @@ from copy import copy
 from itertools import zip_longest
 from typing import TypeVar, Generic, Generator, Any, Callable
 
-from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from general_data_structures.freezable import Freezable
 from exceptions.duplicate_value_error import DuplicateError
 from exceptions.invalid_argument_exception import InvalidArgumentException
