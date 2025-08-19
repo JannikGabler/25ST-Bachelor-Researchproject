@@ -58,23 +58,25 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/internal_project
         run: |
-          FAILED_TESTS=""
-          # rekursiv alle Test-Dateien finden und unittest für jede ausführen
-          find internal_project/tests -name "*.py" | while read test_file; do
+          FAILED_TESTS=()
+          TEST_FILES=( $(find internal_project/tests -name "*.py") )
+
+          for test_file in "${TEST_FILES[@]}"; do
             echo "Running $test_file"
             python -m unittest "$test_file"
             if [ $? -ne 0 ]; then
-              FAILED_TESTS="$FAILED_TESTS $test_file"
+              FAILED_TESTS+=("$test_file")
             fi
           done
 
-          if [ -n "$FAILED_TESTS" ]; then
+          if [ ${#FAILED_TESTS[@]} -ne 0 ]; then
             echo ""
             echo "==== Failed Tests ===="
-            for test in $FAILED_TESTS; do
+            for test in "${FAILED_TESTS[@]}"; do
               echo "$test"
             done
             exit 1
           else
             echo "All tests passed!"
           fi
+
