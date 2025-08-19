@@ -1,4 +1,4 @@
-name: CI Tests (internal logic)
+name: Python Tests
 
 on:
   pull_request:
@@ -21,6 +21,12 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run unit tests
+      - name: Run tests recursively
+        env:
+          PYTHONPATH: ${{ github.workspace }}/internal_project
         run: |
-          python -m unittest discover -s internal_project/tests -p "*.py" -v
+          # rekursiv alle Test-Dateien finden und unittest für jede ausführen
+          find internal_project/tests -name "*.py" | while read test_file; do
+            echo "Running $test_file"
+            python -m unittest "$test_file"
+          done
