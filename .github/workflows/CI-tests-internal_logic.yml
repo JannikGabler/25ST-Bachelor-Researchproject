@@ -1,3 +1,36 @@
+#name: Python Tests
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  test:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Python 3.13
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: 3.13
+#
+#      - name: Install dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#
+#      - name: Run tests for internal project
+#        env:
+#          PYTHONPATH: ${{ github.workspace }}/internal_project
+#        run: |
+#          # rekursiv alle Test-Dateien finden und unittest für jede ausführen
+#          find internal_project/tests -name "*.py" | while read test_file; do
+#            echo "Running $test_file"
+#            python -m unittest "$test_file"
+#          done
+
 name: Python Tests
 
 on:
@@ -11,7 +44,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
           python-version: 3.13
@@ -20,12 +53,28 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Run tests recursively
+
+      - name: Run tests for internal project
         env:
           PYTHONPATH: ${{ github.workspace }}/internal_project
         run: |
+          FAILED_TESTS=""
           # rekursiv alle Test-Dateien finden und unittest für jede ausführen
           find internal_project/tests -name "*.py" | while read test_file; do
             echo "Running $test_file"
             python -m unittest "$test_file"
+            if [ $? -ne 0 ]; then
+              FAILED_TESTS="$FAILED_TESTS $test_file"
+            fi
           done
+
+          if [ -n "$FAILED_TESTS" ]; then
+            echo ""
+            echo "==== Failed Tests ===="
+            for test in $FAILED_TESTS; do
+              echo "$test"
+            done
+            exit 1
+          else
+            echo "All tests passed!"
+          fi
