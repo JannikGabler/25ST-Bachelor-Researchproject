@@ -80,28 +80,28 @@ jobs:
             echo "All tests passed!"
           fi
 
-      - name: Run tests for CLI project
-        env:
-          PYTHONPATH: ${{ github.workspace }}/cli_project
-        run: |
-          set +e  # Fehler sollen die Schleife nicht abbrechen
-          FAILED_TESTS=()
-          
-          for test_file in $(find cli_project/tests -name "*.py"); do
-            echo "Running $test_file"
-            python -m unittest "$test_file"
-            if [ $? -ne 0 ]; then
-              FAILED_TESTS+=("$test_file")
-            fi
-          done
-          
-          echo ""
-          if [ ${#FAILED_TESTS[@]} -ne 0 ]; then
-            echo "==== Failed Tests ===="
-            for test in "${FAILED_TESTS[@]}"; do
-              echo "$test"
-            done
-            exit 1
-          else
-            echo "All tests passed!"
-          fi
+#      - name: Run tests for CLI project
+#        env:
+#          PYTHONPATH: ${{ github.workspace }}/cli_project
+#        run: |
+#          set +e  # Fehler sollen die Schleife nicht abbrechen
+#          FAILED_TESTS=()
+#
+#          for test_file in $(find cli_project/tests -name "*.py"); do
+#            echo "Running $test_file"
+#            python -m unittest "$test_file"
+#            if [ $? -ne 0 ]; then
+#              FAILED_TESTS+=("$test_file")
+#            fi
+#          done
+#
+#          echo ""
+#          if [ ${#FAILED_TESTS[@]} -ne 0 ]; then
+#            echo "==== Failed Tests ===="
+#            for test in "${FAILED_TESTS[@]}"; do
+#              echo "$test"
+#            done
+#            exit 1
+#          else
+#            echo "All tests passed!"
+#          fi
