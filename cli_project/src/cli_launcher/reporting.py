@@ -1,9 +1,10 @@
-from pipeline_entities.output.pipeline_component_execution_report import PipelineComponentExecutionReport
-import jax.numpy as jnp
 import inspect
-from typing import Any
-from pipeline_entities.pipeline_component_instantiation_info.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
-from pipeline_entities.data_transfer.pipeline_data import PipelineData
+import jax.numpy as jnp
+
+from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
+    PipelineComponentExecutionReport
+
 
 def _info() -> str:
     return "" \

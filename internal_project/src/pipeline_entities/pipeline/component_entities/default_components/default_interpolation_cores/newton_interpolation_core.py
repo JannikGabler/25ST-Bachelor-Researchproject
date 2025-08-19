@@ -40,6 +40,7 @@ class NewtonInterpolationCore(AOTCInterpolationCore):
         divided_differences: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = NewtonInterpolant(
+            name="Newton",
             nodes=pipeline_data.interpolation_nodes,
             divided_differences=divided_differences
         )

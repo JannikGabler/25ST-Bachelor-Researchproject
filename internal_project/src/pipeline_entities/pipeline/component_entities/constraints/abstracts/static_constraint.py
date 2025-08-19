@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.constraint import Constraint
 from pipeline_entities.pipeline.component_entities.constraints.enums.constraint_type import ConstraintType
 

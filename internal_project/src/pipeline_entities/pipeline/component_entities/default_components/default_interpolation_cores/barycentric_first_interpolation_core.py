@@ -40,6 +40,7 @@ class BarycentricFirstInterpolationCore(AOTCInterpolationCore):
         weights: jnp.ndarray = self._compiled_jax_callable_()
 
         interpolant = BarycentricFirstInterpolant(
+            name="Barycentric1",
             nodes=pipeline_data.interpolation_nodes,
             values=pipeline_data.interpolation_values,
             weights=weights

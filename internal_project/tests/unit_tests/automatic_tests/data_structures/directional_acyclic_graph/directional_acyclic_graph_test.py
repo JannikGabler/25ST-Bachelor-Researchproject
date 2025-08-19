@@ -1,8 +1,8 @@
 import textwrap
 import unittest
 
-from general_data_structures.directed_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
-from general_data_structures.directed_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 
 
 class InitFromString(unittest.TestCase):

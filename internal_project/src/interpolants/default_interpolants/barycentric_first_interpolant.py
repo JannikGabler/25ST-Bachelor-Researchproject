@@ -22,8 +22,8 @@ class BarycentricFirstInterpolant(CompilableInterpolant):
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
-        super().__init__()
+    def __init__(self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
+        super().__init__(name)
 
         if len({nodes.shape, values.shape, weights.shape}) >= 2:
             raise InvalidArgumentException("The shapes of the given nodes, values and weight arrays differ, although "
