@@ -131,7 +131,7 @@
 #            echo "All tests passed!"
 #          fi
 
-name: Python Tests (CLI project)
+name: Python tests
 
 on:
   pull_request:
