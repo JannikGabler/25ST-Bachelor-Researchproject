@@ -1,11 +1,14 @@
 import jax.numpy as jnp
+from jax import Array
 
 from matplotlib import pyplot as plt
 
 from constants.internal_logic_constants import InterpolantsPlotComponentConstants
+from functions.abstracts.compilable_function import CompilableFunction
+from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
-from pipeline_entities.large_data_classes.plotting_data.interpolants_plot_component_data import \
-    InterpolantsPlotComponentData
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
+    AdditionalComponentExecutionData
 from utils.plot_utils import PlotUtils
 
 
@@ -29,24 +32,27 @@ class InterpolantsPlotComponentUtils:
 
 
 
+    ######################
+    ### Public methods ###
+    ######################
     @classmethod
-    def plot_data(cls, data: InterpolantsPlotComponentData) -> None:
-        amount_of_plot_points: int = len(data.plot_points)
+    def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> None:
+        plot_points, functions, y_limits = cls._create_plot_data_(pipeline_data)
 
         cls._init_plot_()
-        cls._plot_interpolation_points_(data)
+        cls._plot_interpolation_points_(pipeline_data[0])
 
-        plot_data_list: list[FunctionPlotData] = [data.original_function_plot_data] + data.interpolants_plot_data
+        for i, function in enumerate(functions):
+            cls._plot_function_(plot_points, function, i, y_limits)
 
-        for plot_data in plot_data_list:
-            cls._plot_function_(plot_data, amount_of_plot_points)
-
-
-        cls._finish_up_plot_(data)
+        cls._finish_up_plot_(pipeline_data, additional_data)
         plt.show(block=True)
 
 
 
+    #######################
+    ### Private methods ###
+    #######################
     @staticmethod
     def _init_plot_():
         plt.figure(figsize=(10, 6))
@@ -54,31 +60,51 @@ class InterpolantsPlotComponentUtils:
 
 
     @classmethod
-    def _plot_interpolation_points_(cls, data: InterpolantsPlotComponentData) -> None:
-        interpolation_nodes: jnp.ndarray = data.interpolation_nodes
-        interpolation_values: jnp.ndarray = data.interpolation_values
+    def _plot_interpolation_points_(cls, pipeline_data: PipelineData) -> None:
+        interpolation_nodes: jnp.ndarray = pipeline_data.interpolation_nodes
+        interpolation_values: jnp.ndarray = pipeline_data.interpolation_values
 
         size = PlotUtils.adaptive_scatter_size(len(interpolation_nodes), modifier=0.7)
 
-        plt.scatter(interpolation_nodes, interpolation_values, color='red', s=size, label="Interpolation Nodes",
+        plt.scatter(interpolation_nodes, interpolation_values, color='red', s=size, label="Interpolation nodes",
                     zorder=10)
 
 
 
+    # @classmethod
+    # def create_from(cls, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData)\
+    #                 -> InterpolantsPlotComponentData:
+
+
+
+    @staticmethod
+    def _create_plot_data_(pipeline_data: list[PipelineData]) -> tuple[Array, list[CompilableFunction], tuple[Array, Array]]:
+        main_data: PipelineData = pipeline_data[0]
+        interval: jnp.ndarray = main_data.interpolation_interval
+
+        plot_points: jnp.ndarray = PlotUtils.create_plot_points(
+            interval, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
+
+        functions: list[CompilableFunction] = [main_data.original_function] + [data.interpolant for data in
+                                                                               pipeline_data]
+
+        y_limits: tuple[jnp.ndarray, jnp.ndarray] = PlotUtils.calc_y_limits(
+            functions[0], plot_points, InterpolantsPlotComponentConstants.Y_LIMIT_FACTOR)
+
+        return plot_points, functions, y_limits
+
+
+
     @classmethod
-    def _plot_function_(cls, function_plot_data: FunctionPlotData, amount_of_plot_points: int) -> None:
-        index: int = function_plot_data.function_index
+    def _plot_function_(cls, plot_points: jnp.ndarray, function: CompilableFunction, function_index: int,
+                        y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> None:
+
+        function_plot_data: FunctionPlotData = PlotUtils.create_plot_data_from_compilable_function(function, function_index, plot_points, y_limits)
+
         connectable_segments = function_plot_data.connectable_segments
         single_points = function_plot_data.single_points
-        colors = InterpolantsPlotComponentConstants.COLORS
-        line_styles = InterpolantsPlotComponentConstants.LINE_STYLES
 
-        line_width: float = 4 if index == 0 else 2
-        line_style: str = '-' if index == 0 else line_styles[(index - 1) % len(line_styles)]
-        color: str = colors[index % len(colors)]
-        alpha: float = 0.6 if index == 0 else 1
-        z_order: int = 1 if index == 0 else 2
-        label: str = function_plot_data.function_name
+        line_width, line_style, color, alpha, z_order, label = cls._create_plot_parameters_(function_plot_data, function_index)
         label_used: bool = False
 
         for segment in connectable_segments:
@@ -88,9 +114,67 @@ class InterpolantsPlotComponentUtils:
             label_used = True
 
         for point in single_points:
-            plt.scatter(point[0], point[1], color=color, s=PlotUtils.adaptive_scatter_size(amount_of_plot_points),
+            plt.scatter(point[0], point[1], color=color, s=PlotUtils.adaptive_scatter_size(len(plot_points)),
                         label=label if not label_used else None, zorder=10)
             label_used = True
+
+
+
+    @staticmethod
+    def _create_plot_parameters_(function_plot_data: FunctionPlotData, function_index: int) -> tuple[float, str, str, float, int, str]:
+        colors = InterpolantsPlotComponentConstants.COLORS
+        line_styles = InterpolantsPlotComponentConstants.LINE_STYLES
+
+        line_width: float = 4 if function_index == 0 else 2
+        line_style: str = '-' if function_index == 0 else line_styles[(function_index - 1) % len(line_styles)]
+        color: str = colors[function_index % len(colors)]
+        alpha: float = 0.6 if function_index == 0 else 1
+        z_order: int = 1 if function_index == 0 else 2
+        label: str = function_plot_data.function_name
+
+        return line_width, line_style, color, alpha, z_order, label
+
+
+
+    @staticmethod
+    def _finish_up_plot_(pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> None:
+        meta_info_str: str = PlotUtils.create_plot_meta_info_str(pipeline_data, additional_data)
+
+        plt.suptitle(f"Interpolant plot")
+        plt.title(meta_info_str, fontsize=10)
+        plt.xlabel("x")
+        plt.ylabel("f(x)")
+
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+
+
+
+    # @classmethod
+    # def _generate_plot_data_for_original_functions_(cls, plot_points: jnp.ndarray, original_function_values,
+    #                                                 y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> FunctionPlotData:
+    #     return PlotUtils.create_plot_data("Original function", 0, plot_points,
+    #                                       original_function_values, y_limits)
+    #
+    #
+    #
+    # @classmethod
+    # def _generate_plot_data_for_interpolant_(cls, plot_points: jnp.ndarray, pipeline_data: list[PipelineData],
+    #                                          y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> list[FunctionPlotData]:
+    #     plot_data: list[FunctionPlotData] = []
+    #
+    #     for i, data in enumerate(pipeline_data):
+    #         interpolant: CompiledFunction = data.interpolant.compile(len(plot_points), data.data_type)
+    #         function_values: jnp.ndarray = interpolant.evaluate(plot_points.astype(data.data_type))
+    #         function_values = PlotUtils.replace_nan_with_inf(function_values)
+    #         function_values = PlotUtils.clamp_function_values(function_values, y_limits)
+    #
+    #         plot_data.append(PlotUtils.create_plot_data(
+    #             data.interpolant.name, i + 1, plot_points, function_values, y_limits
+    #         ))
+    #
+    #     return plot_data
 
 
 
@@ -139,32 +223,4 @@ class InterpolantsPlotComponentUtils:
     #                 plt.scatter(x_array[inf_index], clamped_value, color=cls.COLORS[i+1], s=size, zorder=10)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    @staticmethod
-    def _finish_up_plot_(data: InterpolantsPlotComponentData) -> None:
-        plt.suptitle(f"Interpolant plot")
-        plt.title(data.meta_info_str, fontsize=10)
-        plt.xlabel("x")
-        plt.ylabel("f(x)")
-
-        plt.legend()
-
-        # plt.legend(
-        #     loc="upper center",
-        #     bbox_to_anchor=(0.5, -0.1),
-        #     ncol=2  # mehrere Spalten nebeneinander
-        # )
-        plt.grid(True)
-        plt.tight_layout()
 

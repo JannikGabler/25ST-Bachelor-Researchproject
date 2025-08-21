@@ -7,7 +7,7 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
     MinPredecessorsConstraint
 
 interpolation_values_input_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
-    attributes_modifying={"interpolation_values"},
+    attributes_modifying={"original_function"},
 
     attributes_allowed_to_be_overridden={"interpolation_values"},
 

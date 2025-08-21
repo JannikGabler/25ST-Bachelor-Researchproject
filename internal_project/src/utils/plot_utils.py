@@ -1,6 +1,9 @@
 import jax.numpy as jnp
+from numpy.typing import DTypeLike
 
 from exceptions.not_instantiable_error import NotInstantiableError
+from functions.abstracts.compilable_function import CompilableFunction
+from functions.abstracts.compiled_function import CompiledFunction
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
@@ -22,7 +25,7 @@ class PlotUtils:
     ### Public methods ###
     ######################
     @staticmethod
-    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points) -> jnp.ndarray:
+    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points, data_type: DTypeLike) -> jnp.ndarray:
         return jnp.linspace(interval[0], interval[1], amount_of_evaluation_points)
 
 
@@ -41,6 +44,21 @@ class PlotUtils:
 
 
 
+    @classmethod
+    def calc_y_limits(cls, function: CompilableFunction, plot_points: jnp.ndarray, y_factor: float) -> tuple[jnp.ndarray, jnp.ndarray]:
+        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
+        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+
+        valid_mask: jnp.ndarray = jnp.isfinite(function_values)
+
+        clean_values = function_values[valid_mask]
+        min_value = jnp.min(clean_values)
+        max_value = jnp.max(clean_values)
+        difference = y_factor * (max_value - min_value)
+        return min_value - difference, max_value + difference
+
+
+
     @staticmethod
     def adaptive_scatter_size(num_points: int, modifier: float = 1.0, min_size: float = 10.0) -> float:
         """Berechnet eine adaptive Scatter-Größe, die mit Anzahl der Punkte abnimmt, aber nicht kleiner als min_size wird."""
@@ -51,16 +69,48 @@ class PlotUtils:
 
 
     @classmethod
-    def create_plot_data(cls, function_name: str, function_index: int, plot_points: jnp.ndarray,
+    def create_plot_data_from_function_values(cls, function_name: str, function_index: int, plot_points: jnp.ndarray,
                     function_values: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> FunctionPlotData:
 
-        clamped_function_values = cls.clamp_function_values(function_values, y_limits)
+        cleaned_function_values = cls.replace_nan_with_inf(function_values)
+        clamped_function_values = cls.clamp_function_values(cleaned_function_values, y_limits)
 
         connectable_segments, single_points = cls._extract_connectable_segments_and_single_points_(
             function_index, plot_points, clamped_function_values, y_limits
         )
 
         return FunctionPlotData(function_name, function_index, connectable_segments, single_points)
+
+
+
+    @classmethod
+    def create_plot_data_from_compilable_function(cls, function: CompilableFunction, function_index: int,
+                    plot_points: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> FunctionPlotData:
+
+        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
+        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+
+        return PlotUtils.create_plot_data_from_function_values(function.name, function_index, plot_points,
+                                                               function_values, y_limits)
+
+
+
+    @staticmethod
+    def create_plot_meta_info_str(pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> str:
+        pipeline_conf_name: str = additional_data.pipeline_configuration.name or ""
+        pipeline_input_name: str = additional_data.pipeline_input.name or ""
+
+        pipeline_conf_str: str = f"Conf.: {repr(pipeline_conf_name)}" if pipeline_conf_name else ""
+        pipeline_input_str: str = f"Input: {repr(pipeline_input_name)}" if pipeline_input_name else ""
+
+        data_types_str: set[str] = { data.data_type.__module__ + "." + data.data_type.__name__ for data in pipeline_data }
+        node_counts_str: set[str] = { str(data.node_count) for data in pipeline_data }
+        intervals_str: set[str] = { str(data.interpolation_interval) for data in pipeline_data }
+        #node_count_str: str = str(pipeline_data[0].node_count)
+        #interval_str: str = str(pipeline_data[0].interpolation_interval)
+
+        return (f"{pipeline_conf_str}; {pipeline_input_str}; Dtypes: {data_types_str}; Node_counts: {node_counts_str}; "
+                f"Intervals: {intervals_str}")
 
 
 
@@ -126,21 +176,4 @@ class PlotUtils:
         return connectable_indices_segments, single_point_indices
 
 
-
-    @staticmethod
-    def create_plot_meta_info_str(pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> str:
-        pipeline_conf_name: str = additional_data.pipeline_configuration.name or ""
-        pipeline_input_name: str = additional_data.pipeline_input.name or ""
-
-        pipeline_conf_str: str = f"Conf.: {repr(pipeline_conf_name)}" if pipeline_conf_name else ""
-        pipeline_input_str: str = f"Input: {repr(pipeline_input_name)}" if pipeline_input_name else ""
-
-        data_types_str: set[str] = { data.data_type.__module__ + "." + data.data_type.__name__ for data in pipeline_data }
-        node_counts_str: set[str] = { str(data.node_count) for data in pipeline_data }
-        intervals_str: set[str] = { str(data.interpolation_interval) for data in pipeline_data }
-        #node_count_str: str = str(pipeline_data[0].node_count)
-        #interval_str: str = str(pipeline_data[0].interpolation_interval)
-
-        return (f"{pipeline_conf_str}; {pipeline_input_str}; Dtypes: {data_types_str}; Node_counts: {node_counts_str}; "
-                f"Intervals: {intervals_str}")
 

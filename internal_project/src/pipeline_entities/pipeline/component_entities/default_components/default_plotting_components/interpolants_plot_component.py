@@ -1,12 +1,11 @@
-import os
-import pickle
+import textwrap
+
+import dill
 import subprocess
 import sys
 import tempfile
 
 from constants.internal_logic_constants import InterpolantsPlotComponentConstants
-from pipeline_entities.large_data_classes.plotting_data.interpolants_plot_component_data import \
-    InterpolantsPlotComponentData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
     interpolants_plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
@@ -18,18 +17,40 @@ from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUti
 
 @pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_plot_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
+    SUB_PROCESS_CODE = textwrap.dedent("""
+        import os
+        import sys
+        
+        import dill
+        
+        from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
+        
+        
+        if __name__ == "__main__":
+            # Check if we run in the child process
+            if len(sys.argv) == 3 and sys.argv[1] == "--child":
+                data_file = sys.argv[2]
+        
+                with open(data_file, "rb") as f:
+                    pipeline_data, additional_execution_info = dill.load(f)
+        
+                try:
+                    os.remove(data_file)
+                except FileNotFoundError:
+                    pass
+        
+                InterpolantsPlotComponentUtils.plot_data(pipeline_data, additional_execution_info)""")
+
 
 
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        plot_data: InterpolantsPlotComponentData = InterpolantsPlotComponentData.create_from(self._pipeline_data_, self._additional_execution_info_)
-
         if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
-            self._start_sub_process_(plot_data)
+            self._start_sub_process_()
         else:
-            InterpolantsPlotComponentUtils.plot_data(plot_data)
+            InterpolantsPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
 
         return self._pipeline_data_[0]
 
@@ -38,32 +59,16 @@ class InterpolantsPlotComponent(InterpolationCore):
     #######################
     ### Private methods ###
     #######################
-    def _start_sub_process_(self, plot_data: InterpolantsPlotComponentData) -> None:
+    def _start_sub_process_(self) -> None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as file:
-            pickle.dump(plot_data, file)
+            dill.dump((self._pipeline_data_, self._additional_execution_info_), file)
             data_file = file.name
 
-        subprocess.Popen([sys.executable, __file__, "--child", data_file])
+        subprocess.Popen([sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file])
+        # subprocess.Popen([sys.executable, __file__, "--child", data_file])
 
 
 
-if __name__ == "__main__":
-    # Check if we run in the child process
-    if len(sys.argv) == 3 and sys.argv[1] == "--child":
-        data_file = sys.argv[2]
-
-        with open(data_file, "rb") as f:
-            data = pickle.load(f)
-
-        if not isinstance(data, InterpolantsPlotComponentData):
-            raise TypeError(f"Unpickled data is not of type '{InterpolantsPlotComponentData.__name__}'.")
-
-        try:
-            os.remove(data_file)
-        except FileNotFoundError:
-            pass
-
-        InterpolantsPlotComponentUtils.plot_data(data)
 
 
 

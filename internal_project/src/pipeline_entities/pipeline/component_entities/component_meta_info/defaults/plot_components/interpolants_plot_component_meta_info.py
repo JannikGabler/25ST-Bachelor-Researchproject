@@ -12,7 +12,7 @@ interpolants_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     post_dynamic_constraints=[],
 
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
-                        AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("function_callable"),
+                        AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant")],
 )

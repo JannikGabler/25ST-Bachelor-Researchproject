@@ -14,7 +14,7 @@ absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
 
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("interpolation_interval"),
-                        AttributeRequiredConstraint("function_callable"),
+                        AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolation_nodes"),
                         AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant")],
