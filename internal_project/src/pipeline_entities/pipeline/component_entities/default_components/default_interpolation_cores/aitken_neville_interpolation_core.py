@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from jax.typing import DTypeLike
 
-from interpolants.default_interpolants.aitken_neville_interpolant import AitkenNevilleInterpolant
+from functions.defaults.default_interpolants.aitken_neville_interpolant import AitkenNevilleInterpolant
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.aitken_neville_interpolation_core_meta_info import \
     aitken_neville_interpolation_core_meta_info

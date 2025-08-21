@@ -1,7 +1,7 @@
 # from typing import Any
 #
 # from exceptions.invalid_argument_exception import InvalidArgumentException
-# from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
+# from functions.abstracts.compilable_interpolant import CompilableInterpolant
 # import jax
 # import jax.numpy as jnp
 #

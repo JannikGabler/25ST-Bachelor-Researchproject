@@ -27,4 +27,6 @@ class InterpolantsPlotComponentConstants:
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
     ]
 
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
 

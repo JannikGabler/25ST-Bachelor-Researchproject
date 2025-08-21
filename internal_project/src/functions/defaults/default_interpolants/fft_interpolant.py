@@ -1,9 +1,9 @@
 import jax.numpy as jnp
 
-from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
+from functions.abstracts.compilable_function import CompilableFunction
 
 # TODO
-class FastFourierTransformationInterpolant(CompilableInterpolant):
+class FastFourierTransformationInterpolant(CompilableFunction):
     """
     TODO
     """

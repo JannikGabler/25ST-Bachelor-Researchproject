@@ -90,8 +90,8 @@ class PipelineManager:
     ### Overridden methods ###
     ##########################
     def __str__(self) -> str:
-        return (f"PipelineManager(pipeline_configuration_name={repr(self._pipeline_.pipeline_configuration.name)}, "
-                f"pipeline_input_name={repr(self._pipeline_.pipeline_input.name)}, amount_of_nodes_left_to_execute={len(self._execution_stack_)})")
+        return (f"PipelineManager(pipeline_configuration_name={str(self._pipeline_.pipeline_configuration.name)}, "
+                f"pipeline_input_name={str(self._pipeline_.pipeline_input.name)}, amount_of_nodes_left_to_execute={len(self._execution_stack_)})")
 
 
 

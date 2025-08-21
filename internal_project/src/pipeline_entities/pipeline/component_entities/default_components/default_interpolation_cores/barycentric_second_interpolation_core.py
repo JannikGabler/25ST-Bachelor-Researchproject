@@ -3,7 +3,7 @@ import jax.numpy as jnp
 
 from jax.typing import DTypeLike
 
-from interpolants.default_interpolants.barycentric_second_interpolant import BarycentricSecondInterpolant
+from functions.defaults.default_interpolants.barycentric_second_interpolant import BarycentricSecondInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
     barycentric_second_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \

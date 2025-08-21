@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import re
 
-from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
+from functions.abstracts.compiled_function import CompiledFunction
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.error_plot_component_meta_info import \
     error_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
@@ -15,11 +15,11 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 class ErrorPlotComponent(InterpolationCore):
     def perform_action(self) -> PipelineData:
         all_data = self._pipeline_data_
-        reference_data = next((d for d in all_data if d.function_callable is not None), all_data[0])
+        reference_data = next((d for d in all_data if d.original_function is not None), all_data[0])
 
-        nodes = reference_data.interpolation_nodes
+        nodes = reference_data.interpolation_nodes # TODO: use
         interval = reference_data.interpolation_interval
-        f = reference_data.function_callable
+        f = reference_data.original_function
 
         if f is None:
             return reference_data
@@ -28,7 +28,12 @@ class ErrorPlotComponent(InterpolationCore):
         y_true = f(x_base)
 
         colors = ['blue', 'green', 'orange', 'purple', 'brown']
-        ylog_value = self._additional_execution_info_.overridden_attributes.get("ylogscale", None)
+
+        y_log_scale_value: object = self._additional_execution_info_.overridden_attributes.get("y_log_scale", False)
+        if not isinstance(y_log_scale_value, bool):
+            raise TypeError("The overridden attribute 'y_log_scale' must be a boolean value.")
+
+        use_y_log_scale: bool = y_log_scale_value
         EPSILON = 1e-12
 
         for error_type in ["absolute", "relative"]:
@@ -39,7 +44,7 @@ class ErrorPlotComponent(InterpolationCore):
                 if interpolant is None:
                     continue
 
-                compiled_interpolant: CompiledInterpolant = interpolant.compile(500, data.data_type)
+                compiled_interpolant: CompiledFunction = interpolant.compile(500, data.data_type)
                 x_eval = jnp.linspace(interval[0], interval[1], 500).astype(compiled_interpolant.used_data_type)
                 x_eval = x_eval.reshape(compiled_interpolant.required_evaluation_points_shape)
 
@@ -96,7 +101,7 @@ class ErrorPlotComponent(InterpolationCore):
             plt.grid(True)
             plt.tight_layout()
 
-            if ylog_value is True:
+            if use_y_log_scale:
                 plt.yscale("log")
 
             plt.show(block=False)

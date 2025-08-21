@@ -106,7 +106,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
         self.assertEqual(jnp.float32, output.data_type)
         self.assertEqual(37, output.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), output.interpolation_interval))
-        self.assertIsNone(output.function_callable)
+        self.assertIsNone(output.original_function)
         self.assertIsNone(output.interpolation_nodes)
         self.assertIsNone(output.interpolation_values)
         self.assertIsNone(output.interpolant)
@@ -133,10 +133,10 @@ class ChebyshevPoints2Case(unittest.TestCase):
         self.assertEqual(jnp.float32, output.data_type)
         self.assertEqual(37, output.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), output.interpolation_interval))
-        self.assertIsNotNone(output.function_callable)
+        self.assertIsNotNone(output.original_function)
 
         x_values = jnp.linspace(-1, 1, 1000)
-        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.function_callable(x_values), rtol=1E-04))
+        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.original_function(x_values), rtol=1E-04))
 
         self.assertIsNone(output.interpolation_nodes)
         self.assertIsNone(output.interpolation_values)
@@ -164,11 +164,11 @@ class ChebyshevPoints2Case(unittest.TestCase):
         self.assertEqual(jnp.float32, output.data_type)
         self.assertEqual(37, output.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), output.interpolation_interval))
-        self.assertIsNotNone(output.function_callable)
+        self.assertIsNotNone(output.original_function)
 
         x_values = jnp.linspace(-1, 1, 1000)
-        self.assertIsNotNone(output.function_callable)
-        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.function_callable(x_values), rtol=1E-04))
+        self.assertIsNotNone(output.original_function)
+        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.original_function(x_values), rtol=1E-04))
 
         expected_nodes = jnp.cos(jnp.arange(0, 37, dtype=output.data_type) * (jnp.pi / 36))
 
@@ -200,11 +200,11 @@ class ChebyshevPoints2Case(unittest.TestCase):
         self.assertEqual(jnp.float32, output.data_type)
         self.assertEqual(37, output.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), output.interpolation_interval))
-        self.assertIsNotNone(output.function_callable)
+        self.assertIsNotNone(output.original_function)
 
         x_values = jnp.linspace(-1, 1, 1000)
-        self.assertIsNotNone(output.function_callable)
-        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.function_callable(x_values), rtol=1E-04))
+        self.assertIsNotNone(output.original_function)
+        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.original_function(x_values), rtol=1E-04))
 
         expected_nodes = jnp.cos(jnp.arange(0, 37, dtype=output.data_type) * (jnp.pi / 36))
 
@@ -240,11 +240,11 @@ class ChebyshevPoints2Case(unittest.TestCase):
         self.assertEqual(jnp.float32, output.data_type)
         self.assertEqual(37, output.node_count)
         self.assertTrue(jnp.array_equal(jnp.array([-1, 1]), output.interpolation_interval))
-        self.assertIsNotNone(output.function_callable)
+        self.assertIsNotNone(output.original_function)
 
         x_values = jnp.linspace(-1, 1, 1000)
-        self.assertIsNotNone(output.function_callable)
-        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.function_callable(x_values), rtol=1E-04))
+        self.assertIsNotNone(output.original_function)
+        self.assertTrue(JaxUtils.all_close_enough(jnp.sin(10 * x_values), output.original_function(x_values), rtol=1E-04))
 
         expected_fraction_nodes = NodesTestUtils.chebyshev_2_nodes((Fraction(-1), Fraction(1)), output.node_count)
         expected_nodes = jnp.array([float(frac) for frac in expected_fraction_nodes], dtype=output.data_type)
