@@ -6,7 +6,7 @@ from pipeline_entities.pipeline.component_entities.default_components.default_in
     AitkenNevilleInterpolationCore,
 )
 
-class TestAitkenNevilleCore(TestInterpolationCoreBase):
+class TestAitkenNevilleInterpolationCore(TestInterpolationCoreBase):
     CORE_CLS = AitkenNevilleInterpolationCore
     INTERPOLANT_CLS = AitkenNevilleInterpolant
 
