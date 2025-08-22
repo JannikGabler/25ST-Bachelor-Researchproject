@@ -6,17 +6,15 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying=set(),
 
-    attributes_allowed_to_be_overridden=set(),
+    attributes_allowed_to_be_overridden={"y_limit", "y_scale", "y_scale_base"},
 
     pre_dynamic_constraints=[],
 
     post_dynamic_constraints=[],
 
-    static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
+    static_constraints=[AttributeRequiredConstraint("data_type"),
                         AttributeRequiredConstraint("interpolation_interval"),
                         AttributeRequiredConstraint("original_function"),
-                        AttributeRequiredConstraint("interpolation_nodes"),
-                        AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant")],
 )
 
