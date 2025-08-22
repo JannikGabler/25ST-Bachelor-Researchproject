@@ -12,13 +12,13 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 interpolation_values_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolation_values"},
 
-    attributes_allowed_to_be_overridden={"data_type", "function_callable", "interpolation_nodes"},
+    attributes_allowed_to_be_overridden={"data_type", "original_function", "interpolation_nodes"},
 
     pre_dynamic_constraints=[],
 
     post_dynamic_constraints=[PipelineDataDtypeRequiredPostConstraint("interpolation_values")],
 
-    static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("function_callable"),
+    static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolation_nodes"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
 )

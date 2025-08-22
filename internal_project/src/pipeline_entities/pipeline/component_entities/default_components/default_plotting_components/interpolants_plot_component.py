@@ -1,199 +1,120 @@
-import matplotlib.pyplot as plt
-import re
+import textwrap
 
-from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
+import dill
+import subprocess
+import sys
+import tempfile
+
+from constants.internal_logic_constants import InterpolantsPlotComponentConstants
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
-    interpolants_component_meta_info
+    interpolants_plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
-import jax.numpy as jnp
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
 
 
-@pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_component_meta_info)
+@pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_plot_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
-    COLORS = [
-        "black",
-        "#66c2a5",  # grünlich
-        "#fc8d62",  # orange
-        "#8da0cb",  # bläulich
-        "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#ffd92f",  # gelb
-        "#e5c494",  # beige
-        "#b3b3b3"  # grau
-    ]
-    LINESTYLES = [
-        #'-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
-        (0, (1, 1)),  # sehr feine Punkte
-        (0, (5, 5)),  # lange Striche mit Lücken
-        (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
-    ]
+    SUB_PROCESS_CODE = textwrap.dedent("""
+        import os
+        import sys
+        
+        import dill
+        
+        from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
+        
+        
+        if __name__ == "__main__":
+            # Check if we run in the child process
+            if len(sys.argv) == 3 and sys.argv[1] == "--child":
+                data_file = sys.argv[2]
+        
+                with open(data_file, "rb") as f:
+                    pipeline_data, additional_execution_info = dill.load(f)
+        
+                try:
+                    os.remove(data_file)
+                except FileNotFoundError:
+                    pass
+        
+                InterpolantsPlotComponentUtils.plot_data(pipeline_data, additional_execution_info)""")
 
-    AMOUNT_OF_EVALUATION_POINTS = 50
 
 
+    ######################
+    ### Public methods ###
+    ######################
     def perform_action(self) -> PipelineData:
-        #fig, ax = plt.subplots(figsize=(10, 6))
-        plt.figure(figsize=(10, 6))
-
-        self._plot_interpolation_points_(self._pipeline_data_[0].interpolation_nodes, self._pipeline_data_[0].interpolation_values)
-
-        # TODO (multiple function callables)
-        interval: jnp.ndarray = self._pipeline_data_[0].interpolation_interval
-        original_function: callable = self._pipeline_data_[0].function_callable
-
-        x_array: jnp.ndarray = jnp.linspace(interval[0], interval[1], self.AMOUNT_OF_EVALUATION_POINTS)
-
-        original_function_values: jnp.ndarray = original_function(x_array)
-        original_function_values = self._replace_nan_(original_function_values)
-
-        y_limits: tuple[jnp.ndarray, jnp.ndarray] = self._calc_limits_(original_function_values)
-
-        self._plot_original_function(x_array, original_function_values, y_limits)
-        self._plot_interpolants_(x_array, y_limits)
-
-        self._finish_up_plot(interval)
+        if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
+            self._start_sub_process_()
+        else:
+            InterpolantsPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
 
         return self._pipeline_data_[0]
 
 
 
-    @classmethod
-    def _plot_interpolation_points_(cls, interpolation_nodes: jnp.ndarray, interpolation_values: jnp.ndarray) -> None:
-        size = cls._adaptive_scatter_size_(len(interpolation_nodes), modifier=0.7)
-        plt.scatter(interpolation_nodes, interpolation_values, color='red', s=size, label="Interpolation Nodes", zorder=10)
+    #######################
+    ### Private methods ###
+    #######################
+    def _start_sub_process_(self) -> None:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as file:
+            dill.dump((self._pipeline_data_, self._additional_execution_info_), file)
+            data_file = file.name
+
+        subprocess.Popen([sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file])
+        # subprocess.Popen([sys.executable, __file__, "--child", data_file])
 
 
 
-    @staticmethod
-    def _calc_limits_(original_function_values: jnp.ndarray) -> tuple[jnp.ndarray, jnp.ndarray]:
-        valid_mask: jnp.ndarray = jnp.isfinite(original_function_values)
-
-        clean_values = original_function_values[valid_mask]
-        min_value = jnp.min(clean_values)
-        max_value = jnp.max(clean_values)
-        difference = 7 * (max_value - min_value)
-        return min_value - difference, max_value + difference
 
 
 
-    @classmethod
-    def _plot_original_function(cls, x_array: jnp.ndarray, function_values: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> None:
-        x_intervals, y_intervals, inf_indices = cls._split_up_function_values_(x_array, function_values)
 
-        for x_interval, y_interval in zip(x_intervals, y_intervals):
-            plt.plot(x_interval, y_interval, label="Original Function", linewidth=4, color=cls.COLORS[0], alpha=0.6, zorder=1)
-
-        for inf_index in inf_indices:
-            value: jnp.ndarray = function_values[inf_index]
-            clamped_value = y_limits[0] if jnp.isneginf(value) else y_limits[1]
-            size = cls._adaptive_scatter_size_(len(x_array))
-            plt.scatter(x_array[inf_index], clamped_value, color=cls.COLORS[0], s=size, zorder=10)
-
-
-
-    def _plot_interpolants_(self, x_array: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> None:
-
-        for i, data in enumerate(self._pipeline_data_):
-            if data.interpolant is not None:
-                interpolant: CompiledInterpolant = data.interpolant.compile(len(x_array), data.data_type)
-                function_values: jnp.ndarray = interpolant.evaluate(x_array.astype(data.data_type))
-                function_values = self._replace_nan_(function_values)
-                function_values = self._clamp_function_values_(function_values, y_limits)
-
-                x_intervals, y_intervals, inf_indices = self._split_up_function_values_(x_array, function_values)
-
-                plt.plot([], [], label=f"{data.interpolant.name}", color=self.COLORS[i+1])
-
-                for j, (x_interval, y_interval) in enumerate(zip(x_intervals, y_intervals)):
-                    plt.plot(x_interval, y_interval, linewidth=2, color=self.COLORS[i+1 % len(self.COLORS)],
-                        linestyle=self.LINESTYLES[i % len(self.LINESTYLES)] ,zorder=2)
-
-                for inf_index in inf_indices:
-                    value: jnp.ndarray = function_values[inf_index]
-                    clamped_value = y_limits[0] - i/4 if jnp.isneginf(value) else y_limits[1] + i/4
-                    size=self._adaptive_scatter_size_(len(x_array))
-                    plt.scatter(x_array[inf_index], clamped_value, color=self.COLORS[i+1], s=size, zorder=10)
+    # def create_sub_process_(self, data: InterpolantsPlotData) -> None:
+    #     # Required for some platforms
+    #     try:
+    #         multiprocessing.set_start_method("spawn", force=True)
+    #     except RuntimeError:
+    #         pass  # Start method has already been set.
+    #
+    #     plot_operation = InterpolantsPlotComponentUtils.plot
+    #     p = multiprocessing.Process(target=plot_operation,
+    #                                 args=data)
+    #     p.start()
 
 
 
-    @staticmethod
-    def _replace_nan_(array: jnp.ndarray) -> jnp.ndarray:
-        return jnp.where(jnp.isnan(array), jnp.inf, array)
 
 
 
-    @classmethod
-    def _split_up_function_values_(cls, x_array: jnp.ndarray, function_values: jnp.ndarray) -> tuple[list[jnp.ndarray], list[jnp.ndarray], list[int]]:
-        indices_list, inf_indices = cls._get_indices_of_piecewise_intervals_(function_values)
-        nodes_list = []
-        values_list = []
 
-        for indices in indices_list:
-            nodes = x_array[indices[0]:indices[-1] + 1]
-            nodes_list.append(nodes)
-
-            values = function_values[indices[0]:indices[-1] + 1]
-            values_list.append(values)
-
-        return nodes_list, values_list, inf_indices
-
-
-    @staticmethod
-    def _get_indices_of_piecewise_intervals_(function_values: jnp.ndarray) -> tuple[list[list[int]], list[int]]:
-        inf_indices = []
-
-        indices_list = []
-        indices = []
-
-        for i, value in enumerate(function_values):
-            if jnp.isinf(value) or jnp.isneginf(value):
-                inf_indices.append(i)
-
-                if len(indices) > 0:
-                    indices_list.append(indices)
-
-            else:
-                indices.append(i)
-
-        if len(indices) > 0:
-            indices_list.append(indices)
-
-        return indices_list, inf_indices
+        # # TODO (multiple function callables)
+        # interval: jnp.ndarray = self._pipeline_data_[0].interpolation_interval
+        # original_function: callable = self._pipeline_data_[0].function_callable
+        # x_array: jnp.ndarray = InterpolantsPlotComponentUtils.create_x_array(interval)
+        # original_function_values: jnp.ndarray = original_function(x_array)
+        # original_function_values = PlotUtils.replace_nan_with_inf(original_function_values)
+        #
+        # y_limits: tuple[jnp.ndarray, jnp.ndarray] = InterpolantsPlotComponentUtils.calc_limits(original_function_values)
+        #
+        # #fig, ax = plt.subplots(figsize=(10, 6))
+        # InterpolantsPlotComponentUtils.init_plot()
+        #
+        # InterpolantsPlotComponentUtils.plot_interpolation_points(self._pipeline_data_[0].interpolation_nodes, self._pipeline_data_[0].interpolation_values)
+        # InterpolantsPlotComponentUtils.plot_original_function(x_array, original_function_values, y_limits)
+        # InterpolantsPlotComponentUtils.plot_interpolants(self._pipeline_data_, x_array, y_limits)
+        #
+        # InterpolantsPlotComponentUtils.finish_up_plot(self._pipeline_data_, self._additional_execution_info_)
+        #
+        # return self._pipeline_data_[0]
 
 
 
-    @staticmethod
-    def _clamp_function_values_(function_values: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> jnp.ndarray:
-        clamped_values = jnp.where(function_values < y_limits[0], -jnp.inf, function_values)
-        clamped_values = jnp.where(clamped_values > y_limits[1], jnp.inf, clamped_values)
-        return clamped_values
 
 
-
-    @staticmethod
-    def _finish_up_plot(interval: jnp.ndarray) -> None:
-        plt.title(f"Original function and interpolants on [{interval[0]}, {interval[1]}]")
-        plt.xlabel("x")
-        plt.ylabel("f(x)")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show(block=False)
-
-
-
-    @staticmethod
-    def _adaptive_scatter_size_(num_points: int, modifier: float = 1.0, min_size: float = 10.0) -> float:
-        """Berechnet eine adaptive Scatter-Größe, die mit Anzahl der Punkte abnimmt, aber nicht kleiner als min_size wird."""
-        base_size = 200 * modifier
-        size = base_size / (num_points ** 0.5)  # Quadratwurzel-Abnahme: visuell angenehm
-        return max(size, min_size)
 
 
     # def perform_action(self) -> PipelineData:

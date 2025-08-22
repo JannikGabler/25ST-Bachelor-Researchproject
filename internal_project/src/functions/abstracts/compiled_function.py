@@ -6,7 +6,8 @@ import jax.numpy as jnp
 from exceptions.invalid_argument_exception import InvalidArgumentException
 
 
-class CompiledInterpolant:
+class CompiledFunction:
+    # TODO: outdated python doc
     """
     Represents a compiled interpolant for evaluating points based on a pre-compiled JAX callable.
 

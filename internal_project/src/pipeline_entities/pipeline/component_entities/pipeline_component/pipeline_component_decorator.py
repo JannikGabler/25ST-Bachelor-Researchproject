@@ -6,6 +6,8 @@ from pipeline_entities.pipeline.component_entities.component_registry.component_
 
 
 def pipeline_component(id: str, type: type, meta_info: ComponentMetaInfo):
+    _registered_classes_ = set()
+
     def decorator(cls: type):
         if not issubclass(cls, PipelineComponent):
             raise TypeError("The decorated class must be a subclass of 'PipelineComponent'.")

@@ -16,6 +16,9 @@ from pipeline_entities.pipeline_execution.output.pipeline_component_execution_re
 
 
 class PipelineManagerUtils:
+    REMOVE_VALUE_MARKER = object()
+
+
 
     ###################
     ### Constructor ###
@@ -133,9 +136,12 @@ class PipelineManagerUtils:
                 setattr(pipeline_data, attribute_name, attribute_value)
 
         else:
-            old_value = data[0].additional_values.get(attribute_name)
+            old_value = data[0].additional_values.get(attribute_name, cls.REMOVE_VALUE_MARKER)
 
             for pipeline_data in data:
-                pipeline_data.additional_values[attribute_name] = attribute_value
+                if attribute_value is cls.REMOVE_VALUE_MARKER:
+                    del pipeline_data.additional_values[attribute_name]
+                else:
+                    pipeline_data.additional_values[attribute_name] = attribute_value
 
         return old_value

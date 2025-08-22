@@ -172,6 +172,12 @@ class PipelineComponentExecutionValidationUtils:
             elif getattr(output_of_predecessor, attribute_name) == getattr(result_pipeline_data, attribute_name):
                 return True
         else:
+            # pred_value: object = output_of_predecessor.additional_values.get(attribute_name)
+            # curr_value: object = result_pipeline_data.additional_values.get(attribute_name)
+            #
+            # if pred_value == curr_value:
+            #     return True
+
             if (attribute_name in output_of_predecessor.additional_values
                 and attribute_name in result_pipeline_data.additional_values
                 and output_of_predecessor.additional_values[attribute_name] == result_pipeline_data.additional_values[attribute_name]):

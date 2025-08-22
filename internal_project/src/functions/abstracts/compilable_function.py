@@ -4,10 +4,11 @@ from numpy.typing import DTypeLike
 
 from abc import ABC, abstractmethod
 
-from interpolants.abstracts.compiled_interpolant import CompiledInterpolant
+from functions.abstracts.compiled_function import CompiledFunction
 
 
-class CompilableInterpolant(ABC):
+class CompilableFunction(ABC):
+    # TODO: outdated python doc
     """
     Represents an abstract base class designed to create interpolants that can be compiled
     for performance optimization. This class outlines a structure for defining interpolants
@@ -37,7 +38,7 @@ class CompilableInterpolant(ABC):
     ######################
     ### Public methods ###
     ######################
-    def compile(self, amount_of_evaluation_points: int, data_type: DTypeLike, **kwargs) -> CompiledInterpolant:
+    def compile(self, amount_of_evaluation_points: int, data_type: DTypeLike, **kwargs) -> CompiledFunction:
         shape: tuple[int] = (amount_of_evaluation_points,)
         self._data_type_ = data_type
 
@@ -46,17 +47,17 @@ class CompilableInterpolant(ABC):
         dummy_array: jnp.ndarray = jnp.empty(shape, dtype=data_type)
         compiled_jax_callable: callable = jax.jit(internal_evaluation_function).lower(dummy_array).compile()
 
-        return CompiledInterpolant(compiled_jax_callable, shape, data_type)
+        return CompiledFunction(compiled_jax_callable, shape, data_type)
 
 
 
-
-    # TODO
-
-
+    #########################
+    ### Getters & setters ###
+    #########################
     @property
     def name(self) -> str:
         return self._name_
+
 
 
     #######################

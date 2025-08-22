@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from jax.typing import DTypeLike
 
-from interpolants.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
+from functions.defaults.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
     barycentric_first_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \

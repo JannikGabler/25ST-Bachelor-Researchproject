@@ -2,7 +2,8 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.dataclass
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.attribute_required_constraint import \
     AttributeRequiredConstraint
 
-interpolants_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+
+absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying=set(),
 
     attributes_allowed_to_be_overridden=set(),
@@ -12,8 +13,10 @@ interpolants_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     post_dynamic_constraints=[],
 
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
-                        AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("original_function"),
-                        AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolation_values"),
+                        AttributeRequiredConstraint("interpolation_interval"),
+                        AttributeRequiredConstraint("original_function"),
+                        AttributeRequiredConstraint("interpolation_nodes"),
+                        AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant")],
 )
 

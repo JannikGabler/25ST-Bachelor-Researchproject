@@ -1,12 +1,11 @@
-from typing import Any
-
-from exceptions.invalid_argument_exception import InvalidArgumentException
-from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
 import jax
 import jax.numpy as jnp
 
+from exceptions.invalid_argument_exception import InvalidArgumentException
+from functions.abstracts.compilable_function import CompilableFunction
 
-class NewtonInterpolant(CompilableInterpolant):
+
+class NewtonInterpolant(CompilableFunction):
     """
     TODO
     """
@@ -55,8 +54,8 @@ class NewtonInterpolant(CompilableInterpolant):
 
 
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, NewtonInterpolant):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
             return False
         else:
             return (jnp.array_equal(self._divided_differences_, other._divided_differences_, equal_nan=True).item()
