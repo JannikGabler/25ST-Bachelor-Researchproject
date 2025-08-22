@@ -5,25 +5,25 @@ import subprocess
 import sys
 import tempfile
 
-from constants.internal_logic_constants import AbsoluteErrorPlotComponentConstants
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.absolute_error_plot_component_meta_info import \
-    absolut_error_plot_component_meta_info
+from constants.internal_logic_constants import RelativeErrorPlotComponentConstants
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.relative_error_plot_component_meta_info import \
+    relative_error_plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import \
     pipeline_component
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from utils.absolute_error_plot_component_utils import AbsoluteErrorPlotComponentUtils
+from utils.relative_error_plot_component_utils import RelativeErrorPlotComponentUtils
 
 
-@pipeline_component(id="absolute error plotter", type=InterpolationCore, meta_info=absolut_error_plot_component_meta_info)
+@pipeline_component(id="relative error plotter", type=InterpolationCore, meta_info=relative_error_plot_component_meta_info)
 class AbsoluteErrorPlotComponent(InterpolationCore):
     SUB_PROCESS_CODE = textwrap.dedent("""
         import os
         import sys
         import dill
 
-        from utils.absolute_error_plot_component_utils import AbsoluteErrorPlotComponentUtils
+        from utils.relative_error_plot_component_utils import RelativeErrorPlotComponentUtils
 
 
         if __name__ == "__main__":
@@ -39,7 +39,7 @@ class AbsoluteErrorPlotComponent(InterpolationCore):
                 except FileNotFoundError:
                     pass
 
-                AbsoluteErrorPlotComponentUtils.plot_data(pipeline_data, additional_execution_info)""")
+                RelativeErrorPlotComponentUtils.plot_data(pipeline_data, additional_execution_info)""")
 
 
 
@@ -47,10 +47,10 @@ class AbsoluteErrorPlotComponent(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        if AbsoluteErrorPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
+        if RelativeErrorPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
             self._start_sub_process_()
         else:
-            AbsoluteErrorPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
+            RelativeErrorPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
 
         return self._pipeline_data_[0]
 

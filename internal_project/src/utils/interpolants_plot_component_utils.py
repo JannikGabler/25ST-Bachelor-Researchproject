@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 
 from constants.internal_logic_constants import InterpolantsPlotComponentConstants
 from functions.abstracts.compilable_function import CompilableFunction
+from functions.abstracts.compiled_function import CompiledFunction
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
@@ -77,8 +78,8 @@ class InterpolantsPlotComponentUtils:
 
 
 
-    @staticmethod
-    def _create_plot_data_(pipeline_data: list[PipelineData]) -> tuple[Array, list[CompilableFunction], tuple[Array, Array]]:
+    @classmethod
+    def _create_plot_data_(cls, pipeline_data: list[PipelineData]) -> tuple[Array, list[CompilableFunction], tuple[Array, Array]]:
         main_data: PipelineData = pipeline_data[0]
         interval: jnp.ndarray = main_data.interpolation_interval
 
@@ -88,10 +89,26 @@ class InterpolantsPlotComponentUtils:
         functions: list[CompilableFunction] = [main_data.original_function] + [data.interpolant for data in
                                                                                pipeline_data]
 
-        y_limits: tuple[jnp.ndarray, jnp.ndarray] = PlotUtils.calc_y_limits(
+        y_limits: tuple[jnp.ndarray, jnp.ndarray] = cls._calc_y_limits_(
             functions[0], plot_points, InterpolantsPlotComponentConstants.Y_LIMIT_FACTOR)
 
         return plot_points, functions, y_limits
+
+
+
+    @classmethod
+    def _calc_y_limits_(cls, function: CompilableFunction, plot_points: jnp.ndarray, y_factor: float) -> tuple[
+        jnp.ndarray, jnp.ndarray]:
+        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
+        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+
+        valid_mask: jnp.ndarray = jnp.isfinite(function_values)
+
+        clean_values = function_values[valid_mask]
+        min_value = jnp.min(clean_values)
+        max_value = jnp.max(clean_values)
+        difference = y_factor * (max_value - min_value)
+        return min_value - difference, max_value + difference
 
 
 
