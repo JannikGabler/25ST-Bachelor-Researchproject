@@ -20,7 +20,6 @@ class InterpolantsPlotComponent(InterpolationCore):
     SUB_PROCESS_CODE = textwrap.dedent("""
         import os
         import sys
-        
         import dill
         
         from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
