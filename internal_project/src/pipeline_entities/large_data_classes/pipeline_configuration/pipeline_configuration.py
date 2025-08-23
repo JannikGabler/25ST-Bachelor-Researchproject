@@ -11,6 +11,7 @@ import jax
 import jax.numpy as jnp
 import numpy
 
+from constants.internal_logic_constants import PipelineConfigurationConstants
 from exceptions.prohibited_attribute_override_exception import ProhibitedAttributeOverrideException
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
@@ -39,15 +40,6 @@ if TYPE_CHECKING:
 
 
 class PipelineConfiguration:
-    ###########################
-    ### Attributes of class ###
-    ###########################
-    _parsing_eval_namespace_: dict[str, Any] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode,
-                                                'DirectionalAcyclicGraph': DirectionalAcyclicGraph,
-                                                'DirectionalAcyclicGraphNode': DirectionalAcyclicGraphNode} # Namespace for dynamically loaded modules is getting added on demand
-
-
 
     ###############################
     ### Attributes of instances ###
@@ -56,6 +48,8 @@ class PipelineConfiguration:
     _supported_program_version_: Version
 
     _components_: DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]
+
+    _runs_for_component_execution_time_measurements_: int
 
     _additional_values_: dict[str, Any]
 
@@ -121,6 +115,10 @@ class PipelineConfiguration:
         return self._components_   #__components__ is frozen (immutable)
 
     @property
+    def runs_for_component_execution_time_measurements(self) -> int:
+        return self._runs_for_component_execution_time_measurements_
+
+    @property
     def additional_values(self) -> dict[str, Any]:
         return self._additional_values_
 
@@ -129,11 +127,19 @@ class PipelineConfiguration:
     ##########################
     ### Overridden methods ###
     ##########################
-    def __repr__(self):
-        return (f"PipelineConfiguration(name={repr(self._name_)}, "
+    def __repr__(self) -> str:
+        return (f"{self.__class__.__name__}(name={repr(self._name_)}, "
                 f"supported_program_version={repr(self._supported_program_version_)}, "
                 f"components={repr(self.components)}, "
+                f"runs_for_component_execution_time_measurements={repr(self.runs_for_component_execution_time_measurements)}, "
                 f"additional_values={repr(self.additional_values)})")
+
+    def __str__(self) -> str:
+        return (f"{self.__class__.__name__}(name={str(self._name_)}, "
+                f"supported_program_version={str(self._supported_program_version_)}, "
+                f"components={str(self.components)}, "
+                f"runs_for_component_execution_time_measurements={str(self.runs_for_component_execution_time_measurements)}, "
+                f"additional_values={str(self.additional_values)})")
 
 
 
@@ -141,14 +147,16 @@ class PipelineConfiguration:
         if not isinstance(other, PipelineConfiguration):   # Covers None
             return False
         else:
-            return self._name_ == other._name_ \
-                   and self._supported_program_version_ == other._supported_program_version_ \
-                   and self._components_ == other._components_
+            return (self._name_ == other._name_
+                    and self._supported_program_version_ == other._supported_program_version_
+                    and self._runs_for_component_execution_time_measurements_ == other._runs_for_component_execution_time_measurements_
+                    and self._components_ == other._components_)
 
 
 
     def __hash__(self) -> int:   # Instances is immutable
-        return hash((self._name_, self._supported_program_version_, self._components_))
+        return hash((self._name_, self._supported_program_version_,
+                     self._runs_for_component_execution_time_measurements_, self._components_))
 
 
 
@@ -156,7 +164,7 @@ class PipelineConfiguration:
     ### Private methods ###
     #######################
     def _parse_input_data_(self, input_data: PipelineConfigurationData) -> None:
-        eval_name_space: dict[str, Any] = DynamicModuleLoader.get_module_namespace() | self._parsing_eval_namespace_
+        eval_name_space: dict[str, Any] = DynamicModuleLoader.get_module_namespace() | PipelineConfigurationConstants.PARSING_EVAL_NAMESPACE
 
         self._parse_regular_input_values_(input_data, eval_name_space)
         self._parse_additional_input_values_(input_data, eval_name_space)
@@ -281,7 +289,7 @@ class PipelineConfiguration:
             evaluated_overridden_attributes: dict[str, object] = {}
 
             for attribute_name, attribute_value in node_value[2].items():
-                value: object = PythonEvalUtils.try_expression_evaluation(attribute_value, PipelineConfiguration._parsing_eval_namespace_)
+                value: object = PythonEvalUtils.try_expression_evaluation(attribute_value, PipelineConfigurationConstants.PARSING_EVAL_NAMESPACE)
                 evaluated_overridden_attributes[attribute_name] = value
 
             return PipelineComponentInstantiationInfo(node_value[0], component_info, evaluated_overridden_attributes)
