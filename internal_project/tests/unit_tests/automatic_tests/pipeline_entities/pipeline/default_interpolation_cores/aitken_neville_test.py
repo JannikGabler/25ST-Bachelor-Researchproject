@@ -1,10 +1,12 @@
 import jax.numpy as jnp
 import unittest
+
 from test_interpolation_core_base import TestInterpolationCoreBase
 from functions.defaults.default_interpolants.aitken_neville_interpolant import AitkenNevilleInterpolant
 from pipeline_entities.pipeline.component_entities.default_components.default_interpolation_cores.aitken_neville_interpolation_core import (
     AitkenNevilleInterpolationCore,
 )
+
 
 class TestAitkenNevilleInterpolationCore(TestInterpolationCoreBase):
     CORE_CLS = AitkenNevilleInterpolationCore
