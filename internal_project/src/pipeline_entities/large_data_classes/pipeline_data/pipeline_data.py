@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Optional, Any, Callable
 
 
-from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
+from functions.abstracts.compilable_function import CompilableFunction
 
 
 @dataclass
@@ -15,12 +15,12 @@ class PipelineData:
     interpolation_interval: jnp.ndarray | None = None
     interpolant_evaluation_points: jnp.ndarray | None = None
 
-    function_callable: Callable[[jnp.ndarray], jnp.ndarray] | None = None   # Not Jax compiled, must be compiled by using components
+    original_function: CompilableFunction | None = None
 
     interpolation_nodes: jnp.ndarray | None = None
     interpolation_values: jnp.ndarray | None = None
 
-    interpolant: Optional[CompilableInterpolant] = None
+    interpolant: CompilableFunction | None = None
     interpolant_values: jnp.ndarray | None = None
 
     additional_values: dict[str, Any] = field(default_factory=dict)

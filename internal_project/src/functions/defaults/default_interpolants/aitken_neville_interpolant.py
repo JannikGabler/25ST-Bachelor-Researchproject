@@ -1,12 +1,10 @@
-from typing import Any
-
 import jax
 import jax.numpy as jnp
 
-from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
+from functions.abstracts.compilable_function import CompilableFunction
 
 
-class AitkenNevilleInterpolant(CompilableInterpolant):
+class AitkenNevilleInterpolant(CompilableFunction):
     """
     TODO
     """
@@ -38,10 +36,10 @@ class AitkenNevilleInterpolant(CompilableInterpolant):
 
 
     def __repr__(self) -> str:
-        return f"AitkenNevilleInterpolant(coefficients={repr(self._coefficients_)})"
+        return f"{self.__class__.__name__}(coefficients={repr(self._coefficients_)})"
 
     def __str__(self) -> str:
-        return self.__repr__()
+        return f"{self.__class__.__name__}(coefficients={str(self._coefficients_)})"
 
 
 
@@ -50,8 +48,8 @@ class AitkenNevilleInterpolant(CompilableInterpolant):
 
 
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, AitkenNevilleInterpolant):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
             return False
         else:
             return jnp.array_equal(self._coefficients_, other._coefficients_).item()

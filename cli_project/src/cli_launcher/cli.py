@@ -5,6 +5,7 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from cli_launcher.reporting import format_all_reports
+from constants.cli_project_constants import CLIConstants
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
@@ -24,10 +25,6 @@ from utilities.user_output_utilities import UserOutputUtilities
 
 
 class CLI:
-    PROGRAM_NAME = "interpolation_pipeline"
-    PROGRAM_DESCRIPTION = "Build and execute your interpolation pipeline."
-
-
     arg_parser: ArgumentParser
 
     directory: Path | None
@@ -67,7 +64,7 @@ class CLI:
         """
         Parses args, shows trust warning, loads the .ini files, then puts the parsed data on out_q.
         """
-        return ArgumentParser(prog=cls.PROGRAM_NAME, description=cls.PROGRAM_DESCRIPTION)
+        return ArgumentParser(prog=CLIConstants.PROGRAM_NAME, description=CLIConstants.PROGRAM_DESCRIPTION)
 
 
 

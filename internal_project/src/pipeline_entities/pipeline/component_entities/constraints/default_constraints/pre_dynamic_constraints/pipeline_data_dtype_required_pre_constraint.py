@@ -2,7 +2,7 @@ from dataclasses import fields
 
 import jax.numpy as jnp
 
-from interpolants.abstracts.compilable_interpolant import CompilableInterpolant
+from functions.abstracts.compilable_function import CompilableFunction
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.pre_dynamic_constraint import PreDynamicConstraint
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData

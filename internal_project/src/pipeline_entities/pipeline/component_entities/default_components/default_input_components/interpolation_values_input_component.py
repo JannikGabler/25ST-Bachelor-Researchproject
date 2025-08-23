@@ -28,5 +28,5 @@ class InterpolationValuesInputComponent(InputPipelineComponent):
 
         interpolation_values: jnp.ndarray = pipeline_input.interpolation_values
 
-        pipeline_data.interpolation_nodes = interpolation_values
+        pipeline_data.interpolant_values = interpolation_values
         return pipeline_data

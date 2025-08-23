@@ -17,7 +17,7 @@ class FunctionCallableInputComponent(InputPipelineComponent):
         pipeline_data: PipelineData = self._pipeline_data_[0]
         function_callable: callable = self._additional_execution_info_.pipeline_input.function_callable
 
-        pipeline_data.function_callable = function_callable
+        pipeline_data.original_function = function_callable
         return pipeline_data
 
 

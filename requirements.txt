@@ -21,6 +21,8 @@ pytest>=8.3.5
 # Version management
 packaging>=25.0
 
+# Serilization
+dill>=0.4.0
 
 #Jupyter notebook
 notebook>=7.4.3
