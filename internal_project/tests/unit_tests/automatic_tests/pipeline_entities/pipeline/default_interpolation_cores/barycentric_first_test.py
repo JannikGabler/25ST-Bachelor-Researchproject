@@ -2,7 +2,7 @@ import jax.numpy as jnp
 import unittest
 
 from test_interpolation_core_base import TestInterpolationCoreBase
-from interpolants.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
+from functions.defaults.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
 from pipeline_entities.pipeline.component_entities.default_components.default_interpolation_cores.barycentric_first_interpolation_core import (
     BarycentricFirstInterpolationCore,
 )
