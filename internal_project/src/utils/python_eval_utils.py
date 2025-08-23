@@ -12,7 +12,6 @@ class PythonEvalUtils:
 
 
 
-
     ######################
     ### Public methods ###
     ######################

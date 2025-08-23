@@ -114,7 +114,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
 
 
         self.assertTrue(0 < report.component_init_time <= 0.5)
-        self.assertTrue(0 < report.component_execution_time <= 0.5)
+        self.assertTrue(0 < report.average_component_execution_time <= 0.5)
 
 
     def test_function_expression_input_output(self):
@@ -145,7 +145,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
 
 
         self.assertTrue(0 < report.component_init_time <= 0.5)
-        self.assertTrue(0 < report.component_execution_time <= 0.5)
+        self.assertTrue(0 < report.average_component_execution_time <= 0.5)
 
 
     def test_chebyshev_2_node_generator_output(self):
@@ -181,7 +181,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
 
 
         self.assertTrue(0 < report.component_init_time <= 0.5)
-        self.assertTrue(0 < report.component_execution_time <= 0.5)
+        self.assertTrue(0 < report.average_component_execution_time <= 0.5)
 
 
     def test_interpolation_values_evaluator_output(self):
@@ -221,7 +221,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
 
 
         self.assertTrue(0 < report.component_init_time <= 0.5)
-        self.assertTrue(0 < report.component_execution_time <= 0.5)
+        self.assertTrue(0 < report.average_component_execution_time <= 0.5)
 
 
     def test_newton_interpolation_output(self):
@@ -270,7 +270,7 @@ class ChebyshevPoints2Case(unittest.TestCase):
 
 
         self.assertTrue(0 < report.component_init_time <= 0.5)
-        self.assertTrue(0 < report.component_execution_time <= 0.5)
+        self.assertTrue(0 < report.average_component_execution_time <= 0.5)
 
 
 

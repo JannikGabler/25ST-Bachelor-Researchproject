@@ -20,5 +20,7 @@ equidistant_node_generator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     static_constraints=[AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         AttributeRequiredConstraint("interpolation_interval"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements=True
 )
 

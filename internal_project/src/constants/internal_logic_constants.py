@@ -1,3 +1,23 @@
+import math
+
+import jax
+import jax.numpy as jnp
+import numpy
+from packaging.version import Version
+
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from general_data_structures.tree.tree import Tree
+from general_data_structures.tree.tree_node import TreeNode
+
+
+class PipelineConfigurationConstants:
+    # Namespace for dynamically loaded modules is getting added on demand
+    PARSING_EVAL_NAMESPACE: dict[str, object] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
+                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode,
+                                                'DirectionalAcyclicGraph': DirectionalAcyclicGraph,
+                                                'DirectionalAcyclicGraphNode': DirectionalAcyclicGraphNode}
+
 
 
 class InterpolantsPlotComponentConstants:

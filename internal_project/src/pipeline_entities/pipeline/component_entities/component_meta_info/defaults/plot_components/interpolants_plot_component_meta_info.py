@@ -15,5 +15,7 @@ interpolants_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
                         AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant")],
+
+    allow_multiple_executions_for_time_measurements=False
 )
 

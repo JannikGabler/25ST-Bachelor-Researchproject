@@ -12,4 +12,5 @@ class PipelineComponentExecutionReport:
     component_output: PipelineData | None = None
 
     component_init_time: float | None = None
-    component_execution_time: float | None = None
+    average_component_execution_time: float | None = None
+    standard_deviation_component_execution_time: float | None = None
