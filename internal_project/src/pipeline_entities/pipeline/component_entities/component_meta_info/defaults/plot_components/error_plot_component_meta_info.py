@@ -13,5 +13,7 @@ error_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
 
     static_constraints=[AttributeRequiredConstraint("interpolation_interval"), AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolant")],
+
+    allow_multiple_executions_for_time_measurements=False
 )
 

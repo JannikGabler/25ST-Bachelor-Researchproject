@@ -16,4 +16,6 @@ function_callable_input_component_meta_info: ComponentMetaInfo = ComponentMetaIn
     post_dynamic_constraints=[],
 
     static_constraints=[MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements=False,
 )

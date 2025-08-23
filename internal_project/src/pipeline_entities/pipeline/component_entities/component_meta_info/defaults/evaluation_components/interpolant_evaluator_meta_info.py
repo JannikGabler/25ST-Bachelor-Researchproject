@@ -23,4 +23,6 @@ interpolant_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     static_constraints=[AttributeRequiredConstraint("interpolant_evaluation_points"),
                         AttributeRequiredConstraint("interpolant"), AttributeRequiredConstraint("data_type"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements = True
 )
