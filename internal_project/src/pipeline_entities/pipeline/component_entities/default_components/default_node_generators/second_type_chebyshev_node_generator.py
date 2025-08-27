@@ -53,6 +53,20 @@ class SecondTypeChebyshevNodeGenerator(NodeGenerator):
     @staticmethod
     def _create_compiled_callable_(data_type: type, node_count: int, interpolation_interval: jnp.ndarray) -> callable:
 
+        if node_count == 1:
+            # Single node → midpoint of the interval (0 on [-1,1])
+            def _internal_perform_action_() -> jnp.ndarray:
+                a = jnp.asarray(interpolation_interval[0], dtype=data_type)
+                b = jnp.asarray(interpolation_interval[1], dtype=data_type)
+                mid = (a + b) / jnp.asarray(2, dtype=data_type)
+                return jnp.array([mid], dtype=data_type)
+
+            return (
+                jax.jit(_internal_perform_action_)  # → XLA-compatible HLO
+                .lower()    # → Low-Level-IR
+                .compile()  # → executable Binary
+            )
+
         def _internal_perform_action_() -> jnp.ndarray:
             nodes: jnp.ndarray = jnp.arange(0, node_count, dtype=data_type)
             nodes = jnp.multiply(nodes, jnp.pi / (node_count - 1))
