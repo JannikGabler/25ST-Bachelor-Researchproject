@@ -45,7 +45,7 @@ class RunTimePlotComponent(InterpolationCore):
 
             method_names.append(pretty_name)
             init_times.append(report.component_init_time)
-            exec_times.append(report.component_execution_time)
+            exec_times.append(report.average_component_execution_time)
 
         x = np.arange(len(method_names))
         width = 0.5

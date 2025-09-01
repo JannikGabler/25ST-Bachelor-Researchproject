@@ -20,5 +20,7 @@ class ComponentMetaInfo:
 
     static_constraints: list[StaticConstraint]
 
+    allow_multiple_executions_for_time_measurements: bool
     allow_additional_value_modifications_outside_specification: bool = False
+
 

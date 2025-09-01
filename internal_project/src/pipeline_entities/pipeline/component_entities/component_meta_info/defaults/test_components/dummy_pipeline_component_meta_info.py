@@ -11,5 +11,7 @@ dummy_pipeline_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     post_dynamic_constraints=[],
 
     static_constraints=[],
+
+    allow_multiple_executions_for_time_measurements=True
 )
 

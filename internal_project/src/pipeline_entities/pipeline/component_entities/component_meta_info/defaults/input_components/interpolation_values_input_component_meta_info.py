@@ -16,4 +16,6 @@ interpolation_values_input_component_meta_info: ComponentMetaInfo = ComponentMet
     post_dynamic_constraints=[],
 
     static_constraints=[MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements=False
 )
