@@ -44,21 +44,6 @@ class PlotUtils:
 
 
 
-    @classmethod
-    def calc_y_limits(cls, function: CompilableFunction, plot_points: jnp.ndarray, y_factor: float) -> tuple[jnp.ndarray, jnp.ndarray]:
-        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
-        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
-
-        valid_mask: jnp.ndarray = jnp.isfinite(function_values)
-
-        clean_values = function_values[valid_mask]
-        min_value = jnp.min(clean_values)
-        max_value = jnp.max(clean_values)
-        difference = y_factor * (max_value - min_value)
-        return min_value - difference, max_value + difference
-
-
-
     @staticmethod
     def adaptive_scatter_size(num_points: int, modifier: float = 1.0, min_size: float = 10.0) -> float:
         """Berechnet eine adaptive Scatter-Größe, die mit Anzahl der Punkte abnimmt, aber nicht kleiner als min_size wird."""
@@ -169,6 +154,7 @@ class PlotUtils:
 
                 if len(connectable_indices) > 0:
                     connectable_indices_segments.append(connectable_indices)
+                    connectable_indices = []
 
         if len(connectable_indices) > 0:
             connectable_indices_segments.append(connectable_indices)

@@ -27,24 +27,25 @@ pipeline_configuration_file_content: bytes = textwrap.dedent("""\
     supported_program_version=Version(\"1.0.0\")
     components=DirectionalAcyclicGraph(\"\"\"
         0=Base Input
-        1=Chebyshev2 Node Generator
+        1=Equidistant Node Generator
             predecessors=["0"]
         2=Function Expression Input
             predecessors=["1"]
         3=Interpolation Values Evaluator
             predecessors=["2"]
         4=Aitken Neville Interpolation
-           predecessors=["3"]
+            predecessors=["3"]
         5=Newton Interpolation
             predecessors=["3"]
         6=Barycentric1 Interpolation
             predecessors=["3"]
         7=Barycentric2 Interpolation
             predecessors=["3"]
-        8=Barycentric2 Chebyshev Interpolation
-            predecessors=["3"]
-        9=Interpolant plotter
-            predecessors=["4", "5", "6", "7", "8"]
+        8=Interpolant Plotter
+            predecessors=["4","5","6","7"]
+        9=Absolute Error Plotter
+            predecessors=["4","5","6","7"]
+            y_limit=5
         \"\"\")
         
     runs_for_component_execution_time_measurements=1
@@ -66,17 +67,11 @@ pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_c
 pipeline_input_file_content: bytes = textwrap.dedent("""\
     name="TestPipeline"
     data_type=jax.numpy.float32
-    node_count=40
+    node_count=36
     interpolation_interval=jax.numpy.array([-1, 1])
-    interpolant_evaluation_points=jax.numpy.array([-1, 0, 1])
     function_expression="sin(10*x)"
-
-    piecewise_function_expressions=[((0,1), 'x'), ((1,2), 'x**2')]
+    interpolant_evaluation_points=jax.numpy.empty(0)
     sympy_function_expression_simplification=True
-    function_callable=lambda x: x**2 + 3
-    function_values=jax.numpy.array([0.0, 1.0, 4.0, 9.0, 16.0])
-    §secret_token="abc123"
-    extra_value=[1, 2, 3]
     """).encode("utf-8")
 
 temp_pipeline_input_file = Path(temp_dir.name + "/pipeline_input.ini")
