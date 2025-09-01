@@ -15,6 +15,7 @@ from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instant
 from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
 from utils.pipeline_component_execution_validation_utils import PipelineComponentExecutionValidationUtils
 from utils.pipeline_manager_utils import PipelineManagerUtils
+from utils.statistics_utils import StatisticsUtils
 
 
 class PipelineManager:
@@ -52,10 +53,9 @@ class PipelineManager:
 
     def execute_next_component(self) -> PipelineComponentExecutionReport:
         node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = self._execution_stack_.popleft()
-        pipeline_data, additional_execution_data, old_attributes = self._setup_node_execution_(node_in_own_dag)
-        pipeline_component: PipelineComponent = self._init_node_component_(node_in_own_dag, pipeline_data, additional_execution_data)
-        result_data: PipelineData = self._execute_node_component_(pipeline_component, node_in_own_dag)
-        self._finish_up_node_execution(node_in_own_dag, result_data, old_attributes)
+
+        self._init_and_execute_node_(node_in_own_dag)
+
         return deepcopy(self._component_execution_reports_[id(node_in_own_dag)])
 
 
@@ -117,12 +117,32 @@ class PipelineManager:
     #######################
     ### Private methods ###
     #######################
+    def _init_and_execute_node_(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]):
+        execution_count: int = (self._pipeline_.pipeline_configuration.runs_for_component_execution_time_measurements if
+                                node_in_own_dag.value.component.component_meta_info.allow_multiple_executions_for_time_measurements
+                                else 1)
+
+        init_time: float | None = None
+        execution_times: list[float] = []
+        result_pipeline_data: PipelineData | None = None
+        old_attributes: dict[str, object] | None = None
+
+        for i in range(execution_count):
+            pipeline_data, additional_execution_data, old_attributes = self._setup_node_execution_(node_in_own_dag)
+            pipeline_component, init_time = self._init_node_component_(node_in_own_dag, pipeline_data, additional_execution_data)
+            result_pipeline_data, execution_time = self._execute_node_component_(pipeline_component)
+            execution_times.append(execution_time)
+
+        self._finish_up_node_execution(node_in_own_dag, result_pipeline_data, old_attributes, init_time, execution_times)
+
+
 
     ### Node initialisation ###
     def _init_node_component_(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                              pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> PipelineComponent:
+                    pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) \
+                    -> tuple[PipelineComponent, float]:
 
-        execution_report: PipelineComponentExecutionReport = self._component_execution_reports_[id(node_in_own_dag)]
+        # execution_report: PipelineComponentExecutionReport = self._component_execution_reports_[id(node_in_own_dag)]
         component_info: PipelineComponentInfo = node_in_own_dag.value.component
         component_cls: type = component_info.component_class
 
@@ -134,15 +154,13 @@ class PipelineManager:
             raise ValueError(f"The PipelineComponentInfo for id '{component_info.component_id}' contains a "
                              f"component_class which is no subclass of PipelineComponent (type: '{component_cls}').")
 
-        execution_report.component_init_time = init_end - init_start
-        return pipeline_component
+        return pipeline_component, init_end - init_start
 
 
 
     ### Node Execution ###
 
-    def _execute_node_component_(self, pipeline_component: PipelineComponent,
-                                 node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]) -> PipelineData:
+    def _execute_node_component_(self, pipeline_component: PipelineComponent) -> tuple[PipelineData, float]:
 
         execution_start: float = time.perf_counter()
 
@@ -150,8 +168,7 @@ class PipelineManager:
 
         execution_end: float = time.perf_counter()
 
-        self._component_execution_reports_[id(node_in_own_dag)].component_execution_time = execution_end - execution_start
-        return result_pipeline_data
+        return result_pipeline_data, execution_end - execution_start
 
 
 
@@ -179,10 +196,15 @@ class PipelineManager:
     ### Node execution finish up ###
 
     def _finish_up_node_execution(self, node_in_own_dag: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                                  result_data: PipelineData, old_attributes: dict[str, object]) -> None:
+                                  result_data: PipelineData, old_attributes: dict[str, object],
+                                  init_time: float, execution_times: list[float]) -> None:
 
         PipelineManagerUtils.reverse_attribute_overrides(node_in_own_dag, result_data, old_attributes)
 
-        self._component_execution_reports_[id(node_in_own_dag)].component_output = result_data
+        execution_report: PipelineComponentExecutionReport = self._component_execution_reports_[id(node_in_own_dag)]
+        execution_report.component_output = result_data
+        execution_report.component_init_time = init_time
+        execution_report.average_component_execution_time = StatisticsUtils.mean(execution_times)
+        execution_report.standard_deviation_component_execution_time = StatisticsUtils.empirical_stddev(execution_times)
 
         PipelineComponentExecutionValidationUtils.validate_after_node_execution(node_in_own_dag, self._pipeline_, self._component_execution_reports_)

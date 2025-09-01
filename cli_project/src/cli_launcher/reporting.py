@@ -29,8 +29,8 @@ def _times(report: PipelineComponentExecutionReport) -> list[str]:
     lines: list[str] = []
     if report.component_init_time is not None:
         lines.append(f"Initialization time: {report.component_init_time * 1000:.3f} ms")
-    if report.component_execution_time is not None:
-        lines.append(f"Execution time: {report.component_execution_time * 1000:.3f} ms")
+    if report.average_component_execution_time is not None:
+        lines.append(f"Execution time: {report.average_component_execution_time * 1000:.3f} ms")
     return lines
 
 def _rows(data: PipelineData | None, previous: list[tuple[str, list[str]]] | None = None) -> list[tuple[str, list[str]]]:

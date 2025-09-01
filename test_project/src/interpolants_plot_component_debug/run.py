@@ -46,7 +46,8 @@ pipeline_configuration_file_content: bytes = textwrap.dedent("""\
         9=Interpolant plotter
             predecessors=["4", "5", "6", "7", "8"]
         \"\"\")
-    extra_value=True
+        
+    runs_for_component_execution_time_measurements=1
     """).encode("utf-8")
 
 temp_pipeline_configuration_file = Path(temp_dir.name + "/pipeline_configuration.ini")
@@ -96,3 +97,5 @@ pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_inpu
 
 pipeline_manager: PipelineManager = PipelineManager(pipeline)
 pipeline_manager.execute_all()
+
+print("a")

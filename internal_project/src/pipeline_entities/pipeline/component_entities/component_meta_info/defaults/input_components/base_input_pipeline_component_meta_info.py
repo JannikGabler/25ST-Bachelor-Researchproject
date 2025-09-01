@@ -14,5 +14,7 @@ base_input_pipeline_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
 
     static_constraints=[],
 
+    allow_multiple_executions_for_time_measurements=False,
+
     allow_additional_value_modifications_outside_specification = True
 )
