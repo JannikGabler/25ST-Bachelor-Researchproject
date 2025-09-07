@@ -19,14 +19,13 @@ class _FakePipelineData:
 
 def _make_component(nodes, values, eval_points, dtype=jnp.float32):
     """
-    Create evaluator instance with fake PipelineData and a jitted **bound**
-    internal method that accepts (nodes, values, evaluation_points).
+    Create evaluator instance with fake PipelineData and a **zero-arg** jitted
+    bound method (matching the component's current behavior).
     """
     pd = _FakePipelineData(nodes, values, eval_points, dtype=dtype)
-
     comp = AitkenNevilleEvaluator.__new__(AitkenNevilleEvaluator)
     comp._pipeline_data_ = [pd]
-
+    
     comp._compiled_jax_callable_ = jax.jit(comp._internal_perform_action_)
     return comp, pd
 
@@ -60,7 +59,7 @@ class TestAitkenNevilleEvaluator(unittest.TestCase):
         self.assertTrue(jnp.allclose(y_hat, p(xs), rtol=rtol, atol=atol))
 
     def test_quadratic(self):
-        # p(x) = 1 - 2x + x^2
+        # p(x) = 1 - 2x + x**2
         def p(x): return 1.0 - 2.0 * x + x**2
         nodes = jnp.array([-1.0, 0.0, 2.0])
         values = p(nodes)
@@ -75,7 +74,6 @@ class TestAitkenNevilleEvaluator(unittest.TestCase):
         self.assertTrue(jnp.allclose(y_hat, p(xs), rtol=rtol, atol=atol))
 
     def test_dtype_respected(self):
-        # float32 path
         p = lambda x: x**3 - x + 1.0
         nodes = jnp.array([-1.0, 0.5, 1.2, 2.0])
         values = p(nodes)
@@ -85,7 +83,6 @@ class TestAitkenNevilleEvaluator(unittest.TestCase):
         out_pd32 = comp32.perform_action()
         self.assertEqual(out_pd32.interpolant_values.dtype, jnp.float32)
 
-        # float64 path only if enabled (avoid failures when x64 is off)
         if _x64_enabled():
             comp64, pd64 = _make_component(nodes, values, xs, dtype=jnp.float64)
             out_pd64 = comp64.perform_action()
