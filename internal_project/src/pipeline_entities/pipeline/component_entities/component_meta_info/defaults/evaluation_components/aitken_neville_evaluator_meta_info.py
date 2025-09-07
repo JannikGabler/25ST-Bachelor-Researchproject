@@ -25,4 +25,6 @@ aitken_neville_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
                         AttributeRequiredConstraint("interpolation_values"),
                         AttributeRequiredConstraint("interpolant_evaluation_points"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements = True,
 )
