@@ -61,9 +61,9 @@ class BarycentricFirstInterpolant(CompilableFunction):
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (jnp.array_equal(self._nodes_, other._nodes_).item()
-                    and jnp.array_equal(self._values_, other._values_).item()
-                    and jnp.array_equal(self._weights_, other._weights_).item())
+            return (jnp.array_equal(self._nodes_, other._nodes_, equal_nan=True).item()
+                    and jnp.array_equal(self._values_, other._values_, equal_nan=True).item()
+                    and jnp.array_equal(self._weights_, other._weights_, equal_nan=True).item())
 
 
 

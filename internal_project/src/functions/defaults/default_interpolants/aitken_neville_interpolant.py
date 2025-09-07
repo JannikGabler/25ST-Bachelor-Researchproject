@@ -52,7 +52,7 @@ class AitkenNevilleInterpolant(CompilableFunction):
         if not isinstance(other, self.__class__):
             return False
         else:
-            return jnp.array_equal(self._coefficients_, other._coefficients_).item()
+            return jnp.array_equal(self._coefficients_, other._coefficients_, equal_nan=True).item()
 
 
 
