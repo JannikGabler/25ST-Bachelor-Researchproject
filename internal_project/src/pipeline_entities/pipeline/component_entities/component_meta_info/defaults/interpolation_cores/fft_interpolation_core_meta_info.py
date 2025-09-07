@@ -17,5 +17,7 @@ fft_interpolation_core_meta_info: ComponentMetaInfo = ComponentMetaInfo( # TODO
 
     static_constraints=[AttributeRequiredConstraint("interpolation_nodes"), AttributeRequiredConstraint("interpolation_values"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
+
+    allow_multiple_executions_for_time_measurements=True
 )
 

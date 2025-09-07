@@ -3,7 +3,7 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
     AttributeRequiredConstraint
 
 
-absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
+relative_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying=set(),
 
     attributes_allowed_to_be_overridden={"y_limit", "y_scale", "y_scale_base"},
@@ -17,6 +17,6 @@ absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
                         AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolant")],
 
-    allow_multiple_executions_for_time_measurements=False
+allow_multiple_executions_for_time_measurements=False
 )
 

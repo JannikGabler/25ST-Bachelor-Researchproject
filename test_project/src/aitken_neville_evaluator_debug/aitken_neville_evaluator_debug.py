@@ -33,22 +33,10 @@ pipeline_configuration_file_content: bytes = textwrap.dedent("""\
             predecessors=["1"]
         3=Interpolation Values Evaluator
             predecessors=["2"]
-        4=Aitken Neville Interpolation
-            predecessors=["3"]
-        5=Newton Interpolation
-            predecessors=["3"]
-        6=Barycentric1 Interpolation
-            predecessors=["3"]
-        7=Barycentric2 Interpolation
-            predecessors=["3"]
-        8=Interpolant Plotter
-            predecessors=["4","5","6","7"]
-        9=Absolute Error Plotter
-            predecessors=["4","5","6","7"]
-            y_limit=5
+        4=Aitken Neville Evaluator
+           predecessors=["3"]
         \"\"\")
-        
-    runs_for_component_execution_time_measurements=1
+    extra_value=True
     """).encode("utf-8")
 
 temp_pipeline_configuration_file = Path(temp_dir.name + "/pipeline_configuration.ini")
@@ -67,10 +55,12 @@ pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_c
 pipeline_input_file_content: bytes = textwrap.dedent("""\
     name="TestPipeline"
     data_type=jax.numpy.float32
-    node_count=36
+    node_count=2
     interpolation_interval=jax.numpy.array([-1, 1])
-    function_expression="sin(10*x)"
-    interpolant_evaluation_points=jax.numpy.empty(0)
+    
+    interpolant_evaluation_points=jax.numpy.array([-1, -0.5, 0, 0.5, 1])
+    
+    function_expression="x**3"
     sympy_function_expression_simplification=True
     """).encode("utf-8")
 
@@ -93,4 +83,8 @@ pipeline: Pipeline = PipelineBuilder.build(pipeline_configuration, pipeline_inpu
 pipeline_manager: PipelineManager = PipelineManager(pipeline)
 pipeline_manager.execute_all()
 
-print("a")
+
+for report in pipeline_manager.get_all_component_execution_reports():
+    print(f"###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
+    print(report)
+    print("\n\n")
