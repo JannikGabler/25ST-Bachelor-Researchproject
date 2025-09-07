@@ -13,7 +13,7 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
     AdditionalComponentExecutionData
 
 
-@pipeline_component(id="aitken neville evaluator", type=InterpolationCore, meta_info=aitken_neville_evaluator_meta_info)
+@pipeline_component(id="aitken neville evaluator", type=EvaluatorComponent, meta_info=aitken_neville_evaluator_meta_info)
 class AitkenNevilleEvaluator(EvaluatorComponent):
     """
     TODO
@@ -32,7 +32,7 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
 
-        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower().compile()
+        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_)
 
 
 
@@ -40,38 +40,39 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
-        pipeline_data.interpolant_values = self._compiled_jax_callable_()
+        out = self._compiled_jax_callable_(
+            pd.interpolation_nodes.astype(pd.data_type),
+            pd.interpolation_values.astype(pd.data_type),
+            pd.interpolant_evaluation_points.astype(pd.data_type)
+        )
 
-        return pipeline_data
+        pd.interpolant_values = out
+        return pd
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _internal_perform_action_(self) -> jnp.ndarray:
+    def _internal_perform_action_(self, nodes: jnp.ndarray, values: jnp.ndarray, evaluation_points: jnp.ndarray) -> jnp.ndarray:
         data_type: DTypeLike = self._pipeline_data_[0].data_type
-        nodes = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
-        values = self._pipeline_data_[0].interpolation_values.astype(data_type)
-        evaluation_points = self._pipeline_data_[0].interpolant_evaluation_points.astype(data_type)
+
         n: int = self._pipeline_data_[0].node_count
         m: int = len(evaluation_points)
 
-        # Initialize values array with function values
-        initial_values = values[:, None] * jnp.ones((1, m))
+        # values[:,None] broadcast to (n, m) without extra compute
+        polynomials = jnp.broadcast_to(values[:, None], (n, m)).astype(data_type)
 
-        def outer_loop(k, polynomials_outer):
-
-            def inner_loop(i, polynomials_inner):
-                value_differences = polynomials_outer[i] - polynomials_outer[i - 1]
-                quotients = (evaluation_points - nodes[i]) / (nodes[i] - nodes[i - k])
-                return polynomials_inner.at[i].set(polynomials_outer[i] + quotients * value_differences)
-
-            return jax.lax.fori_loop(k, n, inner_loop, polynomials_outer)
-
-        return jax.lax.fori_loop(1, n, outer_loop, initial_values)[n - 1]
+        def outer_loop(k, polys_outer):
+            def inner_loop(i, polys_inner):
+                vd = polys_outer[i] - polys_outer[i - 1] # (m,)
+                denom = (nodes[i] - nodes[i - k]) # scalar
+                quot = (evaluation_points - nodes[i]) / denom # (m,)
+                return polys_inner.at[i].set(polys_outer[i] + quot * vd) # (m,)
+            return jax.lax.fori_loop(k, n, inner_loop, polys_outer)
+        return jax.lax.fori_loop(1, n, outer_loop, polynomials)[n - 1]
 
 
         # # Compute divided differences of increasing order
