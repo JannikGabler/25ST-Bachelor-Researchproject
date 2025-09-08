@@ -1,3 +1,4 @@
+from jax import block_until_ready
 from jax.typing import DTypeLike
 
 
@@ -55,7 +56,9 @@ class CompiledFunction:
                f"{repr(self._used_data_type_)} but the given evaluation_points array has the data type"
                f"{repr(evaluation_points.dtype)}.")
 
-        return self._compiled_jax_callable_(evaluation_points)
+        result = self._compiled_jax_callable_(evaluation_points)
+
+        return result
 
 
 

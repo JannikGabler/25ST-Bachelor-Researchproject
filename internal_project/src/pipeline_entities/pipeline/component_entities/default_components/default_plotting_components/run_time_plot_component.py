@@ -5,13 +5,14 @@ import re
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.run_time_plot_component_meta_info import \
     run_time_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
+from pipeline_entities.pipeline.component_entities.default_component_types.plot_component import PlotComponent
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 
 
-@pipeline_component(id="runtime plotter", type=InterpolationCore, meta_info=run_time_component_meta_info)
+@pipeline_component(id="runtime plotter", type=PlotComponent, meta_info=run_time_component_meta_info)
 class RunTimePlotComponent(InterpolationCore):
     """
     Plots the initialization and execution time of each interpolation method as bar chart.

@@ -1,4 +1,5 @@
 import jax.numpy as jnp
+from jax import block_until_ready
 
 from jax.typing import DTypeLike
 
@@ -48,6 +49,7 @@ class InterpolantEvaluator(EvaluatorComponent):
         interpolant_evaluation_points: jnp.ndarray = data.interpolant_evaluation_points.astype(data.data_type)
 
         interpolant_values: jnp.ndarray = self._compiled_interpolant_.evaluate(interpolant_evaluation_points)
+        block_until_ready(interpolant_values)
 
         data.interpolant_values = interpolant_values
         return data
