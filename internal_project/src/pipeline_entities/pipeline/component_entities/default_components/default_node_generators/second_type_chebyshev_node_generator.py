@@ -68,9 +68,9 @@ class SecondTypeChebyshevNodeGenerator(NodeGenerator):
             )
 
         def _internal_perform_action_() -> jnp.ndarray:
-            nodes: jnp.ndarray = jnp.arange(0, node_count, dtype=data_type)
-            nodes = jnp.multiply(nodes, jnp.pi / (node_count - 1))
-            nodes = jnp.cos(nodes)
+            k = jnp.arange(node_count - 1, -1, -1, dtype=data_type)  # n-1, ..., 0
+            angles = jnp.multiply(k, jnp.pi / (node_count - 1))
+            nodes = jnp.cos(angles)
 
             do_rescale = jnp.logical_or(interpolation_interval[0] != -1, interpolation_interval[1] != 1)
 
