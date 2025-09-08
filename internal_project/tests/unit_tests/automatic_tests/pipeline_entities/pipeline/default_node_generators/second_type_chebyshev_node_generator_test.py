@@ -13,7 +13,7 @@ class TestSecondTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
     def build_expected_nodes(self, node_count: int, interval: jnp.ndarray, dtype) -> jnp.ndarray:
         """
         Chebyshev 2nd-kind nodes on [-1,1] (incl. endpoints) for n>=2:
-          x_k = cos(pi*k/(n-1)), k=0..n-1
+          x_k = cos(pi*k/(n-1)), k = n-1, ..., 0
         For n=1: use midpoint 0 on [-1,1], then rescale to (a+b)/2.
         """
         a, b = interval[0], interval[1]
@@ -22,7 +22,7 @@ class TestSecondTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
             mid = (a + b) / jnp.asarray(2, dtype=dtype)
             return jnp.array([mid], dtype=dtype)
 
-        k = jnp.arange(0, node_count, dtype=dtype)
+        k = jnp.arange(node_count - 1, -1, -1, dtype=dtype)  # n-1, ..., 0 for ascending order
         denom = jnp.asarray(node_count - 1, dtype=dtype)
         base = jnp.cos(jnp.pi * k / denom).astype(dtype)
 
@@ -46,7 +46,7 @@ class TestSecondTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
         )
 
     def test_two_nodes_endpoints(self):
-        # n=2 -> [cos(0), cos(pi)] = [1, -1], then rescale
+        # n=2 -> ascending [-1, 1] on [-1,1], then rescale
         self._run_case(node_count=2, interval=(0.0, 10.0), dtype=jnp.float32)
 
     def test_single_node_supported(self):

@@ -53,9 +53,9 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
     def _create_compiled_callable_(data_type: type, node_count: int, interpolation_interval: jnp.ndarray) -> callable:
 
         def _internal_perform_action_() -> jnp.ndarray:
-            nodes = jnp.arange(1, 2 * node_count + 1, 2, dtype=data_type)
-            nodes = nodes * (jnp.pi / (2 * node_count))
-            nodes = jnp.cos(nodes)
+            k = jnp.arange(node_count - 1, -1, -1, dtype=data_type)
+            angles = (2 * k + 1) * (jnp.pi / (2 * node_count))
+            nodes = jnp.cos(angles)
 
             do_rescale = jnp.logical_or(interpolation_interval[0] != -1, interpolation_interval[1] != 1)
 
