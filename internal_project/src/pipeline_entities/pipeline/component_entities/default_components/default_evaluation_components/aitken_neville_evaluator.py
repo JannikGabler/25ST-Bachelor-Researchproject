@@ -13,7 +13,7 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
     AdditionalComponentExecutionData
 
 
-@pipeline_component(id="aitken neville evaluator", type=InterpolationCore, meta_info=aitken_neville_evaluator_meta_info)
+@pipeline_component(id="aitken neville evaluator", type=EvaluatorComponent, meta_info=aitken_neville_evaluator_meta_info)
 class AitkenNevilleEvaluator(EvaluatorComponent):
     """
     TODO
@@ -40,11 +40,10 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
-        pipeline_data.interpolant_values = self._compiled_jax_callable_()
-
-        return pipeline_data
+        pd.interpolant_values = self._compiled_jax_callable_()
+        return pd
 
 
 
@@ -56,6 +55,7 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
         nodes = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
         values = self._pipeline_data_[0].interpolation_values.astype(data_type)
         evaluation_points = self._pipeline_data_[0].interpolant_evaluation_points.astype(data_type)
+
         n: int = self._pipeline_data_[0].node_count
         m: int = len(evaluation_points)
 
