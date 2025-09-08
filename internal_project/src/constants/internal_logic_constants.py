@@ -23,7 +23,7 @@ class PipelineConfigurationConstants:
 class InterpolantsPlotComponentConstants:
     AMOUNT_OF_EVALUATION_POINTS: int = 100
 
-    Y_LIMIT_FACTOR: float = 7.0
+    Y_LIMIT_FACTOR: float = 2.0
 
     COLORS = [
         "black",

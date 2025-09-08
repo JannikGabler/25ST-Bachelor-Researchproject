@@ -9,13 +9,14 @@ from constants.internal_logic_constants import InterpolantsPlotComponentConstant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
     interpolants_plot_component_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
+from pipeline_entities.pipeline.component_entities.default_component_types.plot_component import PlotComponent
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
 
 
-@pipeline_component(id="interpolant plotter", type=InterpolationCore, meta_info=interpolants_plot_component_meta_info)
+@pipeline_component(id="interpolant plotter", type=PlotComponent, meta_info=interpolants_plot_component_meta_info)
 class InterpolantsPlotComponent(InterpolationCore):
     SUB_PROCESS_CODE = textwrap.dedent("""
         import os

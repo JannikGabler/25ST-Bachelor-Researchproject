@@ -19,6 +19,6 @@ aitken_neville_interpolation_core_meta_info: ComponentMetaInfo = ComponentMetaIn
                         AttributeRequiredConstraint("data_type"), AttributeRequiredConstraint("node_count"),
                         MinPredecessorsConstraint(1), MaxPredecessorsConstraint(1)],
 
-    allow_multiple_executions_for_time_measurements = True
+    allow_multiple_executions_for_time_measurements = True,
 )
 

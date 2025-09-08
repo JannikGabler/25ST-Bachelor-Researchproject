@@ -2,6 +2,8 @@ import time
 from collections import deque
 from copy import deepcopy
 
+from jax import block_until_ready
+
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
 from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
