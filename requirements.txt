@@ -1,16 +1,32 @@
 # JAX (CPU)
-jax>=0.6.0 # CPU
+jax>=0.7.0 # CPU
 
 # JAX libraries
-jaxlib>=0.6.0
-orthax>=0.2.4
+jaxlib>=0.7.0
+#orthax>=0.2.4
 
 # Further mathematical libraries
-numpy>=2.2.5
-scipy>=1.15.3
+numpy>=2.3.1
+scipy>=1.16.0
+sympy>=1.14.0
 
 # Visualisation
 matplotlib>=3.10.3
+colorama>=0.4.6
+rich >= 14.1.0
 
 # Testing
 pytest>=8.3.5
+
+# Version management
+packaging>=25.0
+
+# Serilization
+dill>=0.4.0
+
+#Jupyter notebook
+notebook>=7.4.3
+
+# CLI
+-e cli_project
+-e internal_project

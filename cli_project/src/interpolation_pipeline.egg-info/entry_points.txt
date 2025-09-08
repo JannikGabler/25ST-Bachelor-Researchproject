@@ -1,0 +1,2 @@
+[console_scripts]
+interpolation_pipeline = main:main
