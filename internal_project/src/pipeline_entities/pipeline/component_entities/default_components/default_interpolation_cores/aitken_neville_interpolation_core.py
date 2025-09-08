@@ -80,89 +80,89 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     #######################
     ### Private methods ###
     #######################
-    @staticmethod
-    def _internal_perform_action_(nodes, values) -> jnp.ndarray:
-        n: int = nodes.shape[0]
-        dtype = values.dtype
-        eps = jnp.finfo(dtype).eps
-
-        # 1) Anfangsmatrix (n x n): Spalte 0 = Werte
-        polynomials = jnp.zeros((n, n), dtype=dtype).at[:, 0].set(values)
-
-        # 2) Präberechnungen mit statischen Shapes:
-        # nodes_rolled_matrix[:, k] = nodes rolled by k  -> shape (n, n)
-        nodes_rolled = jnp.stack([jnp.roll(nodes, k) for k in range(n)], axis=1)  # (n, n)
-
-        # denom_matrix[i, k] = nodes[i] - nodes[i-k]  (für k=0 ergibt 0, wir nutzen k>=1 später)
-        denom_matrix = nodes[:, None] - nodes_rolled  # (n, n)
-
-        # mask_valid[i, k] = (i >= k)
-        idx = jnp.arange(n)
-        mask_valid = (idx[:, None] >= jnp.arange(n)[None, :])  # (n, n) boolean
-
-        # Ersetze in denom_matrix nahe 0 durch eps (sicherer Divisor)
-        denom_safe_matrix = jnp.where(jnp.abs(denom_matrix) > eps, denom_matrix,
-                                      jnp.sign(denom_matrix) * eps + eps)
-
-        # 3) Äußere Schleife über k: pro k benutzen wir die bereits berechneten Spalten k
-        def outer_loop(k, polynomials_outer):
-            # compute poly_diff = rows - rows_shifted (whole matrix)
-            rows_shifted = jnp.roll(polynomials_outer, 1, axis=0)  # (n,n)
-            poly_diff = polynomials_outer - rows_shifted  # (n,n)
-
-            # Spalte k des denom- und mask-Matrix auswählen (jeweils shape (n,))
-            denom_k = denom_safe_matrix[:, k]  # (n,)
-            mask_k = mask_valid[:, k]  # (n,)
-
-            denom_k_2d = denom_k[:, None]  # (n,1)
-            mask_k_2d = mask_k[:, None]  # (n,1)
-
-            # Nur für i >= k wirken die Differenzen; maskiert für i<k
-            poly_diff_masked = poly_diff * mask_k_2d
-
-            summand1 = polynomials_outer
-            summand2 = - (nodes[:, None] / denom_k_2d) * poly_diff_masked
-
-            div = poly_diff_masked / denom_k_2d  # (n,n)
-            # shifted: insert zero column at left, take div[:, :-1] to align degrees
-            if n > 1:
-                shifted = jnp.pad(div[:, :-1], ((0, 0), (1, 0)))
-            else:
-                shifted = jnp.zeros((n, 1), dtype=dtype)
-
-            new_rows_full = summand1 + summand2 + shifted  # (n,n)
-            # Für i < k ist poly_diff_masked = 0 => new_rows_full[i] == summand1[i] (also unverändert)
-
-            return new_rows_full
-
-        polynomials_final = jax.lax.fori_loop(1, n, outer_loop, polynomials)
-
-        # letzte Zeile = Monom-Koeffizienten
-        return polynomials_final[n - 1]
-
     # @staticmethod
     # def _internal_perform_action_(nodes, values) -> jnp.ndarray:
-    #     n: int = len(nodes)
+    #     n: int = nodes.shape[0]
+    #     dtype = values.dtype
+    #     eps = jnp.finfo(dtype).eps
     #
-    #     # Initialize coefficients array with function values
-    #     initial_polynomials = jnp.zeros((n, n)).at[:, 0].set(values)
+    #     # 1) Anfangsmatrix (n x n): Spalte 0 = Werte
+    #     polynomials = jnp.zeros((n, n), dtype=dtype).at[:, 0].set(values)
     #
-    #     # Compute divided differences of increasing order
+    #     # 2) Präberechnungen mit statischen Shapes:
+    #     # nodes_rolled_matrix[:, k] = nodes rolled by k  -> shape (n, n)
+    #     nodes_rolled = jnp.stack([jnp.roll(nodes, k) for k in range(n)], axis=1)  # (n, n)
+    #
+    #     # denom_matrix[i, k] = nodes[i] - nodes[i-k]  (für k=0 ergibt 0, wir nutzen k>=1 später)
+    #     denom_matrix = nodes[:, None] - nodes_rolled  # (n, n)
+    #
+    #     # mask_valid[i, k] = (i >= k)
+    #     idx = jnp.arange(n)
+    #     mask_valid = (idx[:, None] >= jnp.arange(n)[None, :])  # (n, n) boolean
+    #
+    #     # Ersetze in denom_matrix nahe 0 durch eps (sicherer Divisor)
+    #     denom_safe_matrix = jnp.where(jnp.abs(denom_matrix) > eps, denom_matrix,
+    #                                   jnp.sign(denom_matrix) * eps + eps)
+    #
+    #     # 3) Äußere Schleife über k: pro k benutzen wir die bereits berechneten Spalten k
     #     def outer_loop(k, polynomials_outer):
-    #         # Update entries for current order of divided differences
-    #         def inner_loop(i, polynomials_inner):
-    #             node_difference: jnp.ndarray = nodes[i] - nodes[i - k]
-    #             polynomial_difference: jnp.ndarray = polynomials_outer[i] - polynomials_outer[i - 1]
+    #         # compute poly_diff = rows - rows_shifted (whole matrix)
+    #         rows_shifted = jnp.roll(polynomials_outer, 1, axis=0)  # (n,n)
+    #         poly_diff = polynomials_outer - rows_shifted  # (n,n)
     #
-    #             summand1: jnp.ndarray = polynomials_outer[i]
-    #             summand2: jnp.ndarray = - nodes[i] / node_difference * polynomial_difference
-    #             summand3: jnp.ndarray = jnp.roll(polynomial_difference / node_difference, 1, axis=0)
+    #         # Spalte k des denom- und mask-Matrix auswählen (jeweils shape (n,))
+    #         denom_k = denom_safe_matrix[:, k]  # (n,)
+    #         mask_k = mask_valid[:, k]  # (n,)
     #
-    #             return polynomials_inner.at[i].set(summand1 + summand2 + summand3)
+    #         denom_k_2d = denom_k[:, None]  # (n,1)
+    #         mask_k_2d = mask_k[:, None]  # (n,1)
     #
-    #         return jax.lax.fori_loop(k, n, inner_loop, polynomials_outer)
+    #         # Nur für i >= k wirken die Differenzen; maskiert für i<k
+    #         poly_diff_masked = poly_diff * mask_k_2d
     #
-    #     return jax.lax.fori_loop(1, n, outer_loop, initial_polynomials)[n - 1]
+    #         summand1 = polynomials_outer
+    #         summand2 = - (nodes[:, None] / denom_k_2d) * poly_diff_masked
+    #
+    #         div = poly_diff_masked / denom_k_2d  # (n,n)
+    #         # shifted: insert zero column at left, take div[:, :-1] to align degrees
+    #         if n > 1:
+    #             shifted = jnp.pad(div[:, :-1], ((0, 0), (1, 0)))
+    #         else:
+    #             shifted = jnp.zeros((n, 1), dtype=dtype)
+    #
+    #         new_rows_full = summand1 + summand2 + shifted  # (n,n)
+    #         # Für i < k ist poly_diff_masked = 0 => new_rows_full[i] == summand1[i] (also unverändert)
+    #
+    #         return new_rows_full
+    #
+    #     polynomials_final = jax.lax.fori_loop(1, n, outer_loop, polynomials)
+    #
+    #     # letzte Zeile = Monom-Koeffizienten
+    #     return polynomials_final[n - 1]
+
+    @staticmethod
+    def _internal_perform_action_(nodes, values) -> jnp.ndarray:
+        n: int = len(nodes)
+
+        # Initialize coefficients array with function values
+        initial_polynomials = jnp.zeros((n, n)).at[:, 0].set(values)
+
+        # Compute divided differences of increasing order
+        def outer_loop(k, polynomials_outer):
+            # Update entries for current order of divided differences
+            def inner_loop(i, polynomials_inner):
+                node_difference: jnp.ndarray = nodes[i] - nodes[i - k]
+                polynomial_difference: jnp.ndarray = polynomials_outer[i] - polynomials_outer[i - 1]
+
+                summand1: jnp.ndarray = polynomials_outer[i]
+                summand2: jnp.ndarray = - nodes[i] / node_difference * polynomial_difference
+                summand3: jnp.ndarray = jnp.roll(polynomial_difference / node_difference, 1, axis=0)
+
+                return polynomials_inner.at[i].set(summand1 + summand2 + summand3)
+
+            return jax.lax.fori_loop(k, n, inner_loop, polynomials_outer)
+
+        return jax.lax.fori_loop(1, n, outer_loop, initial_polynomials)[n - 1]
 
     # def _internal_perform_action_(nodes, values) -> jnp.ndarray:
     #     data_type: DTypeLike = self._pipeline_data_[0].data_type
