@@ -7,8 +7,6 @@ from functions.defaults.default_interpolants.aitken_neville_interpolant import A
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.aitken_neville_interpolation_core_meta_info import \
     aitken_neville_interpolation_core_meta_info
-from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \
-    AOTCInterpolationCore
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import \
     pipeline_component
@@ -35,10 +33,10 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
 
-        data_type = self._pipeline_data_[0].data_type
+        data_type: DTypeLike = pipeline_data[0].data_type
 
-        nodes_dummy = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
-        values_dummy = jnp.empty_like(pipeline_data[0].interpolation_values, dtype=data_type)
+        nodes_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
+        values_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_values, dtype=data_type)
 
         self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower(nodes_dummy, values_dummy).compile()
         # print(f"Jaxpr {len(nodes_dummy)}:\n", jax.make_jaxpr(self._internal_perform_action_)(nodes_dummy, values_dummy))
@@ -141,7 +139,7 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     #     return polynomials_final[n - 1]
 
     @staticmethod
-    def _internal_perform_action_(nodes, values) -> jnp.ndarray:
+    def _internal_perform_action_(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.ndarray:
         n: int = len(nodes)
 
         # Initialize coefficients array with function values

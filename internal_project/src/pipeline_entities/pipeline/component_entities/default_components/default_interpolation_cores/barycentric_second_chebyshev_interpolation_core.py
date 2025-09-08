@@ -1,12 +1,12 @@
+import jax
 import jax.numpy as jnp
+from jax import block_until_ready
 
 from jax.typing import DTypeLike
 
 from functions.defaults.default_interpolants.barycentric_second_interpolant import BarycentricSecondInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_second_interpolation_core_meta_info import \
     barycentric_second_interpolation_core_meta_info
-from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \
-    AOTCInterpolationCore
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
@@ -15,12 +15,25 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="barycentric2 chebyshev interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)
-class BarycentricSecondChebyshevInterpolationCore(AOTCInterpolationCore):
+class BarycentricSecondChebyshevInterpolationCore(InterpolationCore):
+    """
+    TODO
+    """
+
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    _compiled_jax_callable_: callable
+
+
+
     ###################
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
+
+        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower().compile()
 
 
 
@@ -28,27 +41,20 @@ class BarycentricSecondChebyshevInterpolationCore(AOTCInterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
         weights: jnp.ndarray = self._compiled_jax_callable_()
+        block_until_ready(weights)
 
         interpolant = BarycentricSecondInterpolant(
             name="Barycentric2 Chebyshev",
-            nodes=pipeline_data.interpolation_nodes,
-            values=pipeline_data.interpolation_values,
+            nodes=pd.interpolation_nodes,
+            values=pd.interpolation_values,
             weights=weights
         )
 
-        pipeline_data.interpolant = interpolant
-        return pipeline_data
-
-
-
-    ##########################
-    ### Overridden methods ###
-    ##########################
-    def _get_internal_perform_action_function_(self) -> callable:
-        return self._internal_perform_action_
+        pd.interpolant = interpolant
+        return pd
 
 
 

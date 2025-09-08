@@ -1,4 +1,5 @@
 import jax
+from jax import block_until_ready
 
 from jax.typing import DTypeLike
 
@@ -16,18 +17,32 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
-class NewtonInterpolationCore(AOTCInterpolationCore):
+class NewtonInterpolationCore(InterpolationCore):
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
 
     Returns:
          coefficients: 1D array of coefficients computed via divided differences.
     """
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    _compiled_jax_callable_: callable
+
+
+
     ###################
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
+
+        data_type: DTypeLike = pipeline_data[0].data_type
+
+        nodes_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
+        values_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_values, dtype=data_type)
+
+        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower(nodes_dummy, values_dummy).compile()
 
 
 
@@ -35,37 +50,31 @@ class NewtonInterpolationCore(AOTCInterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
-        divided_differences: jnp.ndarray = self._compiled_jax_callable_()
+        nodes: jnp.ndarray = pd.interpolation_nodes.astype(pd.data_type)
+        values: jnp.ndarray = pd.interpolation_values.astype(pd.data_type)
+
+        divided_differences: jnp.ndarray = self._compiled_jax_callable_(nodes, values)
+        block_until_ready(divided_differences)
 
         interpolant = NewtonInterpolant(
             name="Newton",
-            nodes=pipeline_data.interpolation_nodes,
+            nodes=pd.interpolation_nodes,
             divided_differences=divided_differences
         )
 
-        pipeline_data.interpolant = interpolant
-        return pipeline_data
-
-
-
-    ##########################
-    ### Overridden methods ###
-    ##########################
-    def _get_internal_perform_action_function_(self) -> callable:
-        return self._internal_perform_action_
+        pd.interpolant = interpolant
+        return pd
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _internal_perform_action_(self) -> jnp.ndarray:
-        data_type: DTypeLike = self._pipeline_data_[0].data_type
-        nodes = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
-        values = self._pipeline_data_[0].interpolation_values.astype(data_type)
-        n: int = self._pipeline_data_[0].node_count
+    @staticmethod
+    def _internal_perform_action_(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.ndarray:
+        n: int = nodes.shape[0]
 
         # Initialize coefficients array with function values
         coefficients = values.copy()
