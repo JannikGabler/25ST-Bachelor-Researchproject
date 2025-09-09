@@ -208,11 +208,11 @@ class CLI:
         RichUtilities.write_lines_in_panel(
             "Loading custom pipelines may execute arbitrary code. "
             "Only load files and directory from trusted sources!\n"
-            "Would you like to proceed? [y/n]", style="yellow")
+            "Would you like to proceed? [Y/n]", style="yellow")
 
         RichUtilities.close_panel()
 
-        if RichUtilities.get_yes_no_input() is False:
+        if not RichUtilities.get_yes_no_input():
             sys.exit(0)
 
 
