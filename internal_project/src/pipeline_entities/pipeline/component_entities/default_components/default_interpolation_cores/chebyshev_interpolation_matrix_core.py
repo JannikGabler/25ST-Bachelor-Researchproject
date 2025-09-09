@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+from jax import block_until_ready
 from jax.typing import DTypeLike
 
 from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
@@ -20,12 +21,8 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
 )
 
 
-@pipeline_component(
-    id="chebyshev interpolation matrix",
-    type=InterpolationCore,
-    meta_info=chebyshev_interpolation_matrix_core_meta_info,
-)
-class ChebyshevInterpolationMatrixCore(AOTCInterpolationCore):
+@pipeline_component(id="chebyshev interpolation matrix", type=InterpolationCore, meta_info=chebyshev_interpolation_matrix_core_meta_info)
+class ChebyshevInterpolationMatrixCore(InterpolationCore):
     """
     Builds the Chebyshev (first-kind) interpolation/Vandermonde matrix M for the
     given interpolation nodes in the current PipelineData.
@@ -39,41 +36,52 @@ class ChebyshevInterpolationMatrixCore(AOTCInterpolationCore):
       map them beforehand or add a mapping step here.
     - The result is stored on the PipelineData as `interpolation_matrix`.
     """
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    _compiled_jax_callable_: callable
+
+
 
     ###################
     ### Constructor ###
     ###################
-    def __init__(
-        self,
-        pipeline_data: list[PipelineData],
-        additional_execution_data: AdditionalComponentExecutionData,
-    ) -> None:
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
+
+        data_type: DTypeLike = pipeline_data[0].data_type
+
+        nodes_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
+
+        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower(nodes_dummy).compile()
+
+
 
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
-        interpolation_matrix: jnp.ndarray = self._compiled_jax_callable_()
+        nodes: jnp.ndarray = pd.interpolation_nodes.astype(pd.data_type)
+
+        interpolation_matrix: jnp.ndarray = self._compiled_jax_callable_(nodes)
+        block_until_ready(interpolation_matrix)
+
         # Expose the matrix on the pipeline data object
-        pipeline_data.interpolation_matrix = interpolation_matrix
+        pd.interpolation_matrix = interpolation_matrix
 
         # (Optional) If your pipeline expects an "interpolant" object,
         # you could wrap this matrix elsewhere to solve M c = y.
-        return pipeline_data
+        return pd
 
-    ##########################
-    ### Overridden methods ###
-    ##########################
-    def _get_internal_perform_action_function_(self) -> callable:
-        return self._internal_perform_action_
+
 
     #######################
     ### Private methods ###
     #######################
-    def _internal_perform_action_(self) -> jnp.ndarray:
+    @staticmethod
+    def _internal_perform_action_(nodes: jnp.ndarray) -> jnp.ndarray:
         """
         Construct M with entries M[i, j] = T_j(x_i), j = 0..n-1.
 
@@ -81,16 +89,14 @@ class ChebyshevInterpolationMatrixCore(AOTCInterpolationCore):
         - Uses θ_i = arccos(x_i) and T_j(x_i) = cos(j * θ_i).
         - Fully JAX-compatible (jit/compile-ready).
         """
-        data_type: DTypeLike = self._pipeline_data_[0].data_type
-        x: jnp.ndarray = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
-        n: int = self._pipeline_data_[0].node_count  # number of nodes
+        n: int = nodes.shape[0]  # number of nodes
 
         # Clip to [-1, 1] for numerical safety before arccos
-        x_clipped = jnp.clip(x, -1.0, 1.0)
-        theta = jnp.arccos(x_clipped)
+        nodes_clipped = jnp.clip(nodes, -1.0, 1.0)
+        theta = jnp.arccos(nodes_clipped)
 
         # Allocate matrix M (n x n): columns are T_j, j=0..n-1
-        M0: jnp.ndarray = jnp.zeros((n, n), dtype=data_type)
+        M0: jnp.ndarray = jnp.zeros((n, n), dtype=nodes.dtype)
 
         def fill_col(j: int, M: jnp.ndarray) -> jnp.ndarray:
             col = jnp.cos(j * theta)  # T_j(x) = cos(j arccos x)

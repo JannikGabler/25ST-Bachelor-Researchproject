@@ -1,12 +1,10 @@
 import jax
 import jax.numpy as jnp
-from jax.typing import DTypeLike
+from jax import block_until_ready
 
 from functions.defaults.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.barycentric_first_interpolation_core_meta_info import \
     barycentric_first_interpolation_core_meta_info
-from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import \
-    AOTCInterpolationCore
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 
 
@@ -16,18 +14,31 @@ from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import Pip
 
 
 @pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
-class BarycentricFirstInterpolationCore(AOTCInterpolationCore):
+class BarycentricFirstInterpolationCore(InterpolationCore):
     """
     Computes the barycentric weights for the first form of the barycentric interpolation formula.
 
     Returns:
         1D array containing the barycentric weights.
     """
+    ###############################
+    ### Attributes of instances ###
+    ###############################
+    _compiled_jax_callable_: callable
+
+
+
     ###################
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_data)
+
+        data_type = pipeline_data[0].data_type
+
+        nodes_dummy = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
+
+        self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower(nodes_dummy).compile()
 
 
 
@@ -35,38 +46,32 @@ class BarycentricFirstInterpolationCore(AOTCInterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        pd: PipelineData = self._pipeline_data_[0]
 
-        weights: jnp.ndarray = self._compiled_jax_callable_()
+        nodes: jnp.ndarray = pd.interpolation_nodes.astype(pd.data_type)
+
+        weights: jnp.ndarray = self._compiled_jax_callable_(nodes)
+        block_until_ready(weights)
 
         interpolant = BarycentricFirstInterpolant(
             name="Barycentric1",
-            nodes=pipeline_data.interpolation_nodes,
-            values=pipeline_data.interpolation_values,
+            nodes=pd.interpolation_nodes,
+            values=pd.interpolation_values,
             weights=weights
         )
 
-        pipeline_data.interpolant = interpolant
+        pd.interpolant = interpolant
 
-        return pipeline_data
-
-
-
-    ##########################
-    ### Overridden methods ###
-    ##########################
-    def _get_internal_perform_action_function_(self) -> callable:
-        return self._internal_perform_action_
+        return pd
 
 
 
     #######################
     ### Private methods ###
     #######################
-    def _internal_perform_action_(self) -> jnp.ndarray:
-        data_type: DTypeLike = self._pipeline_data_[0].data_type
-        nodes: jnp.ndarray = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
-        n: int = self._pipeline_data_[0].node_count
+    @staticmethod
+    def _internal_perform_action_(nodes) -> jnp.ndarray:
+        n: int = nodes.shape[0]
 
         initial_weights: jnp.ndarray = jnp.empty_like(nodes)
 
