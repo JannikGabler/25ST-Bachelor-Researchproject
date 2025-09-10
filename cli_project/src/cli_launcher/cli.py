@@ -40,6 +40,7 @@ class CLI:
         self.directory = None
         self.pipeline_config_file = None
         self.pipeline_input_file = None
+        self.skip_trust_warning = False
 
 
 
@@ -77,7 +78,7 @@ class CLI:
 
         # Skip the arbitrary code execution trust warning
         arg_parser.add_argument(
-            "--skip-trust-warning",
+            "-st", "--skip-trust-warning",
             action="store_true",
             help="Skips the security warning prompt."
         )
@@ -140,6 +141,7 @@ class CLI:
 
 
     def _parse_argument_namespace_(self, arg_namespace: Namespace) -> None:
+        self.skip_trust_warning = arg_namespace.skip_trust_warning
         self._parse_directory_in_argument_namespace_(arg_namespace)
         self._parse_conf_file_in_argument_namespace_(arg_namespace)
         self._parse_input_file_in_argument_namespace_(arg_namespace)
@@ -202,17 +204,19 @@ class CLI:
 
 
 
-    @classmethod
-    def _perform_security_prompt_(cls) -> None:
+    def _perform_security_prompt_(self) -> None:
+        if self.skip_trust_warning:
+            return
+
         RichUtilities.open_panel("Security warning")
         RichUtilities.write_lines_in_panel(
             "Loading custom pipelines may execute arbitrary code. "
             "Only load files and directory from trusted sources!\n"
-            "Would you like to proceed? [y/n]", style="yellow")
+            "Would you like to proceed? [Y/n]", style="yellow")
 
         RichUtilities.close_panel()
 
-        if RichUtilities.get_yes_no_input() is False:
+        if not RichUtilities.get_yes_no_input():
             sys.exit(0)
 
 

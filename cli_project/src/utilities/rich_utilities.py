@@ -162,15 +162,19 @@ class RichUtilities:
 
 
     @classmethod
-    def get_yes_no_input(cls, repeat_after_invalid_input: bool=True) -> bool | None:
+    def get_yes_no_input(cls, repeat_after_invalid_input: bool=True, default_yes: bool = True) -> bool | None:
+        """
+        Prompts the user for yes or no. If default_yes is set to True (default), entering nothing will return True.
+        If default_yes is set to False, entering nothing will return False.
+        """
         prompt = "-> "
 
         while True:
             user_input = Prompt.ask(prompt).lower() #input(prompt).lower()
 
-            if user_input == "y" or user_input == "yes":
+            if user_input == "y" or user_input == "yes" or (default_yes and user_input == ""):
                 return True
-            elif user_input == "n" or user_input == "no":
+            elif user_input == "n" or user_input == "no" or (not default_yes and user_input == ""):
                 return False
             elif not repeat_after_invalid_input:
                 return None
