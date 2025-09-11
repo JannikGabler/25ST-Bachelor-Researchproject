@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_input.pipeline_input import PipelineInput
 from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 
 

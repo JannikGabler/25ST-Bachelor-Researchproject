@@ -3,7 +3,7 @@ from general_data_structures.directional_acyclic_graph.directional_acyclic_graph
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.static_constraint import StaticConstraint
 from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
 
 
 class MaxPredecessorsConstraint(StaticConstraint):

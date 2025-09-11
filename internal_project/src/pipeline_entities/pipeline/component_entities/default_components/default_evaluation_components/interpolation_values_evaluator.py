@@ -9,7 +9,7 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.
 from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import EvaluatorComponent
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 @pipeline_component(id="interpolation values evaluator", type=EvaluatorComponent, meta_info=interpolation_values_evaluator_meta_info)

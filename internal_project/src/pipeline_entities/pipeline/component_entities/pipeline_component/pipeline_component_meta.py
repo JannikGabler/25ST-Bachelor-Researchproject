@@ -3,7 +3,7 @@ from abc import ABCMeta
 from typing import get_type_hints
 
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 class PipelineComponentMeta(ABCMeta):

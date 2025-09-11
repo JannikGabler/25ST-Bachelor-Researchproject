@@ -4,8 +4,8 @@ from general_data_structures.directional_acyclic_graph.directional_acyclic_graph
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_input.pipeline_input import PipelineInput
 
 
 @dataclass(frozen=True)

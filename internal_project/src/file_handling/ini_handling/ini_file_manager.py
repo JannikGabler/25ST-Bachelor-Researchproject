@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from exceptions.not_instantiable_error import NotInstantiableError
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from utils.ini_format_utils import INIFormatUtils
 
 

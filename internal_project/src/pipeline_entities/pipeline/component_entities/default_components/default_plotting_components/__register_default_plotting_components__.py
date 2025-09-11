@@ -2,6 +2,7 @@
 
 def register_plotting_components():
     from . import interpolants_plot_component
+    from . import old_interpolants_plot_component
     from . import absolute_error_plot_component
     from . import relative_error_plot_component
     from . import interpolant_evaluation_plot_component

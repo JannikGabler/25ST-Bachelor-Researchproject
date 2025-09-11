@@ -11,7 +11,7 @@ from pipeline_entities.pipeline.component_entities.default_component_types.inter
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 @pipeline_component(id="barycentric2 chebyshev interpolation", type=InterpolationCore, meta_info=barycentric_second_interpolation_core_meta_info)

@@ -13,7 +13,7 @@ from pipeline_entities.pipeline.component_entities.default_component_types.plot_
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import \
     pipeline_component
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from utils.absolute_error_plot_component_utils import AbsoluteErrorPlotComponentUtils
 
 

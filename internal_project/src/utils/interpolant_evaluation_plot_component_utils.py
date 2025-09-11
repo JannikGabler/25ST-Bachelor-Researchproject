@@ -3,11 +3,11 @@ from jax import Array
 
 from matplotlib import pyplot as plt
 
-from constants.internal_logic_constants import InterpolantsPlotComponentConstants
+from constants.internal_logic_constants import OldInterpolantsPlotComponentConstants
 from functions.abstracts.compilable_function import CompilableFunction
 from functions.abstracts.compiled_function import CompiledFunction
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 from utils.plot_utils import PlotUtils
@@ -60,7 +60,7 @@ class InterpolantEvaluationPlotComponentUtils:
         evaluation_points: jnp.ndarray = pipeline_data.interpolant_evaluation_points
         interpolant_values: jnp.ndarray = pipeline_data.interpolant_values
 
-        colors = InterpolantsPlotComponentConstants.COLORS # TODO
+        colors = OldInterpolantsPlotComponentConstants.COLORS # TODO
         color: str = colors[plot_index % len(colors)]
         label: str = str(plot_index)
 
@@ -75,10 +75,10 @@ class InterpolantEvaluationPlotComponentUtils:
         interval: jnp.ndarray = main_data.interpolation_interval
 
         plot_points: jnp.ndarray = PlotUtils.create_plot_points(
-            interval, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
+            interval, OldInterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
 
         y_limits: tuple[jnp.ndarray, jnp.ndarray] = cls._calc_y_limits_(
-            main_data.original_function, plot_points, InterpolantsPlotComponentConstants.Y_LIMIT_FACTOR)
+            main_data.original_function, plot_points, OldInterpolantsPlotComponentConstants.Y_LIMIT_FACTOR)
 
         return plot_points, y_limits
 
@@ -127,7 +127,7 @@ class InterpolantEvaluationPlotComponentUtils:
 
     @staticmethod
     def _create_plot_parameters_(function_plot_data: FunctionPlotData, function_index: int) -> tuple[float, str, int, str]:
-        colors = InterpolantsPlotComponentConstants.COLORS # TODO
+        colors = OldInterpolantsPlotComponentConstants.COLORS # TODO
 
         line_width: float = 4
         color: str = colors[function_index % len(colors)]

@@ -6,8 +6,8 @@ from matplotlib import pyplot as plt
 from constants.internal_logic_constants import AbsoluteErrorPlotComponentConstants
 from functions.abstracts.compilable_function import CompilableFunction
 from functions.abstracts.compiled_function import CompiledFunction
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 from utils.plot_utils import PlotUtils

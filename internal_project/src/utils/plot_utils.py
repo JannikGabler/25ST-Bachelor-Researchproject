@@ -1,11 +1,13 @@
+import math
+
 import jax.numpy as jnp
 from numpy.typing import DTypeLike
 
 from exceptions.not_instantiable_error import NotInstantiableError
 from functions.abstracts.compilable_function import CompilableFunction
 from functions.abstracts.compiled_function import CompiledFunction
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.large_data_classes.plotting_data.function_plot_data import FunctionPlotData
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 
@@ -31,6 +33,13 @@ class PlotUtils:
 
 
     @staticmethod
+    def evaluate_function(function: CompilableFunction, plot_points: jnp.ndarray) -> jnp.ndarray:
+        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
+        return compiled_function.evaluate(plot_points)
+
+
+
+    @staticmethod
     def replace_nan_with_inf(array: jnp.ndarray) -> jnp.ndarray:
         return jnp.where(jnp.isnan(array), jnp.inf, array)
 
@@ -50,6 +59,68 @@ class PlotUtils:
         base_size = 200 * modifier
         size = base_size / (num_points ** 0.5)  # Quadratwurzel-Abnahme: visuell angenehm
         return max(size, min_size)
+
+
+
+    @staticmethod
+    def scatter_size_for_equidistant_circles(number_of_circles: int, length_of_axis_inch: float) -> float:
+        length_of_axis_pt: float = length_of_axis_inch * 72
+        scatter_diameter_pt: float = length_of_axis_pt / number_of_circles
+
+        return math.pi *  (scatter_diameter_pt / 2) ** 2
+
+
+
+    @staticmethod
+    def scatter_distance_for_equidistant_circles(number_of_circles: int, length_of_axis_coords: jnp.ndarray) -> jnp.ndarray:
+        return length_of_axis_coords / number_of_circles
+
+
+
+    @staticmethod
+    def scatter_touch_distance(x_min: float, x_max: float, y_min: float, y_max: float, scatter_size: float, fig_width=6, fig_height=4, dpi=100):
+        """
+        Berechne den minimalen Abstand in Datenkoordinaten,
+        den zwei Scatter-Punkte (Kreise) haben müssen, um sich exakt zu berühren.
+
+        Parameter:
+            x_min, x_max, y_min, y_max : float
+                Achsenlimits (Datenbereich)
+            scatter_size : float
+                Scatter-Parameter (Markergröße in pt^2)
+            fig_width, fig_height : float
+                Größe der Figur in Zoll (Standard: 6x4)
+            dpi : int
+                Auflösung der Figur in dpi (Standard: 100)
+
+        Rückgabe:
+            (dx, dy) : tuple of float
+                Radius in x- und y-Datenkoordinaten
+                Die Distanz zweier Punkte zum Berühren ist dann 2*dx bzw. 2*dy
+                (abhängig davon, ob man sie horizontal oder vertikal betrachtet).
+        """
+        # Radius in Punkten
+        r_pt = math.sqrt(scatter_size / math.pi)
+        # Umrechnung: pt -> inch
+        r_inch = r_pt / 72.0
+
+        # Größe der Achsen in Zoll
+        ax_width_inch = fig_width
+        ax_height_inch = fig_height
+
+        # Datenbereich
+        x_range = x_max - x_min
+        y_range = y_max - y_min
+
+        # Daten pro Zoll
+        x_per_inch = x_range / ax_width_inch
+        y_per_inch = y_range / ax_height_inch
+
+        # Radius in Datenkoordinaten
+        dx = 2.75 * r_inch * x_per_inch
+        dy = 2.75 * r_inch * y_per_inch
+
+        return dx, dy
 
 
 
@@ -118,8 +189,8 @@ class PlotUtils:
 
     @classmethod
     def _extract_connectable_segments_and_single_points_(cls, function_index: int, plot_points: jnp.ndarray,
-                    function_values: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) \
-                    -> tuple[list[list[tuple[jnp.ndarray, jnp.ndarray]]], list[tuple[jnp.ndarray, jnp.ndarray]]]:
+                function_values: jnp.ndarray, y_limits: tuple[jnp.ndarray, jnp.ndarray]) \
+                -> tuple[list[list[tuple[jnp.ndarray, jnp.ndarray]]], list[tuple[jnp.ndarray, jnp.ndarray]]]:
 
         connectable_indices_segments, single_point_indices = cls._extract_connectable_segments_and_single_points_indices_(function_values)
 
@@ -132,7 +203,8 @@ class PlotUtils:
 
         for single_point_index in single_point_indices:
             old_y_value: jnp.ndarray = function_values[single_point_index]
-            new_y_value: jnp.ndarray = y_limits[0] - function_index / 4 if jnp.isneginf(old_y_value) else y_limits[1] + function_index / 4
+            y_offset: float = function_index * 2 * math.sqrt(PlotUtils.adaptive_scatter_size(len(plot_points)) / math.pi)
+            new_y_value: jnp.ndarray = y_limits[0] - y_offset if jnp.isneginf(old_y_value) else y_limits[1] + y_offset
             single_points.append((plot_points[single_point_index], new_y_value))
 
         return connectable_segments, single_points
@@ -163,3 +235,29 @@ class PlotUtils:
 
 
 
+
+# s: float = 600
+#
+# plt.figure(figsize=(6, 4))
+#
+# x_factor = 2
+# y_factor = 3
+#
+#
+#
+#
+# plt.scatter(0, 0, s=s)
+# plt.scatter(x_factor, y_factor, s=s)
+# plt.scatter(x_factor, -y_factor, s=s)
+# plt.scatter(-x_factor, y_factor, s=s)
+# plt.scatter(-x_factor, -y_factor, s=s)
+#
+# dx, dy = PlotUtils.scatter_touch_distance(-x_factor, x_factor, -y_factor, y_factor, s)
+#
+# plt.scatter(2.75 * dx, 0, s=s)
+# plt.scatter(0, 2.75 * dy, s=s)
+#
+# # plt.yticks([0.5 * i - 1.5 for i in range(7)])
+# # plt.xticks([0.5 * i - 1.5 for i in range(7)])
+#
+# plt.show()
