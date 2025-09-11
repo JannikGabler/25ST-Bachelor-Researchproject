@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from jax import block_until_ready
 
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.evaluation_components.aitken_neville_evaluator_meta_info import \
     aitken_neville_evaluator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import EvaluatorComponent

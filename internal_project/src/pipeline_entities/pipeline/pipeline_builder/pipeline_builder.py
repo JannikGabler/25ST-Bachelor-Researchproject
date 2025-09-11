@@ -1,6 +1,6 @@
 from exceptions.not_instantiable_error import NotInstantiableError
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_input.pipeline_input import PipelineInput
 from pipeline_entities.pipeline.pipeline import Pipeline
 
 

@@ -5,7 +5,7 @@ from jax.typing import DTypeLike
 
 from functions.abstracts.compilable_function import CompilableFunction
 from functions.abstracts.compiled_function import CompiledFunction
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.evaluation_components.interpolant_evaluator_meta_info import \
     interpolant_evaluator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import EvaluatorComponent

@@ -3,12 +3,9 @@ import jax.numpy as jnp
 from jax import block_until_ready
 from jax.typing import DTypeLike
 
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.chebyshev_interpolation_matrix_core_meta_info import (
     chebyshev_interpolation_matrix_core_meta_info,
-)
-from pipeline_entities.pipeline.component_entities.default_component_types.aotc_interpolation_core import (
-    AOTCInterpolationCore,
 )
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import (
     InterpolationCore,

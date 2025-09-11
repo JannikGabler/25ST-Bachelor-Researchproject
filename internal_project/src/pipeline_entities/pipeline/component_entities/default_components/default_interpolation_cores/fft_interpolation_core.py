@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 
 from functions.defaults.default_interpolants.fft_interpolant import FastFourierTransformationInterpolant
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.fft_interpolation_core_meta_info import \
     fft_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore

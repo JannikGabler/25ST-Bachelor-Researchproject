@@ -15,7 +15,7 @@ from general_data_structures.tree.tree_node import TreeNode
 from exceptions.evaluation_error import EvaluationError
 from exceptions.type_annotation_error import TypeAnnotationError
 from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from utils.typing_utils import TypingUtils
 
 

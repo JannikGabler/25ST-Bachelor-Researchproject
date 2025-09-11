@@ -1,9 +1,8 @@
 import time
 
-import jax
 import jax.numpy as jnp
 
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.default_components.default_evaluation_components.aitken_neville_evaluator import \
     AitkenNevilleEvaluator
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \

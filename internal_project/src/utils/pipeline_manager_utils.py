@@ -3,9 +3,9 @@ from dataclasses import fields
 
 from exceptions.not_instantiable_error import NotInstantiableError
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_input.pipeline_input import PipelineInput
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData

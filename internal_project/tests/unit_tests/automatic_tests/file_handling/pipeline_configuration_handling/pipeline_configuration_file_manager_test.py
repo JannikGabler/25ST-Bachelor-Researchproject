@@ -5,7 +5,7 @@ from pathlib import Path
 
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
+from data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
 
 
 class MyTestCase(unittest.TestCase):

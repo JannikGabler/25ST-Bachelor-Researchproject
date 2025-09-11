@@ -7,7 +7,7 @@ import jax.numpy as jnp
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 @pipeline_component(id="equidistant node generator", type=NodeGenerator, meta_info=equidistant_node_generator_meta_info)

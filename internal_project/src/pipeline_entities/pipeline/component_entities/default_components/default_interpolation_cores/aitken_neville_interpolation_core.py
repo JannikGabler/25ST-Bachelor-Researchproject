@@ -4,7 +4,7 @@ from jax import block_until_ready
 from jax.typing import DTypeLike
 
 from functions.defaults.default_interpolants.aitken_neville_interpolant import AitkenNevilleInterpolant
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.interpolation_cores.aitken_neville_interpolation_core_meta_info import \
     aitken_neville_interpolation_core_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore

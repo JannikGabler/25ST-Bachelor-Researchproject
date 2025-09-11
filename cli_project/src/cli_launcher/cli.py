@@ -9,11 +9,11 @@ from constants.cli_project_constants import CLIConstants
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import \
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_configuration.pipeline_configuration_data import \
     PipelineConfigurationData
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
@@ -56,7 +56,9 @@ class CLI:
         self._print_results_(pipeline_manager)
 
         RichUtilities.close_panel()
-        input("Press enter to exit.")
+
+        if CLIConstants.WAIT_FOR_ENTER_TO_EXIT:
+            input("Press enter to exit.")
 
 
 

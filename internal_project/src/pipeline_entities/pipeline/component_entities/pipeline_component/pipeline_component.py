@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_meta import PipelineComponentMeta
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 if TYPE_CHECKING:
     from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
