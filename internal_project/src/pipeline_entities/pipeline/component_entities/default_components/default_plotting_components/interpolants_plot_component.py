@@ -58,6 +58,7 @@ class InterpolantsPlotComponent(InterpolationCore):
             template.fig.show()
             plt.show(block=True)
 
+        self._pipeline_data_[0].plots = [template]
         return self._pipeline_data_[0]
     # def perform_action(self) -> PipelineData:
     #     if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
