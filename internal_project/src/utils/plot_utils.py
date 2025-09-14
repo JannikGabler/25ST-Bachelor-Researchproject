@@ -1,4 +1,5 @@
 import math
+from fractions import Fraction
 
 import jax.numpy as jnp
 from numpy.typing import DTypeLike
@@ -27,8 +28,18 @@ class PlotUtils:
     ### Public methods ###
     ######################
     @staticmethod
-    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points, data_type: DTypeLike) -> jnp.ndarray:
-        return jnp.linspace(interval[0], interval[1], amount_of_evaluation_points)
+    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points: int, data_type: DTypeLike) -> jnp.ndarray:
+        return jnp.linspace(interval[0], interval[1], amount_of_evaluation_points, dtype=data_type)
+
+
+
+    @staticmethod
+    def create_exact_plot_points(interval: jnp.ndarray, amount_of_evaluation_points: int) -> list[Fraction]:
+        left_end: Fraction = Fraction.from_float(interval[0].astype(float).item())
+        right_end: Fraction = Fraction.from_float(interval[1].astype(float).item())
+
+        step_size: Fraction = (right_end - left_end) / (amount_of_evaluation_points - 1)
+        return [left_end + i * step_size for i in range(amount_of_evaluation_points)]
 
 
 

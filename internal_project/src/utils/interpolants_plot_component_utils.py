@@ -189,8 +189,8 @@ class InterpolantsPlotComponentUtils:
                 x_values = jnp.array([data.evaluation_points[index] for index in plot_segment])
                 y_values = jnp.array([data.function_values[function_index][index] for index in plot_segment])
 
-                template.ax.plot(x_values, y_values, linewidth=line_width, linestyle=line_style, color=color, alpha=alpha,
-                                 zorder=z_order)
+                template.ax.plot(x_values, y_values, linewidth=line_width, linestyle=line_style, color=color,
+                                 alpha=alpha, zorder=z_order)
 
             for scatter_segment in segments[1]:
                 left_segment_border = data.evaluation_points[scatter_segment[0]]
@@ -250,7 +250,6 @@ class InterpolantsPlotComponentUtils:
 
     @classmethod
     def _set_legend_(cls, template: PlotTemplate, data: _Data_) -> None:
-
         custom_lines: list = [Line2D([0], [0], color='red', marker='o', markersize=8, linestyle='None')]
         labels = ["Nodes"]
 
