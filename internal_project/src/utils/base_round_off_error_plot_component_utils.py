@@ -79,7 +79,6 @@ class BaseRoundOffErrorPlotComponentUtils:
 
         cls._set_legend_(template, data)
         template.ax.grid()
-        template.fig.tight_layout()
 
         return template
 

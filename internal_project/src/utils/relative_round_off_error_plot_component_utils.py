@@ -42,7 +42,10 @@ class RelativeRoundOffErrorPlotComponentUtils:
 
         template.fig.suptitle(f"Relative round-off error plot")
         template.ax.set_xlabel("$x$")
-        template.ax.set_ylabel("$\varrho f(x)$")
+        template.ax.set_ylabel("$\\varrho f(x)$")
+        template.fig.tight_layout()
+
+        return template
 
 
 

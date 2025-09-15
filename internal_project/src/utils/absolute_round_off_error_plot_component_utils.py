@@ -43,6 +43,9 @@ class AbsoluteRoundOffErrorPlotComponentUtils:
         template.fig.suptitle(f"Absolute round-off error plot")
         template.ax.set_xlabel("$x$")
         template.ax.set_ylabel("$\Delta f(x)$")
+        template.fig.tight_layout()
+
+        return template
 
 
 
