@@ -70,21 +70,12 @@ class BaseRoundOffErrorPlotComponentUtils:
         cls._plot_segments_(template, data)
         cls._draw_y_threshold_line_(template, data)
 
-        # template.ax.plot(data.evaluation_points, data.interpolant_values_exact, color="red", label="Fraction result")
-        # original_function_values: jnp.ndarray = PlotUtils.evaluate_function(pipeline_data[0].original_function, data.evaluation_points)
-        # template.ax.plot(data.evaluation_points, original_function_values, color="green", label="Original function")
-
         template.ax.scatter(data.evaluation_points[0], data.border[1][0], alpha=0)
         template.ax.scatter(data.evaluation_points[0], data.border[1][1], alpha=0)
 
         meta_info_str: str = PlotUtils.create_plot_meta_info_str(pipeline_data, additional_data)
 
-        # print("Weights: ", [float(w) for w in data.barycentric_weights_exact])
-
-        template.fig.suptitle(f"Absolute round-off error plot")
         template.ax.set_title(meta_info_str, fontsize=10)
-        template.ax.set_xlabel("$x$")
-        template.ax.set_ylabel("$\Delta f(x)$")
 
         cls._set_legend_(template, data)
         template.ax.grid()

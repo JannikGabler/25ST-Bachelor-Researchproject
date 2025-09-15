@@ -38,7 +38,11 @@ class RelativeRoundOffErrorPlotComponentUtils:
     ######################
     @classmethod
     def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
-        return BaseRoundOffErrorPlotComponentUtils.plot_data(pipeline_data, additional_data, cls._set_relative_round_off_errors_)
+        template: PlotTemplate = BaseRoundOffErrorPlotComponentUtils.plot_data(pipeline_data, additional_data, cls._set_relative_round_off_errors_)
+
+        template.fig.suptitle(f"Relative round-off error plot")
+        template.ax.set_xlabel("$x$")
+        template.ax.set_ylabel("$\varrho f(x)$")
 
 
 
@@ -56,5 +60,5 @@ class RelativeRoundOffErrorPlotComponentUtils:
             interpolant_value_jnp: jnp.ndarray = jnp.array(interpolant_values_float)
 
             abs_round_off_errors: jnp.ndarray = jnp.abs(function_values - interpolant_value_jnp)
-            rel_round_off_errors: jnp.ndarray = abs_round_off_errors / (interpolant_value_jnp + eps)
+            rel_round_off_errors: jnp.ndarray = abs_round_off_errors / (jnp.abs(interpolant_value_jnp) + eps)
             data.round_off_errors.append(rel_round_off_errors)
