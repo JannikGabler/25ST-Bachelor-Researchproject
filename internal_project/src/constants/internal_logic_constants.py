@@ -143,8 +143,8 @@ class RelativeErrorPlotComponentConstants:
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
-class AbsoluteRoundOffErrorPlotComponentConstants:
-    AMOUNT_OF_EVALUATION_POINTS: int = 250
+class BaseRoundOffErrorPlotComponentConstants:
+    AMOUNT_OF_EVALUATION_POINTS: int = 500
 
     DEFAULT_Y_LIMIT: float = 10.0
     Y_LIMIT_ATTRIBUTE_NAME: str = "y_limit"
@@ -152,8 +152,6 @@ class AbsoluteRoundOffErrorPlotComponentConstants:
     Y_THRESHOLD_ATTRIBUTE_NAME: str = "y_threshold"
 
     COLORS = [
-        "black",
-        # "#FF0000",  # Rot
         "#00FF00",  # Grün
         "#00BFFF",  # DeepSkyBlue
         "#FFFF00",  # Gelb
@@ -168,8 +166,19 @@ class AbsoluteRoundOffErrorPlotComponentConstants:
         "#b3b3b3"  # grau
     ]
 
-    LINE_STYLE_DASH_DISTANCE: float = 2.5
+    LINE_WIDTH: int = 2
+    LINE_STYLE_DASH_DISTANCE: float = 1
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     FIGURE_SIZE = (10, 6)
+
+
+
+class AbsoluteRoundOffErrorPlotComponentConstants:
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
+
+
+class RelativeRoundOffErrorPlotComponentConstants:
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
