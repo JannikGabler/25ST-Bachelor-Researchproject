@@ -42,7 +42,7 @@ class RelativeRoundOffErrorPlotComponentUtils:
 
         template.fig.suptitle(f"Relative round-off error plot")
         template.ax.set_xlabel("$x$")
-        template.ax.set_ylabel("$\\varrho f(x)$")
+        template.ax.set_ylabel("$\\delta f(x)$")
         template.fig.tight_layout()
 
         return template
@@ -58,7 +58,7 @@ class RelativeRoundOffErrorPlotComponentUtils:
         eps = jnp.finfo(pipeline_data[0].data_type).eps
 
         for i, pd in enumerate(pipeline_data):
-            function_values: jnp.ndarray = PlotUtils.evaluate_function(pd.interpolant, data.evaluation_points)
+            function_values: jnp.ndarray = PlotUtils.evaluate_function(pd.interpolant, pd.data_type, data.evaluation_points)
             interpolant_values_float: list[float] = [float(value) for value in data.interpolant_values_exact]
             interpolant_value_jnp: jnp.ndarray = jnp.array(interpolant_values_float)
 

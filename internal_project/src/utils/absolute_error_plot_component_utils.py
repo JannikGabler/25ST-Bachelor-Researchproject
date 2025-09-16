@@ -1,11 +1,11 @@
 import jax.numpy as jnp
 from jax import Array
+from jax.typing import DTypeLike
 
 from matplotlib import pyplot as plt
 
 from constants.internal_logic_constants import AbsoluteErrorPlotComponentConstants
 from functions.abstracts.compilable_function import CompilableFunction
-from functions.abstracts.compiled_function import CompiledFunction
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.plotting_data.function_plot_data import FunctionPlotData
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
@@ -46,13 +46,12 @@ class AbsoluteErrorPlotComponentUtils:
         interval: jnp.ndarray = main_data.interpolation_interval
 
         plot_points: jnp.ndarray = PlotUtils.create_plot_points(
-            interval, AbsoluteErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
+            interval, AbsoluteErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
-        compiled_original_function: CompiledFunction = main_data.original_function.compile(len(plot_points), plot_points.dtype)
-        original_function_values: jnp.ndarray = compiled_original_function.evaluate(plot_points)
+        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, main_data.data_type, plot_points)
 
         absolut_errors_list: list[jnp.ndarray] = [ cls._calc_absolute_errors_(plot_points, original_function_values,
-            data.interpolant) for data in pipeline_data ]
+            data.interpolant, data.data_type) for data in pipeline_data ]
 
         y_limits: tuple[jnp.ndarray, jnp.ndarray] = cls._calc_y_limits_(absolut_errors_list, additional_data)
 
@@ -80,10 +79,11 @@ class AbsoluteErrorPlotComponentUtils:
 
     @staticmethod
     def _calc_absolute_errors_(plot_points: jnp.ndarray, original_function_values: jnp.ndarray,
-                               function: CompilableFunction) -> jnp.ndarray:
+                               function: CompilableFunction, data_type: DTypeLike) -> jnp.ndarray:
 
-        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
-        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+        # compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
+        # function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+        function_values: jnp.ndarray = PlotUtils.evaluate_function(function, data_type, plot_points)
 
         return jnp.absolute(original_function_values - function_values)
 

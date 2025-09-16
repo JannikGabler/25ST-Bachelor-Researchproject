@@ -69,7 +69,7 @@ class OldInterpolantsPlotComponentUtils:
         interval: jnp.ndarray = main_data.interpolation_interval
 
         plot_points: jnp.ndarray = PlotUtils.create_plot_points(
-            interval, OldInterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
+            interval, OldInterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
         functions: list[CompilableFunction] = [main_data.original_function] + [data.interpolant for data in
                                                                                pipeline_data]

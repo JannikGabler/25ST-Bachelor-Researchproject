@@ -92,7 +92,7 @@ class BaseRoundOffErrorPlotComponentUtils:
         pd: PipelineData = pipeline_data[0]
 
         data.evaluation_points = PlotUtils.create_plot_points(pd.interpolation_interval,
-                                                              BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, pd.data_type)
+                                                              BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
         data.evaluation_points_exact = PlotUtils.create_exact_plot_points(pd.interpolation_interval,
                                                                           BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)

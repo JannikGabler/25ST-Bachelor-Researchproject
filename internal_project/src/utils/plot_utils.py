@@ -28,8 +28,8 @@ class PlotUtils:
     ### Public methods ###
     ######################
     @staticmethod
-    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points: int, data_type: DTypeLike) -> jnp.ndarray:
-        return jnp.linspace(interval[0], interval[1], amount_of_evaluation_points, dtype=data_type)
+    def create_plot_points(interval: jnp.ndarray, amount_of_evaluation_points: int) -> jnp.ndarray:
+        return jnp.linspace(interval[0], interval[1], amount_of_evaluation_points, dtype=jnp.float32)
 
 
 
@@ -44,9 +44,9 @@ class PlotUtils:
 
 
     @staticmethod
-    def evaluate_function(function: CompilableFunction, plot_points: jnp.ndarray) -> jnp.ndarray:
-        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
-        return compiled_function.evaluate(plot_points)
+    def evaluate_function(function: CompilableFunction, data_type: DTypeLike, plot_points: jnp.ndarray) -> jnp.ndarray:
+        compiled_function: CompiledFunction = function.compile(len(plot_points), data_type)
+        return compiled_function.evaluate(plot_points.astype(data_type))
 
 
 

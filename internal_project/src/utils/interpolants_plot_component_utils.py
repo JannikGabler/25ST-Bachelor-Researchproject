@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass
+from jax.typing import DTypeLike
 
 import jax.numpy as jnp
 from matplotlib.lines import Line2D
@@ -18,6 +19,7 @@ class InterpolantsPlotComponentUtils:
     class _Data_:
         amount_of_functions_to_plot: int | None = None
         functions: list[CompilableFunction] | None = None
+        data_types: list[DTypeLike] | None = None
         evaluation_points: jnp.ndarray | None = None
         function_values: jnp.ndarray | None = None
         function_names: list[str] | None = None
@@ -42,8 +44,9 @@ class InterpolantsPlotComponentUtils:
 
         data.amount_of_functions_to_plot = len(pipeline_data) + 1
         data.evaluation_points = PlotUtils.create_plot_points(pd.interpolation_interval,
-                                                              InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, pd.data_type)
+                                                              InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
         data.functions = [pd.original_function] + [pd.interpolant for pd in pipeline_data]
+        data.data_types = [pd.data_type] + [_pd_.data_type for _pd_ in pipeline_data]
         data.function_values = cls._calc_function_values_(data, pipeline_data)
         data.function_names = [pd.original_function.name] + [pd.interpolant.name for pd in pipeline_data]
         data.y_limits = cls._calc_y_limits_(data.function_values[0])
@@ -85,10 +88,12 @@ class InterpolantsPlotComponentUtils:
     def _calc_function_values_(data: _Data_, pipeline_data: list[PipelineData]) -> jnp.ndarray:
         function_values: jnp.ndarray = jnp.empty((data.amount_of_functions_to_plot, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS))
 
-        function_values = function_values.at[0].set(PlotUtils.evaluate_function(pipeline_data[0].original_function, data.evaluation_points))
+        function_values = function_values.at[0].set(PlotUtils.evaluate_function(
+            pipeline_data[0].original_function, pipeline_data[0].data_type, data.evaluation_points))
 
         for i, pd in enumerate(pipeline_data):
-            function_values = function_values.at[i + 1].set(PlotUtils.evaluate_function(pd.interpolant, data.evaluation_points))
+            function_values = function_values.at[i + 1].set(PlotUtils.evaluate_function(
+                pd.interpolant, pd.data_type, data.evaluation_points))
 
         return function_values
 
@@ -206,8 +211,9 @@ class InterpolantsPlotComponentUtils:
                     scatter_x_values.extend(intermediate_points)
 
                 scatter_x_values = jnp.array(scatter_x_values)
-                compiled_function = data.functions[function_index].compile(len(scatter_x_values), left_segment_border.dtype)
-                actual_y_values: jnp.ndarray = compiled_function.evaluate(scatter_x_values)
+                # compiled_function = data.functions[function_index].compile(len(scatter_x_values), left_segment_border.dtype)
+                # actual_y_values: jnp.ndarray = compiled_function.evaluate(scatter_x_values)
+                actual_y_values = PlotUtils.evaluate_function(data.functions[function_index], data.data_types[function_index], scatter_x_values)
                 actual_y_values = PlotUtils.clamp_function_values(actual_y_values, data.y_limits)
 
                 for x_value, actual_y_value in zip(scatter_x_values, actual_y_values):
