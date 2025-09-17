@@ -47,7 +47,7 @@ class RelativeErrorPlotComponentUtils:
 
         plot_points: jnp.ndarray = PlotUtils.create_plot_points(interval, RelativeErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
-        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, main_data.data_type, plot_points)
+        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, jnp.float32, plot_points)
 
         absolut_errors_list: list[jnp.ndarray] = [ cls._calc_relative_errors_(plot_points, original_function_values,
                                                                               data.interpolant, data.data_type) for data in pipeline_data ]
@@ -81,8 +81,9 @@ class RelativeErrorPlotComponentUtils:
                                function: CompilableFunction, data_type: DTypeLike) -> jnp.ndarray:
 
         function_values: jnp.ndarray = PlotUtils.evaluate_function(function, data_type, plot_points)
+        cast_function_values: jnp.ndarray = function_values.astype(jnp.float32)
 
-        absolute_errors: jnp.ndarray = jnp.absolute(original_function_values - function_values)
+        absolute_errors: jnp.ndarray = jnp.absolute(original_function_values - cast_function_values)
         return absolute_errors / jnp.absolute(original_function_values)
 
 
@@ -130,6 +131,7 @@ class RelativeErrorPlotComponentUtils:
             x_array, y_array = zip(*segment)
             plt.plot(x_array, y_array, linewidth=RelativeErrorPlotComponentConstants.LINE_WIDTH,
                      linestyle=line_style, color=color, label=label if not label_used else None)
+
             label_used = True
 
         for point in single_points:
