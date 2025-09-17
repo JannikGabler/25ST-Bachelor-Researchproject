@@ -48,7 +48,7 @@ class AbsoluteErrorPlotComponentUtils:
         plot_points: jnp.ndarray = PlotUtils.create_plot_points(
             interval, AbsoluteErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
-        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, main_data.data_type, plot_points)
+        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, jnp.float32, plot_points)
 
         absolut_errors_list: list[jnp.ndarray] = [ cls._calc_absolute_errors_(plot_points, original_function_values,
             data.interpolant, data.data_type) for data in pipeline_data ]
@@ -81,11 +81,10 @@ class AbsoluteErrorPlotComponentUtils:
     def _calc_absolute_errors_(plot_points: jnp.ndarray, original_function_values: jnp.ndarray,
                                function: CompilableFunction, data_type: DTypeLike) -> jnp.ndarray:
 
-        # compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
-        # function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
         function_values: jnp.ndarray = PlotUtils.evaluate_function(function, data_type, plot_points)
+        cast_function_values: jnp.ndarray = function_values.astype(jnp.float32)
 
-        return jnp.absolute(original_function_values - function_values)
+        return jnp.absolute(original_function_values - cast_function_values)
 
 
 

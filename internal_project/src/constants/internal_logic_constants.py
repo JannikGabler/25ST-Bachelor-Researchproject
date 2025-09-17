@@ -53,7 +53,7 @@ class OldInterpolantsPlotComponentConstants:
 
 
 class InterpolantsPlotComponentConstants:
-    AMOUNT_OF_EVALUATION_POINTS: int = 250
+    AMOUNT_OF_EVALUATION_POINTS: int = 800
     AMOUNT_OF_INF_SCATTER_POINTS: int = 150
 
     Y_LIMIT_FACTOR: float = 1.0
@@ -83,7 +83,7 @@ class InterpolantsPlotComponentConstants:
 
 
 class AbsoluteErrorPlotComponentConstants:
-    AMOUNT_OF_EVALUATION_POINTS: int = 100
+    AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     LINE_WIDTH: int = 2
 
@@ -114,7 +114,7 @@ class AbsoluteErrorPlotComponentConstants:
 
 
 class RelativeErrorPlotComponentConstants:
-    AMOUNT_OF_EVALUATION_POINTS: int = 100
+    AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     LINE_WIDTH: int = 2
 
@@ -144,7 +144,7 @@ class RelativeErrorPlotComponentConstants:
 
 
 class BaseRoundOffErrorPlotComponentConstants:
-    AMOUNT_OF_EVALUATION_POINTS: int = 500
+    AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     DEFAULT_Y_LIMIT: float = 10.0
     Y_LIMIT_ATTRIBUTE_NAME: str = "y_limit"

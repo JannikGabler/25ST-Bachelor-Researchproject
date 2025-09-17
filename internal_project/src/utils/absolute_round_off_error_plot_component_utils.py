@@ -58,6 +58,10 @@ class AbsoluteRoundOffErrorPlotComponentUtils:
 
         for i, pd in enumerate(pipeline_data):
             function_values: jnp.ndarray = PlotUtils.evaluate_function(pd.interpolant, pd.data_type, data.evaluation_points)
+            cast_function_values: jnp.ndarray = function_values.astype(jnp.float32)
+
             interpolant_values_float: list[float] = [float(value) for value in data.interpolant_values_exact]
-            abs_round_off_errors: jnp.ndarray = jnp.abs(function_values - jnp.array(interpolant_values_float))
+            cast_interpolant_values: jnp.ndarray = jnp.array(interpolant_values_float, dtype=jnp.float32)
+
+            abs_round_off_errors: jnp.ndarray = jnp.abs(cast_function_values - cast_interpolant_values)
             data.round_off_errors.append(abs_round_off_errors)

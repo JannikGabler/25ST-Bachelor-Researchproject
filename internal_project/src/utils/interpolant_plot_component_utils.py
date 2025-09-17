@@ -14,7 +14,7 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
 from utils.plot_utils import PlotUtils
 
 
-class InterpolantsPlotComponentUtils:
+class InterpolantPlotComponentUtils:
     @dataclass
     class _Data_:
         amount_of_functions_to_plot: int | None = None
@@ -88,12 +88,13 @@ class InterpolantsPlotComponentUtils:
     def _calc_function_values_(data: _Data_, pipeline_data: list[PipelineData]) -> jnp.ndarray:
         function_values: jnp.ndarray = jnp.empty((data.amount_of_functions_to_plot, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS))
 
-        function_values = function_values.at[0].set(PlotUtils.evaluate_function(
-            pipeline_data[0].original_function, pipeline_data[0].data_type, data.evaluation_points))
+        v: jnp.ndarray = PlotUtils.evaluate_function(pipeline_data[0].original_function, pipeline_data[0].data_type,
+                                                     data.evaluation_points)
+        function_values = function_values.at[0].set(v.astype(jnp.float32))
 
         for i, pd in enumerate(pipeline_data):
-            function_values = function_values.at[i + 1].set(PlotUtils.evaluate_function(
-                pd.interpolant, pd.data_type, data.evaluation_points))
+            v: jnp.ndarray = PlotUtils.evaluate_function(pd.interpolant, pd.data_type, data.evaluation_points)
+            function_values = function_values.at[i + 1].set(v.astype(jnp.float32))
 
         return function_values
 

@@ -53,7 +53,6 @@ class BaseRoundOffErrorPlotComponentUtils:
         cls._set_functions_(data, pipeline_data)
         cls._set_function_names_(data, pipeline_data)
 
-        # cls._set_absolute_round_off_errors_(data, pipeline_data)
         set_error_callable(data, pipeline_data)
 
         cls._set_y_threshold_(data, additional_data)

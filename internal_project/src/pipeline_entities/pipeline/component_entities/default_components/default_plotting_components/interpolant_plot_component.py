@@ -16,11 +16,11 @@ from pipeline_entities.pipeline.component_entities.default_component_types.plot_
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from data_classes.pipeline_data.pipeline_data import PipelineData
-from utils.interpolants_plot_component_utils import InterpolantsPlotComponentUtils
+from utils.interpolant_plot_component_utils import InterpolantPlotComponentUtils
 
 
 @pipeline_component(id="interpolant plotter", type=PlotComponent, meta_info=interpolants_plot_component_meta_info)
-class InterpolantsPlotComponent(InterpolationCore):
+class InterpolantPlotComponent(InterpolationCore):
     SUB_PROCESS_CODE = textwrap.dedent("""
         import os
         import sys
@@ -50,7 +50,7 @@ class InterpolantsPlotComponent(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        template: PlotTemplate = InterpolantsPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
+        template: PlotTemplate = InterpolantPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
 
         if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
             self._start_sub_process_(template)
