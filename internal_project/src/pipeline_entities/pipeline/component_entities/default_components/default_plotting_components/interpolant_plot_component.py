@@ -1,90 +1,13 @@
-import textwrap
-
-import dill
-import subprocess
-import sys
-import tempfile
-
-import matplotlib.pyplot as plt
-
-from constants.internal_logic_constants import InterpolantsPlotComponentConstants
-from data_classes.plot_template.plot_template import PlotTemplate
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import \
-    interpolants_plot_component_meta_info
-from pipeline_entities.pipeline.component_entities.default_component_types.interpolation_core import InterpolationCore
 from pipeline_entities.pipeline.component_entities.default_component_types.plot_component import PlotComponent
 
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
-from data_classes.pipeline_data.pipeline_data import PipelineData
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import interpolants_plot_component_meta_info
+
 from utils.interpolant_plot_component_utils import InterpolantPlotComponentUtils
+from constants.internal_logic_constants import InterpolantsPlotComponentConstants
 
 
 @pipeline_component(id="interpolant plotter", type=PlotComponent, meta_info=interpolants_plot_component_meta_info)
-class InterpolantPlotComponent(InterpolationCore):
-    SUB_PROCESS_CODE = textwrap.dedent("""
-        import os
-        import sys
-        import dill
-        import matplotlib.pyplot as plt
-        
-        
-        if __name__ == "__main__":
-            # Check if we run in the child process
-            if len(sys.argv) == 3 and sys.argv[1] == "--child":
-                data_file = sys.argv[2]
-        
-                with open(data_file, "rb") as f:
-                    template = dill.load(f)
-        
-                try:
-                    os.remove(data_file)
-                except FileNotFoundError:
-                    pass
-                
-                template.fig.show()
-                plt.show(block=True)""")
-
-
-
-    ######################
-    ### Public methods ###
-    ######################
-    def perform_action(self) -> PipelineData:
-        template: PlotTemplate = InterpolantPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
-
-        if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
-            self._start_sub_process_(template)
-        else:
-            template.fig.show()
-            plt.show(block=True)
-
-        self._pipeline_data_[0].plots = [template]
-        return self._pipeline_data_[0]
-    # def perform_action(self) -> PipelineData:
-    #     if InterpolantsPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS:
-    #         self._start_sub_process_()
-    #     else:
-    #         InterpolantsPlotComponentUtils.plot_data(self._pipeline_data_, self._additional_execution_info_)
-    #
-    #     return self._pipeline_data_[0]
-
-
-
-
-
-    #######################
-    ### Private methods ###
-    #######################
-    def _start_sub_process_(self, template: PlotTemplate) -> None:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as file:
-            dill.dump(template, file)
-            data_file = file.name
-
-        subprocess.Popen([sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file])
-        # subprocess.Popen([sys.executable, __file__, "--child", data_file])
-
-
-
-
-
-
+class InterpolantPlotComponent(PlotComponent):
+    PLOT_COMPONENT_UTILS_CLASS = InterpolantPlotComponentUtils
+    PLOT_COMPONENT_CONSTANTS_CLASS = InterpolantsPlotComponentConstants
