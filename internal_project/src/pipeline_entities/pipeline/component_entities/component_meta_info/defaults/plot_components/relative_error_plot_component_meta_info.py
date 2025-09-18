@@ -4,7 +4,7 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 
 
 relative_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
-    attributes_modifying=set(),
+    attributes_modifying={"plots"},
 
     attributes_allowed_to_be_overridden={"y_limit", "y_scale", "y_scale_base"},
 
