@@ -53,7 +53,6 @@ class BaseRoundOffErrorPlotComponentUtils:
         cls._set_functions_(data, pipeline_data)
         cls._set_function_names_(data, pipeline_data)
 
-        # cls._set_absolute_round_off_errors_(data, pipeline_data)
         set_error_callable(data, pipeline_data)
 
         cls._set_y_threshold_(data, additional_data)
@@ -79,7 +78,6 @@ class BaseRoundOffErrorPlotComponentUtils:
 
         cls._set_legend_(template, data)
         template.ax.grid()
-        template.fig.tight_layout()
 
         return template
 
@@ -93,7 +91,7 @@ class BaseRoundOffErrorPlotComponentUtils:
         pd: PipelineData = pipeline_data[0]
 
         data.evaluation_points = PlotUtils.create_plot_points(pd.interpolation_interval,
-                                                              BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, pd.data_type)
+                                                              BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
         data.evaluation_points_exact = PlotUtils.create_exact_plot_points(pd.interpolation_interval,
                                                                           BaseRoundOffErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)

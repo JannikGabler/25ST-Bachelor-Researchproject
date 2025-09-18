@@ -1,5 +1,6 @@
 import jax.numpy as jnp
 from jax import Array
+from jax.typing import DTypeLike
 
 from matplotlib import pyplot as plt
 
@@ -44,14 +45,12 @@ class RelativeErrorPlotComponentUtils:
         main_data: PipelineData = pipeline_data[0]
         interval: jnp.ndarray = main_data.interpolation_interval
 
-        plot_points: jnp.ndarray = PlotUtils.create_plot_points(
-            interval, RelativeErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS, main_data.data_type)
+        plot_points: jnp.ndarray = PlotUtils.create_plot_points(interval, RelativeErrorPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
 
-        compiled_original_function: CompiledFunction = main_data.original_function.compile(len(plot_points), plot_points.dtype)
-        original_function_values: jnp.ndarray = compiled_original_function.evaluate(plot_points)
+        original_function_values: jnp.ndarray = PlotUtils.evaluate_function(main_data.original_function, jnp.float32, plot_points)
 
         absolut_errors_list: list[jnp.ndarray] = [ cls._calc_relative_errors_(plot_points, original_function_values,
-                                                                              data.interpolant) for data in pipeline_data ]
+                                                                              data.interpolant, data.data_type) for data in pipeline_data ]
 
         y_limits: tuple[jnp.ndarray, jnp.ndarray] = cls._calc_y_limits_(absolut_errors_list, additional_data)
 
@@ -79,12 +78,12 @@ class RelativeErrorPlotComponentUtils:
 
     @staticmethod
     def _calc_relative_errors_(plot_points: jnp.ndarray, original_function_values: jnp.ndarray,
-                               function: CompilableFunction) -> jnp.ndarray:
+                               function: CompilableFunction, data_type: DTypeLike) -> jnp.ndarray:
 
-        compiled_function: CompiledFunction = function.compile(len(plot_points), plot_points.dtype)
-        function_values: jnp.ndarray = compiled_function.evaluate(plot_points)
+        function_values: jnp.ndarray = PlotUtils.evaluate_function(function, data_type, plot_points)
+        cast_function_values: jnp.ndarray = function_values.astype(jnp.float32)
 
-        absolute_errors: jnp.ndarray = jnp.absolute(original_function_values - function_values)
+        absolute_errors: jnp.ndarray = jnp.absolute(original_function_values - cast_function_values)
         return absolute_errors / jnp.absolute(original_function_values)
 
 
@@ -132,6 +131,7 @@ class RelativeErrorPlotComponentUtils:
             x_array, y_array = zip(*segment)
             plt.plot(x_array, y_array, linewidth=RelativeErrorPlotComponentConstants.LINE_WIDTH,
                      linestyle=line_style, color=color, label=label if not label_used else None)
+
             label_used = True
 
         for point in single_points:
