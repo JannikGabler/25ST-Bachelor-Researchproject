@@ -63,15 +63,16 @@ class InterpolantsPlotComponentConstants:
         # "#FF0000",  # Rot
         "#00FF00",  # Grün
         "#00BFFF",  # DeepSkyBlue
-        "#FFFF00",  # Gelb
+        # "#FFFF00",  # Gelb
+        # "#e5c494",  # beige
+        # "brown",
+        "#00FFFF",  # Cyan
         "#FF00FF",  # Magenta
         "#FFA500",  # Orange
-        "#00FFFF",  # Cyan
         "#66c2a5",  # grünlich
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#e5c494",  # beige
         "#b3b3b3"  # grau
     ]
 
@@ -88,15 +89,20 @@ class AbsoluteErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
 
     COLORS = [
+        # "#FF0000",  # Rot
+        "#00FF00",  # Grün
+        "#00BFFF",  # DeepSkyBlue
+        # "#FFFF00",  # Gelb
+        # "#e5c494",  # beige
+        # "brown",
+        "#00FFFF",  # Cyan
+        "#FF00FF",  # Magenta
+        "#FFA500",  # Orange
         "#66c2a5",  # grünlich
-        "#fc8d62",  # orange
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#ffd92f",  # gelb
-        "#e5c494",  # beige
         "#b3b3b3"  # grau
-        "black",
     ]
 
     LINE_STYLES = [
@@ -119,15 +125,20 @@ class RelativeErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
 
     COLORS = [
+        # "#FF0000",  # Rot
+        "#00FF00",  # Grün
+        "#00BFFF",  # DeepSkyBlue
+        # "#FFFF00",  # Gelb
+        # "#e5c494",  # beige
+        # "brown",
+        "#00FFFF",  # Cyan
+        "#FF00FF",  # Magenta
+        "#FFA500",  # Orange
         "#66c2a5",  # grünlich
-        "#fc8d62",  # orange
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#ffd92f",  # gelb
-        "#e5c494",  # beige
         "#b3b3b3"  # grau
-        "black",
     ]
 
     LINE_STYLES = [
@@ -152,17 +163,19 @@ class BaseRoundOffErrorPlotComponentConstants:
     Y_THRESHOLD_ATTRIBUTE_NAME: str = "y_threshold"
 
     COLORS = [
+        # "#FF0000",  # Rot
         "#00FF00",  # Grün
         "#00BFFF",  # DeepSkyBlue
-        "#FFFF00",  # Gelb
+        # "#FFFF00",  # Gelb
+        # "#e5c494",  # beige
+        # "brown",
+        "#00FFFF",  # Cyan
         "#FF00FF",  # Magenta
         "#FFA500",  # Orange
-        "#00FFFF",  # Cyan
         "#66c2a5",  # grünlich
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#e5c494",  # beige
         "#b3b3b3"  # grau
     ]
 
