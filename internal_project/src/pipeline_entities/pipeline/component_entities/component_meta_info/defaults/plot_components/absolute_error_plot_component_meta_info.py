@@ -6,7 +6,7 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 absolut_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying=set(),
 
-    attributes_allowed_to_be_overridden={"y_limit", "y_scale", "y_scale_base"},
+    attributes_allowed_to_be_overridden={"data_type", "y_limit", "y_scale", "y_scale_base"},
 
     pre_dynamic_constraints=[],
 

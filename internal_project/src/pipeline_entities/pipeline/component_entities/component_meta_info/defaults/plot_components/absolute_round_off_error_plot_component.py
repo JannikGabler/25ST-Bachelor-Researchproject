@@ -7,7 +7,8 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 absolute_round_off_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"plots"},
 
-    attributes_allowed_to_be_overridden={BaseRoundOffErrorPlotComponentConstants.Y_THRESHOLD_ATTRIBUTE_NAME,
+    attributes_allowed_to_be_overridden={"data_type",
+                                         BaseRoundOffErrorPlotComponentConstants.Y_THRESHOLD_ATTRIBUTE_NAME,
                                          BaseRoundOffErrorPlotComponentConstants.Y_LIMIT_ATTRIBUTE_NAME},
 
     pre_dynamic_constraints=[],
