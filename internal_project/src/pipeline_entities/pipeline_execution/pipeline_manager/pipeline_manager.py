@@ -10,6 +10,7 @@ from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.plot_template.plot_template import PlotTemplate
 from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
     PipelineComponentInstantiationInfo
 from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
@@ -70,6 +71,20 @@ class PipelineManager:
 
     def get_all_component_execution_reports(self) -> list[PipelineComponentExecutionReport]:
         return deepcopy(list(self._component_execution_reports_.values()))
+    
+
+    def get_all_plots(self) -> dict[str, list[PlotTemplate]]:
+        plots_by_component: dict[str, list[PlotTemplate]] = {}
+        for report in self._component_execution_reports_.values():
+            comp_info: PipelineComponentInfo = report.component_instantiation_info.component
+            comp_id: str = comp_info.component_id
+            pd: PipelineData | None = report.component_output
+
+            if pd is not None and pd.plots:
+                # Make a shallow copy so callers can't mutate internal state
+                plots_by_component[comp_id] = list(pd.plots)
+
+        return plots_by_component
 
 
 

@@ -3,28 +3,44 @@ from __future__ import annotations
 import shutil
 import time
 from pathlib import Path
-from typing import Any
+from typing import Iterable
 
 from data_classes.plot_template.plot_template import PlotTemplate
-
 from file_handling.result_persistence.save_policy import SavePolicy
 from file_handling.result_persistence.savers.base import get_saver
 
-# Import savers to ensure they self-register
+
+from constants.internal_logic_constants import FilesystemResultStoreConstants
+
+# Import savers so they self-register
 # ! DO NOT REMOVE THESE IMPORTS !
-from file_handling.result_persistence.savers import plot_saver   # noqa: F401
-from file_handling.result_persistence.savers import json_saver    # noqa: F401
-from file_handling.result_persistence.savers import text_saver    # noqa: F401
-from file_handling.result_persistence.savers import binary_saver  # noqa: F401
+from file_handling.result_persistence.savers import plot_saver      # noqa: F401
+from file_handling.result_persistence.savers import reports_saver   # noqa: F401
+
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
+from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
 
 
 class FilesystemResultStore:
     """
-    Orchestrates persistence:
-    - prepares run directory according to SavePolicy
-    - delegates saving to registered savers by 'kind'
-    - writes a manifest if needed
+    Minimal, purpose-built store for this project.
+
+    Responsibilities:
+      1) Create a run directory according to SavePolicy.
+      2) Save execution reports -> JSON (single file).
+      3) Save plots contained in PipelineData.plots, grouped per component.
+
+    Directory layout (example):
+      runs/
+        latest/ or 2025-10-08_14-37-55/
+          reports/
+            reports.json
+          components/
+            <component_id>/
+              plots/
+                plot.png, plot.pdf, ...
     """
+
     def __init__(self, output_root: Path):
         self.output_root = Path(output_root)
         self.runs_root = self.output_root / "runs"
@@ -37,8 +53,8 @@ class FilesystemResultStore:
     def prepare_run_dir(self, policy: SavePolicy) -> Path:
         """
         Create and return the run directory based on the policy.
-        Soft-state uses <output_root>/runs/latest (with optional rotation);
-        snapshot uses a new timestamped directory.
+        soft-state -> runs/latest (with optional rotation);
+        snapshot   -> runs/<timestamp>.
         """
         if policy.mode == "soft-state":
             run_dir = self.runs_root / "latest"
@@ -52,7 +68,6 @@ class FilesystemResultStore:
             run_dir.mkdir(parents=True, exist_ok=True)
         else:
             raise ValueError(f"Unknown SavePolicy.mode: {policy.mode}")
-        # Per-kind subfolders are created by savers on demand.
         return run_dir
 
     def promote_latest_to_snapshot(self) -> Path:
@@ -66,61 +81,82 @@ class FilesystemResultStore:
         shutil.copytree(src, dst)
         return dst
 
-    #########################
-    ### Delegated saving  ###
-    #########################
+    ######################
+    ### Public methods ###
+    ######################
 
-    def _save_artifact(self, artifact: Any, run_dir: Path, policy: SavePolicy) -> Path | None:
+    def save_run(
+        self,
+        reports: Iterable[PipelineComponentExecutionReport],
+        policy: SavePolicy | None
+    ) -> Path:
         """
-        Try to save artifact:
-        - PlotTemplate -> 'plot' saver
-        - list/tuple -> recurse into items; if none saved, save the whole container via 'binary'
-        - everything else -> 'binary' saver
-        Returns the first successfully saved Path, or None.
+        Orchestrates saving both execution reports and plots for a single pipeline run.
+        Returns the run directory.
+        """
+        if policy is None:
+            policy = FilesystemResultStoreConstants.POLICY
+        
+        run_dir = self.prepare_run_dir(policy)
+
+        reports = list(reports)
+        self.save_reports(reports, run_dir, policy)
+        self.save_plots_from_reports(reports, run_dir, policy)
+
+        return run_dir
+
+    def save_reports(
+        self,
+        reports: Iterable[PipelineComponentExecutionReport],
+        run_dir: Path,
+        policy: SavePolicy
+    ) -> Path:
+        """
+        Save all component execution reports into a single JSON file.
+        """
+        saver = get_saver("reports")
+        return saver.save(list(reports), run_dir, policy)
+
+    def save_plots_from_reports(
+        self,
+        reports: Iterable[PipelineComponentExecutionReport],
+        run_dir: Path,
+        policy: SavePolicy
+    ) -> None:
+        """
+        Extract plots from each report's PipelineData and save them,
+        grouped by component_id: runs/<run>/components/<id>/plots/*
         """
         plot_saver = get_saver("plot")
-        bin_saver  = get_saver("binary")
 
-        match artifact:
-            # single plot
-            case PlotTemplate():
-                return plot_saver.save(artifact, run_dir, policy)
+        for report in reports:
+            comp_info: PipelineComponentInfo = report.component_instantiation_info.component
+            comp_id: str = getattr(comp_info, "component_id", "unknown_component")
 
-            # handle lists/tuples recursively
-            case list() | tuple():
-                primary: str = None
-                for item in artifact:
-                    p = self._save_artifact(item, run_dir, policy) # TODO maybe put them in a sub-folder
-                    if p is not None:
-                        primary = p
-                # nothing inside saved -> fallback to saving the container as a blob
-                return primary if primary is not None else bin_saver.save(artifact, run_dir, policy)
+            pdata = report.component_output
+            if pdata is None:
+                continue
+            plots: list[PlotTemplate] = getattr(pdata, "plots", None) or []
+            if not plots:
+                continue
 
-            # fallback
-            case _:
-                return bin_saver.save(artifact, run_dir, policy)
+            # We want plots under .../components/<component_id>/plots/*
+            component_root = run_dir / "components" / comp_id
+            component_root.mkdir(parents=True, exist_ok=True)
 
-    # ################ TODO remove manifest
-    # ### Manifest ###
-    # ################
+            # pass component_root to the plot_saver, which will itself put files under <component_root>/plots according to its own policy.
+            for plot in plots:
+                try:
+                    plot_saver.save(plot, component_root, policy)
+                except Exception as e:
+                    # one 'bad' plot doesn't stop execution
+                    print(f"⚠️ Could not save plot for component {comp_id}: {e}")
 
-    # def write_manifest(self, run_dir: Path, manifest: Mapping[str, Any]) -> Path:
-    #     """
-    #     Write a run_manifest.json into the run directory and return its path.
-    #     """
-    #     path = run_dir / "run_manifest.json"
-    #     with path.open("w", encoding="utf-8") as f:
-    #         json.dump(manifest, f, indent=2, ensure_ascii=False)
-    #     return path
-
-    #################
-    ### Internals ###
-    #################
+    #######################
+    ### Private methods ###
+    #######################
 
     def _new_timestamped_dir(self) -> Path:
-        """
-        Create a new unique timestamped directory name under runs/.
-        """
         ts = time.strftime("%Y-%m-%d_%H-%M-%S")
         path = self.runs_root / ts
         idx = 1
@@ -131,18 +167,10 @@ class FilesystemResultStore:
 
     @staticmethod
     def _rotate_soft_state(latest_dir: Path, keep_n: int) -> None:
-        """
-        Rotate soft-state directories: latest -> latest-1 -> ... up to keep_n-1.
-        Removes the oldest if it would exceed keep_n.
-        """
         base = latest_dir.parent
-
-        # Remove the oldest if present
         oldest = base / f"latest-{keep_n-1}"
         if oldest.exists():
             shutil.rmtree(oldest)
-
-        # Shift downward
         for i in range(keep_n - 2, -1, -1):
             src_name = "latest" if i == 0 else f"latest-{i}"
             src = base / src_name
