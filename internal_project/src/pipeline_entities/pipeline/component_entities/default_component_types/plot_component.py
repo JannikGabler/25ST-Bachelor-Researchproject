@@ -44,10 +44,12 @@ class PlotComponent(PipelineComponent, ABC):
 
     
     def perform_action(self) -> PipelineData:
-        if not self.PLOT_COMPONENT_CONSTANTS_CLASS or not self.PLOT_COMPONENT_UTILS_CLASS:
+        if self.PLOT_COMPONENT_CONSTANTS_CLASS is None or self.PLOT_COMPONENT_UTILS_CLASS is None:
             raise Exception("Plot components must specify PLOT_COMPONENT_UTILS_CLASS and PLOT_COMPONENT_CONSTANTS_CLASS.")
 
         template: PlotTemplate = self.PLOT_COMPONENT_UTILS_CLASS.plot_data(self._pipeline_data_, self._additional_execution_info_)
+        if template is None:
+            raise Exception(f"PlotTemplate of {self.__class__.__name__} is None!\n(object: {self.__repr__()})")
 
         if self.PLOT_COMPONENT_CONSTANTS_CLASS.SHOW_PLOT_IN_SEPARATE_PROCESS:
             self._start_sub_process_(template)
@@ -61,9 +63,9 @@ class PlotComponent(PipelineComponent, ABC):
     #######################
     ### Private methods ###
     #######################
-    def _start_sub_process_(self) -> None:
+    def _start_sub_process_(self, template: PlotTemplate) -> None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pkl") as file:
-            dill.dump((self._pipeline_data_, self._additional_execution_info_), file)
+            dill.dump(template, file)
             data_file = file.name
 
         subprocess.Popen([sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file])

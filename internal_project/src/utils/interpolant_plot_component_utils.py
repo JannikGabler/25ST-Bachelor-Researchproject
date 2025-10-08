@@ -39,7 +39,7 @@ class InterpolantPlotComponentUtils:
     @classmethod
     def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
         pd: PipelineData = pipeline_data[0]
-        data: cls._Data_ = cls._Data_()
+        data: InterpolantPlotComponentUtils._Data_ = cls._Data_()
         template: PlotTemplate = PlotTemplate(figsize=InterpolantsPlotComponentConstants.FIGURE_SIZE)
 
         data.amount_of_functions_to_plot = len(pipeline_data) + 1

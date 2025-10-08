@@ -17,6 +17,6 @@ relative_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
                         AttributeRequiredConstraint("original_function"),
                         AttributeRequiredConstraint("interpolant")],
 
-allow_multiple_executions_for_time_measurements=False
+    allow_multiple_executions_for_time_measurements=False
 )
 
