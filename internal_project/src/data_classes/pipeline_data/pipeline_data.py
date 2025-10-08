@@ -26,9 +26,3 @@ class PipelineData:
     plots: list[PlotTemplate] | None = None
 
     additional_values: dict[str, Any] = field(default_factory=dict)
-
-
-
-
-
-
