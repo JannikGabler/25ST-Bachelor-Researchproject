@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -8,26 +9,36 @@ from file_handling.result_persistence.save_policy import SavePolicy
 from file_handling.result_persistence.savers.base import Saver, register_saver
 
 from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 
+from file_handling.result_persistence.utils import type_repr, to_jsonable, prune_trivial
 
-# TODO make the serialized report more extensive
 def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
     """
     Convert a PipelineComponentExecutionReport into a JSON-serializable dict.
     Keeps it lean and stable; avoids dumping large PipelineData contents.
     """
-    comp_info: PipelineComponentInfo = rep.component_instantiation_info.component
+    comp_inst_info: PipelineComponentInstantiationInfo = rep.component_instantiation_info
+    comp_info: PipelineComponentInfo = comp_inst_info.component
+    
+    comp_name = getattr(comp_inst_info, "component_name", None) or getattr(comp_info, "name", None)
     comp_id = getattr(comp_info, "component_id", None)
-    comp_name = getattr(comp_info, "component_name", None) or getattr(comp_info, "name", None)
+    comp_type = type_repr(getattr(comp_info, "component_type", None))
+    comp_class = type_repr(getattr(comp_info, "component_class", None))
 
     pdata = rep.component_output
-    plots_count = len(getattr(pdata, "plots", []) or []) if pdata is not None else 0
+    plots = getattr(pdata, "plots", None) if pdata is not None else None
+    plots_count = len(plots) if plots else 0
+
+    pd_json = prune_trivial(to_jsonable(pdata)) if pdata is not None else None
 
     return {
         "component": {
             "id": comp_id,
             "name": comp_name,
+            "type": comp_type,
+            "class": comp_class
             # could add more metadata (version, tags, etc.)
         },
         "timing": {
@@ -36,10 +47,11 @@ def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
             "std_exec_time": rep.standard_deviation_component_execution_time,
         },
         "outputs": {
-            "has_pipeline_data": pdata is not None,
             "plots_count": plots_count,
+            "pipeline_data": pd_json
         },
     }
+
 
 
 class ReportsSaver(Saver):

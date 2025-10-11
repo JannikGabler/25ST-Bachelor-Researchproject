@@ -245,3 +245,45 @@ def to_jsonable(obj: Any, _seen: set[int] | None = None) -> Any:
     except Exception:
         # Last resort: readable string
         return repr(obj)
+
+def _is_trivial(v: Any) -> bool:
+    """
+    Return True if a value is considered trivial for JSON output:
+    - None
+    - the string "<recursion>"
+    - empty lists/tuples/sets/frozensets
+    - empty dicts
+    """
+    if v is None:
+        return True
+    if v == "<recursion>":
+        return True
+    if isinstance(v, (list, tuple, set, frozenset)) and len(v) == 0:
+        return True
+    if isinstance(v, dict) and len(v) == 0:
+        return True
+    return False
+
+def prune_trivial(obj: Any) -> Any:
+    """
+    Recursively remove trivial entries from a JSON-like structure.
+
+    Trivial entries are:
+    - None
+    - the string "<recursion>"
+    - empty lists/tuples/sets/frozensets
+    - empty dicts
+
+    Notes
+    - Dict keys whose values become trivial are dropped.
+    - Sequences are returned as lists with trivial items removed.
+    - Non-container values are returned unchanged.
+    """
+    if isinstance(obj, dict):
+        pruned = {k: prune_trivial(v) for k, v in obj.items()}
+        return {k: v for k, v in pruned.items() if not _is_trivial(v)}
+    if isinstance(obj, (list, tuple, set, frozenset)):
+        pruned_seq = [prune_trivial(v) for v in obj]
+        pruned_seq = [v for v in pruned_seq if not _is_trivial(v)]
+        return pruned_seq if not isinstance(obj, tuple) else tuple(pruned_seq)
+    return obj
