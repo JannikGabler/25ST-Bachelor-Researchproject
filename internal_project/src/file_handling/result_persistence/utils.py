@@ -16,6 +16,14 @@ def slugify(text: str) -> str:
     - Collapses consecutive underscores into a single underscore.
     - Strips leading/trailing whitespace before processing.
     - Returns "artifact" if the result would otherwise be empty.
+
+    Parameters
+    text : str
+        The input string to be normalized.
+
+    Returns
+    str
+        A safe slug suitable for filenames/keys.
     """
     safe = "".join(c if c.isalnum() or c in ("-", "_") else "_" for c in text.strip())
     while "__" in safe:
@@ -23,6 +31,23 @@ def slugify(text: str) -> str:
     return safe or "artifact"
 
 def type_repr(t) -> str | None:
+    """
+    Produce a stable, readable string for a Python type or typing construct.
+
+    Handles:
+      - `None` -> None
+      - Raw strings (returned as-is)
+      - Standard classes/types -> "module.qualname"
+      - Typing constructs (e.g., list[int], dict[str, Any]) -> "module.qualname[arg1, arg2]"
+
+    Parameters
+    t : Any
+        A type object, typing annotation, or string.
+
+    Returns
+    str | None
+        Readable identifier or None if input is None.
+    """
     if t is None:
         return None
     if isinstance(t, str):
@@ -42,6 +67,20 @@ def type_repr(t) -> str | None:
         return repr(t)
     
 def callable_repr(obj: Any) -> str:
+    """
+    Produce a readable identifier for callables (functions, methods, builtins, or callable instances).
+
+    For functions/methods/builtins: "module.qualname".
+    For callable instances: "module.ClassName(callable)".
+
+    Parameters
+    obj : Any
+        Callable object or any object (falls back to repr on error).
+
+    Returns
+    str
+        Readable identifier string.
+    """
     # For functions, methods, callables—give a readable id
     try:
         if inspect.isfunction(obj) or inspect.ismethod(obj) or inspect.isbuiltin(obj):
@@ -55,12 +94,37 @@ def callable_repr(obj: Any) -> str:
         return repr(obj)
 
 def classlike_repr(obj: Any) -> str:
+    """
+    Wrapper around `type_repr` that tolerates failures and returns `repr(obj)` as fallback.
+
+    Parameters
+    obj : Any
+        A class/type or typing construct.
+
+    Returns
+    str
+        Readable class/type representation.
+    """
     try:
         return type_repr(obj)
     except Exception:
         return repr(obj)
 
 def ndarray_like_to_list(arr):
+    """
+    Convert NumPy/JAX array-likes to Python lists.
+
+    If `.tolist()` fails, return a small summary dict containing shape and dtype
+    instead of raising.
+
+    Parameters
+    arr : Any
+        NumPy/JAX ndarray-like object.
+
+    Returns
+    list | dict
+        A list for successful conversions; otherwise a summary dict.
+    """
     try:
         return arr.tolist()
     except Exception:
@@ -70,6 +134,17 @@ def ndarray_like_to_list(arr):
         return {"__array__": "unserializable", "shape": tuple(shape) if shape else None, "dtype": str(dtype)}
 
 def dtype_to_str(dt) -> str:
+    """
+    Convert a dtype-like object to a robust string representation.
+
+    Parameters
+    dt : Any
+        A NumPy dtype or similar.
+
+    Returns
+    str
+        String form of the dtype; falls back to repr on error.
+    """
     try:
         return str(dt)
     except Exception:
@@ -77,7 +152,30 @@ def dtype_to_str(dt) -> str:
 
 def to_jsonable(obj: Any, _seen: set[int] | None = None) -> Any:
     """
-    Convert arbitrary Python/JAX/NumPy / dataclass objects to JSON-friendly structures.
+    Convert arbitrary Python/JAX/NumPy/dataclass objects to JSON-friendly structures.
+
+    Rules of conversion:
+      - Primitives (None, bool, int, float, str) -> unchanged.
+      - NumPy/JAX arrays -> lists (via `.tolist()`), with a safe fallback summary.
+      - NumPy scalars -> `.item()`.
+      - dtypes -> strings.
+      - dict/list/tuple/set/frozenset -> recursively converted.
+      - dataclasses -> `asdict` then recursively converted.
+      - `type` objects -> `classlike_repr`.
+      - Callables -> `callable_repr`.
+      - Objects with `__json__`, `to_json`, `to_dict`, `as_dict` -> call and recurse.
+      - Fallback -> dict of public attributes with `"__class__"` marker.
+      - Cycles are detected and represented as the string "<recursion>".
+
+    Parameters
+    obj : Any
+        Object to serialize.
+    _seen : set[int] | None, optional
+        Internal set of visited object IDs to prevent infinite recursion.
+
+    Returns
+    Any
+        A structure composed only of JSON-serializable primitives, lists, and dicts.
     """
     if _seen is None:
         _seen = set()
