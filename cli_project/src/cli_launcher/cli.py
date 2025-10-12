@@ -8,12 +8,15 @@ from cli_launcher.reporting import format_all_reports
 from constants.cli_project_constants import CLIConstants
 from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
     PipelineConfigurationFileManager
+from file_handling.result_persistence.filesystem_result_store import FilesystemResultStore
+from file_handling.result_persistence.save_policy import SavePolicy
 from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
 from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
 from data_classes.pipeline_configuration.pipeline_configuration_data import \
     PipelineConfigurationData
 from data_classes.pipeline_input.pipeline_input import PipelineInput
 from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from data_classes.plot_template.plot_template import PlotTemplate
 from pipeline_entities.pipeline.pipeline import Pipeline
 from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
 from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
@@ -51,9 +54,11 @@ class CLI:
         self._perform_security_prompt_()
         self._setup_internal_logic_()
         pc, pi = self._parse_input_files_()
+
         pipeline: Pipeline = self._build_pipeline_(pc, pi)
         pipeline_manager: PipelineManager = self._execute_pipeline_(pipeline)
         self._print_results_(pipeline_manager)
+        self._store_results(pipeline_manager)
 
         RichUtilities.close_panel()
 
@@ -289,7 +294,7 @@ class CLI:
         pipeline: Pipeline = PipelineBuilder.build(pc, pi)
         RichUtilities.write_lines_in_panel(str(pipeline), indent_level=1)
 
-        RichUtilities.write_lines_in_panel("\nSuccessfully build pipeline.")
+        RichUtilities.write_lines_in_panel("\nSuccessfully built pipeline.")
 
         return pipeline
 
@@ -302,7 +307,7 @@ class CLI:
 
         manager = PipelineManager(pipeline)
         manager.execute_all()
-        RichUtilities.write_lines_in_panel("Successfully build pipeline.")
+        RichUtilities.write_lines_in_panel("Successfully executed pipeline.")
 
         return manager
 
@@ -316,4 +321,13 @@ class CLI:
 
         RichUtilities.write_lines_in_panel(output)
 
+    @classmethod
+    def _store_results(cls, pipeline_manager: PipelineManager) -> None:
+        execution_reports: list[PipelineComponentExecutionReport] = pipeline_manager.get_all_component_execution_reports()
+        
+        policy = None # TODO make this an optional user input
 
+        store = FilesystemResultStore(output_root=Path.cwd() / "output")
+        run_dir = store.save_run(execution_reports, policy)
+
+        UserOutputUtilities.print_text(f"Saved results to: {run_dir}")

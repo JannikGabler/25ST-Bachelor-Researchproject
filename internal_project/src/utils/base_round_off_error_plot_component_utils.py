@@ -2,7 +2,6 @@ import math
 
 import jax.numpy as jnp
 
-from dataclasses import dataclass
 from fractions import Fraction
 
 import matplotlib.pyplot as plt
@@ -14,7 +13,6 @@ from data_classes.plot_template.plot_template import PlotTemplate
 from data_classes.plotting.base_round_off_error_plot_component_utils_data.base_round_off_error_plot_component_utils_data import \
     BaseRoundOffErrorPlotComponentUtilsData
 from exceptions.not_instantiable_error import NotInstantiableError
-from functions.abstracts.compilable_function import CompilableFunction
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 from utils.plot_utils import PlotUtils

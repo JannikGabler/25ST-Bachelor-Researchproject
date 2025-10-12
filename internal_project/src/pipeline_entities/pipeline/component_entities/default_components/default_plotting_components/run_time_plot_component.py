@@ -17,6 +17,7 @@ class RunTimePlotComponent(InterpolationCore):
     """
     Plots the initialization and execution time of each interpolation method as bar chart.
     """
+    # TODO change to match parent class => enable concurrent plots and storing plots
 
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData):
         super().__init__(pipeline_data, additional_execution_data)

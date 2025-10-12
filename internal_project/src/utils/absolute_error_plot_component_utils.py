@@ -8,6 +8,7 @@ from constants.internal_logic_constants import AbsoluteErrorPlotComponentConstan
 from functions.abstracts.compilable_function import CompilableFunction
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.plotting_data.function_plot_data import FunctionPlotData
+from data_classes.plot_template.plot_template import PlotTemplate
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
     AdditionalComponentExecutionData
 from utils.plot_utils import PlotUtils
@@ -19,20 +20,24 @@ class AbsoluteErrorPlotComponentUtils:
     ### Public methods ###
     ######################
     @classmethod
-    def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> None:
-        plot_points, absolut_errors_list, y_limits = cls._create_plot_data_(pipeline_data, additional_data)
+    def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
+        plot_points, absolute_errors_list, y_limits = cls._create_plot_data_(pipeline_data, additional_data)
 
-        cls._init_plot_()
+        template: PlotTemplate = cls._init_plot_()
         # cls._plot_interpolation_points_(pipeline_data[0])
 
-        for i, absolut_errors in enumerate(absolut_errors_list):
+        for i, absolute_errors in enumerate(absolute_errors_list):
             cls._plot_absolute_error_values_(
-                plot_points, absolut_errors, pipeline_data[i].interpolant.name, i, y_limits
+                template,
+                plot_points,
+                absolute_errors,
+                pipeline_data[i].interpolant.name,
+                i,
+                y_limits
             )
 
-        cls._finish_up_plot_(pipeline_data, additional_data)
-        plt.show(block=AbsoluteErrorPlotComponentConstants.SHOW_PLOT_IN_SEPARATE_PROCESS)
-
+        cls._finish_up_plot_(template, pipeline_data, additional_data)
+        return template
 
 
     #######################
@@ -58,7 +63,6 @@ class AbsoluteErrorPlotComponentUtils:
         return plot_points, absolut_errors_list, y_limits
 
 
-
     @classmethod
     def _calc_y_limits_(cls, absolute_errors_list: list[jnp.ndarray], additional_data: AdditionalComponentExecutionData) -> tuple[jnp.ndarray, jnp.ndarray]:
         specified_y_limit: object = additional_data.overridden_attributes.get("y_limit")
@@ -70,11 +74,9 @@ class AbsoluteErrorPlotComponentUtils:
             return jnp.array(0), max_absolute_error
 
 
-
     @staticmethod
     def _init_plot_():
-        plt.figure(figsize=(10, 6))
-
+        return PlotTemplate(figsize=(10, 6)) # TODO make figsize a constant
 
 
     @staticmethod
@@ -87,32 +89,16 @@ class AbsoluteErrorPlotComponentUtils:
         return jnp.absolute(original_function_values - cast_function_values)
 
 
-
-    # @classmethod
-    # def _plot_interpolation_points_(cls, pipeline_data: PipelineData) -> None:
-    #     interpolation_nodes: jnp.ndarray = pipeline_data.interpolation_nodes
-    #     interpolation_values: jnp.ndarray = pipeline_data.interpolation_values
-    #
-    #     size = PlotUtils.adaptive_scatter_size(len(interpolation_nodes), modifier=0.7)
-    #
-    #     plt.scatter(interpolation_nodes, interpolation_values, color='red', s=size, label="Interpolation nodes",
-    #                 zorder=10)
-
-
-
-    # @classmethod
-    # def create_from(cls, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData)\
-    #                 -> InterpolantsPlotComponentData:
-
-
-
-
-
-
-
     @classmethod
-    def _plot_absolute_error_values_(cls, plot_points: jnp.ndarray, absolute_errors: jnp.ndarray,
-                    function_name: str, function_index: int, y_limits: tuple[jnp.ndarray, jnp.ndarray]) -> None:
+    def _plot_absolute_error_values_(
+        cls, 
+        template: PlotTemplate,
+        plot_points: jnp.ndarray,
+        absolute_errors: jnp.ndarray,
+        function_name: str,
+        function_index: int,
+        y_limits: tuple[jnp.ndarray, jnp.ndarray]
+    ) -> None:
 
         PlotUtils.replace_nan_with_inf(absolute_errors)
         PlotUtils.clamp_function_values(absolute_errors, y_limits)
@@ -129,13 +115,23 @@ class AbsoluteErrorPlotComponentUtils:
 
         for segment in connectable_segments:
             x_array, y_array = zip(*segment)
-            plt.plot(x_array, y_array, linewidth=AbsoluteErrorPlotComponentConstants.LINE_WIDTH,
-                     linestyle=line_style, color=color, label=label if not label_used else None)
+            template.ax.plot(
+                x_array, y_array,
+                linewidth=AbsoluteErrorPlotComponentConstants.LINE_WIDTH,
+                linestyle=line_style,
+                color=color,
+                label=label if not label_used else None
+            )
             label_used = True
 
         for point in single_points:
-            plt.scatter(point[0], point[1], color=color, s=PlotUtils.adaptive_scatter_size(len(plot_points)),
-                        label=label if not label_used else None, zorder=10)
+            template.ax.scatter(
+                point[0], point[1],
+                color=color,
+                s=PlotUtils.adaptive_scatter_size(len(plot_points)),
+                label=label if not label_used else None,
+                zorder=10
+            )
             label_used = True
 
 
@@ -152,26 +148,25 @@ class AbsoluteErrorPlotComponentUtils:
         return line_style, color, label
 
 
-
     @staticmethod
-    def _finish_up_plot_(pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> None:
+    def _finish_up_plot_(template: PlotTemplate,
+                         pipeline_data: list[PipelineData],
+                         additional_data: AdditionalComponentExecutionData) -> None:
         meta_info_str: str = PlotUtils.create_plot_meta_info_str(pipeline_data, additional_data)
 
-        plt.suptitle(f"Absolute error of interpolants plot")
-        plt.title(meta_info_str, fontsize=10)
-        plt.xlabel("x")
-        plt.ylabel("$\\Delta$f(x)")
+        template.fig.suptitle("Absolute error of interpolants plot")
+        template.ax.set_title(meta_info_str, fontsize=10)
+        template.ax.set_xlabel("x")
+        template.ax.set_ylabel("$\\Delta$f(x)")
 
         overridden_y_scale: object = additional_data.overridden_attributes.get("y_scale")
-
         if overridden_y_scale is not None:
             overridden_y_scale_base: object = additional_data.overridden_attributes.get("y_scale_base")
-
             if overridden_y_scale_base is not None:
-                plt.yscale(overridden_y_scale, base=overridden_y_scale_base)
+                template.ax.set_yscale(overridden_y_scale, base=overridden_y_scale_base)
             else:
-                plt.yscale(overridden_y_scale)
+                template.ax.set_yscale(overridden_y_scale)
 
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
+        template.ax.legend()
+        template.ax.grid(True)
+        template.fig.tight_layout()

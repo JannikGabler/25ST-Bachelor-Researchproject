@@ -10,6 +10,8 @@ from general_data_structures.directional_acyclic_graph.directional_acyclic_graph
 from general_data_structures.tree.tree import Tree
 from general_data_structures.tree.tree_node import TreeNode
 
+from file_handling.result_persistence.save_policy import SavePolicy
+
 
 class PipelineConfigurationConstants:
     # Namespace for dynamically loaded modules is getting added on demand
@@ -195,3 +197,12 @@ class AbsoluteRoundOffErrorPlotComponentConstants:
 
 class RelativeRoundOffErrorPlotComponentConstants:
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
+
+class FilesystemResultStoreConstants:
+    POLICY = SavePolicy( 
+            mode="soft-state", # or "snapshot"
+            keep_soft_state_n=3,
+            json_indent=2,
+            plot_formats=("svg", "png", "pdf"),
+        )
