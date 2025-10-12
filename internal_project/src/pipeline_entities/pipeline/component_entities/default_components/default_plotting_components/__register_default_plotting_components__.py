@@ -1,5 +1,6 @@
 ### DO NOT REMOVE IMPORTS, THEY ARE NECESSARY!  ###
 
+
 def register_plotting_components():
     from . import interpolant_plot_component
     from . import old_interpolants_plot_component

@@ -1,3 +1,2 @@
-
 class FormatError(Exception):
     pass

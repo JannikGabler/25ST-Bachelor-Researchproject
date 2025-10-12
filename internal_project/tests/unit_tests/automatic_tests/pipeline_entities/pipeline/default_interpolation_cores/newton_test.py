@@ -45,11 +45,13 @@ class TestNewtonInterpolationCore(TestInterpolationCoreBase):
           for i = n-1..0:
               acc = acc * (x - nodes[i]) + dd[i]
         """
+
         def eval_one(x):
             acc = jnp.array(0.0, dtype=xs.dtype)
             for i in range(nodes.size - 1, -1, -1):
                 acc = acc * (x - nodes[i]) + dd[i]
             return acc
+
         return jnp.array([eval_one(x) for x in xs], dtype=xs.dtype)
 
     # ---- Concrete cases ----
@@ -65,8 +67,8 @@ class TestNewtonInterpolationCore(TestInterpolationCoreBase):
     def test_quadratic(self):
         # p(x) = 1 + 2x + x^2 -> nodes [0,1,2], values [1,4,9]
         nodes = jnp.array([0.0, 1.0, 2.0])
-        values = (nodes ** 2) + 2.0 * nodes + 1.0  # [1,4,9]
-        f_true = lambda x: (x ** 2) + 2.0 * x + 1.0
+        values = (nodes**2) + 2.0 * nodes + 1.0  # [1,4,9]
+        f_true = lambda x: (x**2) + 2.0 * x + 1.0
         xs = jnp.array([-1.0, 0.0, 0.5, 1.0, 3.0])
         self._run_case(nodes, values, f_true, xs)
 

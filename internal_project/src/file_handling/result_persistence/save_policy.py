@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
+
 @dataclass(frozen=True)
 class SavePolicy:
     """
@@ -13,6 +14,7 @@ class SavePolicy:
     - json_indent:     pretty print JSON
     - keep_soft_state_n: if >1, keep rotating latest directories latest, latest-1, ...
     """
+
     mode: Literal["soft-state", "snapshot"]
     plot_formats: list[str]
     json_indent: int

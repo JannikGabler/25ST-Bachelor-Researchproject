@@ -10,7 +10,9 @@ from pipeline_entities.pipeline.component_entities.default_components.default_no
 class TestSecondTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
     CORE_CLS = SecondTypeChebyshevNodeGenerator
 
-    def build_expected_nodes(self, node_count: int, interval: jnp.ndarray, dtype) -> jnp.ndarray:
+    def build_expected_nodes(
+        self, node_count: int, interval: jnp.ndarray, dtype
+    ) -> jnp.ndarray:
         """
         Chebyshev 2nd-kind nodes on [-1,1] (incl. endpoints) for n>=2:
           x_k = cos(pi*k/(n-1)), k = n-1, ..., 0
@@ -22,7 +24,9 @@ class TestSecondTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
             mid = (a + b) / jnp.asarray(2, dtype=dtype)
             return jnp.array([mid], dtype=dtype)
 
-        k = jnp.arange(node_count - 1, -1, -1, dtype=dtype)  # n-1, ..., 0 for ascending order
+        k = jnp.arange(
+            node_count - 1, -1, -1, dtype=dtype
+        )  # n-1, ..., 0 for ascending order
         denom = jnp.asarray(node_count - 1, dtype=dtype)
         base = jnp.cos(jnp.pi * k / denom).astype(dtype)
 

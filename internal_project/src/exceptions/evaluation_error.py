@@ -1,3 +1,2 @@
-
 class EvaluationError(Exception):
     pass

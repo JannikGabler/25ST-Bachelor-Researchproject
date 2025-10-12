@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from exceptions.frozen_instance_error import FrozenInstanceError
 
@@ -9,15 +9,11 @@ class Freezable(ABC):
     ###############################
     _frozen_: bool = False
 
-
-
     #########################
     ### Getters & setters ###
     #########################
     def freeze(self):
         self._frozen_ = True
-
-
 
     #######################
     ### Private methods ###

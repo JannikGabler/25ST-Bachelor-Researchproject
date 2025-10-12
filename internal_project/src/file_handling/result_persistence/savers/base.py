@@ -5,23 +5,28 @@ from typing import Any
 
 from file_handling.result_persistence.save_policy import SavePolicy
 
+
 class Saver(ABC):
     """
     Abstract base for savers.
     """
-    kind: str # e.g., "plot", "json", "jnp_array", ...
+
+    kind: str  # e.g., "plot", "json", "jnp_array", ...
 
     @abstractmethod
     def save(self, artifact: Any, run_dir: Path, policy: SavePolicy) -> Path:
         """Persist the artifact and return the primary file path."""
         raise NotImplementedError
-    
+
+
 _SAVER_REGISTRY: dict[str, Saver] = {}
 
-def register_saver(saver: Saver) -> None: 
-    if not saver.kind: 
-        raise ValueError(f"saver.kind must be a non-empty string. Got: {saver.kind}") 
+
+def register_saver(saver: Saver) -> None:
+    if not saver.kind:
+        raise ValueError(f"saver.kind must be a non-empty string. Got: {saver.kind}")
     _SAVER_REGISTRY[saver.kind] = saver
+
 
 def get_saver(kind: str) -> Saver:
     try:

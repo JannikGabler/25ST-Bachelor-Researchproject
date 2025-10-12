@@ -10,7 +10,8 @@ from exceptions.duplicate_value_error import DuplicateError
 from utils.collections_utils import CollectionsUtils
 from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class DirectionalAcyclicGraphNode(Generic[T], Freezable):
     ###############################
@@ -20,8 +21,6 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
     _successors_: list[DirectionalAcyclicGraphNode[T]]
     _value_: T | None
 
-
-
     ###################
     ### Constructor ###
     ###################
@@ -30,16 +29,18 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
         self._successors_ = []
         self._value_ = value
 
-
-
     ######################
     ### Public methods ###
     ######################
     def add_predecessor(self, predecessor: DirectionalAcyclicGraphNode[T]) -> None:
         if DirectionalAcyclicGraphNode._is_predecessor_of_node_(predecessor, self):
-            raise DuplicateError(f"Cannot add '{str(predecessor)}' as a predecessor because this node is already a predecessor.")
+            raise DuplicateError(
+                f"Cannot add '{str(predecessor)}' as a predecessor because this node is already a predecessor."
+            )
         if self.can_reach_node(predecessor):
-            raise CycleException(f"Cannot add '{str(predecessor)}' as a predecessor because it would create a cycle.")
+            raise CycleException(
+                f"Cannot add '{str(predecessor)}' as a predecessor because it would create a cycle."
+            )
 
         predecessor._successors_.append(self)
         self._predecessors_.append(predecessor)
@@ -49,7 +50,9 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
             self._predecessors_.remove(predecessor)
             predecessor._successors_.remove(self)
         else:
-            raise Exception(f"Cannot remove '{str(predecessor)}' from predecessors because the node is not a predecessor.")
+            raise Exception(
+                f"Cannot remove '{str(predecessor)}' from predecessors because the node is not a predecessor."
+            )
 
     def clear_predecessors(self) -> None:
         for predecessor in self._predecessors_:
@@ -58,13 +61,15 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
     def is_predecessor_of(self, node: DirectionalAcyclicGraphNode[T]) -> bool:
         return CollectionsUtils.is_exact_element_in_collection(node, self._successors_)
 
-
-
     def add_successor(self, successor: DirectionalAcyclicGraphNode[T]) -> None:
         if DirectionalAcyclicGraphNode._is_successor_of_node_(successor, self):
-            raise DuplicateError(f"Cannot add '{str(successor)}' as a successor because this node is already a successor.")
+            raise DuplicateError(
+                f"Cannot add '{str(successor)}' as a successor because this node is already a successor."
+            )
         if successor.can_reach_node(self):
-            raise CycleException(f"Cannot add '{str(successor)}' as a successor because it would create a cycle.")
+            raise CycleException(
+                f"Cannot add '{str(successor)}' as a successor because it would create a cycle."
+            )
 
         self._successors_.append(successor)
         successor._predecessors_.append(self)
@@ -74,18 +79,22 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
             self._successors_.remove(successor)
             successor._predecessors_.remove(self)
         else:
-            raise Exception(f"Cannot remove '{str(successor)}' from successors because the node is not a successor.")
+            raise Exception(
+                f"Cannot remove '{str(successor)}' from successors because the node is not a successor."
+            )
 
     def clear_successors(self) -> None:
         for successor in self._successors_:
             self.remove_successor(successor)
 
     def is_successor_of(self, node: DirectionalAcyclicGraphNode[T]) -> bool:
-        return CollectionsUtils.is_exact_element_in_collection(node, self._predecessors_)
+        return CollectionsUtils.is_exact_element_in_collection(
+            node, self._predecessors_
+        )
 
-
-
-    def depth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+    def depth_first_traversal(
+        self,
+    ) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         stack: deque[DirectionalAcyclicGraphNode[T]] = deque([self])
 
         while stack:
@@ -95,7 +104,9 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
 
             yield current_node
 
-    def breadth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+    def breadth_first_traversal(
+        self,
+    ) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         queue: deque[DirectionalAcyclicGraphNode[T]] = deque([self])
 
         while queue:
@@ -105,12 +116,14 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
 
             yield current_node
 
-    def topological_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+    def topological_traversal(
+        self,
+    ) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         yield from DirectionalAcyclicGraphUtils.topological_traversal(self)
 
-
-
-    def all_predecessors_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+    def all_predecessors_traversal(
+        self,
+    ) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
         queue: deque[DirectionalAcyclicGraphNode[T]] = deque(self._predecessors_)
 
         while queue:
@@ -120,16 +133,12 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
 
             yield predecessor
 
-
-
     def can_reach_node(self, node: DirectionalAcyclicGraphNode[T]) -> bool:
         for reachable_node in self.breadth_first_traversal():
             if reachable_node is node:
                 return True
 
         return False
-
-
 
     #########################
     ### Getters & setters ###
@@ -146,13 +155,11 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
     def value(self) -> T | None:
         return self._value_
 
-
-
     ##########################
     ### Overridden methods ###
     ##########################
     def __eq__(self, other: any) -> bool:
-        if not isinstance(other, DirectionalAcyclicGraphNode): # Cover None
+        if not isinstance(other, DirectionalAcyclicGraphNode):  # Cover None
             return False
         if self.value != other.value:
             return False
@@ -163,45 +170,41 @@ class DirectionalAcyclicGraphNode(Generic[T], Freezable):
 
         return True
 
-
-
     def __hash__(self) -> int | None:
-        if self._frozen_:   # instance is immutable
-            return hash((self._value_, len(self._predecessors_), len(self._successors_)))
+        if self._frozen_:  # instance is immutable
+            return hash(
+                (self._value_, len(self._predecessors_), len(self._successors_))
+            )
 
-        else:   # instance is mutable
+        else:  # instance is mutable
             return None
-
-
 
     def __str__(self) -> str:
         return f"DirectedAcyclicNode(value='{self._value_})'"
 
-
-
     def __repr__(self) -> str:
         return f"DirectedAcyclicNode(value={repr(self._value_)}, predecessors={repr(self._predecessors_)}, successors={repr(self._successors_)}"
-
-
 
     #######################
     ### Private methods ###
     #######################
     @staticmethod
-    def _is_predecessor_of_node_(predecessor: DirectionalAcyclicGraphNode[T], node: DirectionalAcyclicGraphNode[T]) -> bool:
+    def _is_predecessor_of_node_(
+        predecessor: DirectionalAcyclicGraphNode[T],
+        node: DirectionalAcyclicGraphNode[T],
+    ) -> bool:
         for old_predecessor in node._predecessors_:
             if old_predecessor is predecessor:
                 return True
 
         return False
 
-
-
     @staticmethod
-    def _is_successor_of_node_(successor: DirectionalAcyclicGraphNode[T], node: DirectionalAcyclicGraphNode[T]) -> bool:
+    def _is_successor_of_node_(
+        successor: DirectionalAcyclicGraphNode[T], node: DirectionalAcyclicGraphNode[T]
+    ) -> bool:
         for old_successor in node._successors_:
             if old_successor is successor:
                 return True
 
         return False
-

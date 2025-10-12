@@ -1,5 +1,7 @@
 from exceptions.not_instantiable_error import NotInstantiableError
-from pipeline_entities.pipeline.component_entities.component_registry.component_registry import ComponentRegistry
+from pipeline_entities.pipeline.component_entities.component_registry.component_registry import (
+    ComponentRegistry,
+)
 
 
 class InternalLogicSetupManager:
@@ -7,9 +9,9 @@ class InternalLogicSetupManager:
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError("The class 'InternalLogicSetupManager' can not be instantiated.")
-
-
+        raise NotInstantiableError(
+            "The class 'InternalLogicSetupManager' can not be instantiated."
+        )
 
     ######################
     ### Public methods ###

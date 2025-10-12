@@ -7,8 +7,8 @@ from sympy import Expr
 
 data_type = jnp.float32
 x_array = jnp.linspace(-1.0, 1.0, 101, dtype=data_type)
-warmups=10
-runs=1000
+warmups = 10
+runs = 1000
 
 
 def get_hard_coded_callable():
@@ -58,7 +58,7 @@ for _ in range(warmups):
     sympy_callable(x_array).block_until_ready()
 
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     hard_coded_callable(x_array).block_until_ready()
@@ -69,7 +69,7 @@ avg = sum(times) / len(times)
 print(f"The hard coded callable took in average: {avg * 1E06:0.1f} µs")
 
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     sympy_callable(x_array).block_until_ready()

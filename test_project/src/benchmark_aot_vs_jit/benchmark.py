@@ -17,7 +17,6 @@ data_2: PipelineData = PipelineData(node_count, data_type)
 data_3: PipelineData = PipelineData(node_count, data_type)
 
 
-
 # Init generators
 start = time.perf_counter()
 aot_generator: AOTGenerator = AOTGenerator(data_1)
@@ -33,7 +32,6 @@ start = time.perf_counter()
 python_generator: PurePythonGenerator = PurePythonGenerator(data_3)
 end = time.perf_counter()
 print(f"Init of the PYT generator took: {(end - start) * 1E06:0.1f} µs\n")
-
 
 
 # Set interval after init
@@ -59,28 +57,10 @@ end = time.perf_counter()
 print(f"Node generation took the PYT generator: {(end - start) * 1E03:0.1f} ms\n")
 
 
-#Output
+# Output
 # print("Calculated notes by the AOT generator")
 # print(str(data_1.nodes) + "\n")
 # print("Calculated notes by the JIT generator")
 # print(str(data_2.nodes) + "\n")
 # print("Calculated notes by the PYT generator")
 # print(str(data_3.nodes) + "\n")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

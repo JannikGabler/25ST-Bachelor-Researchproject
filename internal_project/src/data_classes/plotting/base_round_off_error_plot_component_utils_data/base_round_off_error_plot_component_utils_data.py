@@ -29,5 +29,7 @@ class BaseRoundOffErrorPlotComponentUtilsData:
     scatter_size: float | None = None
     scatter_x_distance: jnp.ndarray | None = None
     scatter_y_distance: jnp.ndarray | None = None
-    border: tuple[tuple[jnp.ndarray, jnp.ndarray], tuple[jnp.ndarray, jnp.ndarray]] | None = None
+    border: (
+        tuple[tuple[jnp.ndarray, jnp.ndarray], tuple[jnp.ndarray, jnp.ndarray]] | None
+    ) = None
     connectable_segments: list[tuple[list[list[int]], list[list[int]]]] | None = None

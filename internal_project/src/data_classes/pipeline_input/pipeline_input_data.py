@@ -19,6 +19,3 @@ class PipelineInputData:
 
     additional_directly_injected_values: dict[str, str] = field(default_factory=dict)
     additional_values: dict[str, str] = field(default_factory=dict)
-
-
-

@@ -11,4 +11,3 @@ class FunctionPlotData:
     connectable_segments: list[list[tuple[jnp.ndarray, jnp.ndarray]]]
 
     single_points: list[tuple[jnp.ndarray, jnp.ndarray]]
-

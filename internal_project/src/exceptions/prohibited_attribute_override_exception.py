@@ -1,3 +1,2 @@
-
 class ProhibitedAttributeOverrideException(Exception):
     pass

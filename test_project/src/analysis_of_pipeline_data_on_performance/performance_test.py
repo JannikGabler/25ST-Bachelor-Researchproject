@@ -14,10 +14,11 @@ print("Starting interval generation...")
 intervals = [(random.uniform(-10, 0), random.uniform(1, 10)) for _ in range(0, 150)]
 data_type = jnp.float32
 
+
 def benchmark_1(warmup=5, runs=50):
     # Warm-up
     for i in range(warmup):
-        print(f"{i+1} ", end='')
+        print(f"{i+1} ", end="")
         generator: Generator1 = Generator1(node_counts[i], data_type, intervals[i])
 
         generator.generate_nodes().block_until_ready()  # important!
@@ -26,7 +27,7 @@ def benchmark_1(warmup=5, runs=50):
 
     times = []
     for i in range(runs):
-        print(f"{i + 1} ", end='')
+        print(f"{i + 1} ", end="")
 
         generator: Generator1 = Generator1(node_counts[0], data_type, intervals[0])
 
@@ -45,7 +46,7 @@ def benchmark_1(warmup=5, runs=50):
 def benchmark_2(warmup=5, runs=50):
     # Warm-up
     for i in range(warmup):
-        print(f"{i+1} ", end='')
+        print(f"{i+1} ", end="")
 
         data: PipelineData = PipelineData(node_counts[i], intervals[i], data_type)
         generator: Generator2 = Generator2(data)
@@ -56,7 +57,7 @@ def benchmark_2(warmup=5, runs=50):
 
     times = []
     for i in range(runs):
-        print(f"{i+1} ", end='')
+        print(f"{i+1} ", end="")
 
         data: PipelineData = PipelineData(node_counts[0], intervals[0], data_type)
         generator: Generator2 = Generator2(data)
@@ -76,7 +77,7 @@ def benchmark_2(warmup=5, runs=50):
 def benchmark_3(warmup=5, runs=50):
     # Warm-up
     for i in range(warmup):
-        print(f"{i+1} ", end='')
+        print(f"{i+1} ", end="")
 
         data: PipelineData = PipelineData(node_counts[i], intervals[i], data_type)
         generator: Generator3 = Generator3(data)
@@ -87,7 +88,7 @@ def benchmark_3(warmup=5, runs=50):
 
     times = []
     for i in range(runs):
-        print(f"{i+1} ", end='')
+        print(f"{i+1} ", end="")
 
         data: PipelineData = PipelineData(node_counts[0], intervals[0], data_type)
         generator: Generator3 = Generator3(data)
@@ -104,7 +105,7 @@ def benchmark_3(warmup=5, runs=50):
     return avg_time
 
 
-r=50
+r = 50
 print("Starting benchmark 1...")
 benchmark_1(runs=r)
 print("Starting benchmark 2...")

@@ -14,7 +14,9 @@ from general_data_structures.tree.tree import Tree
 from general_data_structures.tree.tree_node import TreeNode
 from exceptions.evaluation_error import EvaluationError
 from exceptions.type_annotation_error import TypeAnnotationError
-from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
+from file_handling.dynamic_module_loading.dynamic_module_loader import (
+    DynamicModuleLoader,
+)
 from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from utils.typing_utils import TypingUtils
 
@@ -23,10 +25,15 @@ class PipelineInput:
     ###########################
     ### Attributes of class ###
     ###########################
-    _parsing_eval_namespace_: dict[str, object] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode} # Namespace for dynamically loaded modules is getting added on demand
-
-
+    _parsing_eval_namespace_: dict[str, object] = {
+        "jax": jax,
+        "jax.numpy": jnp,
+        "math": math,
+        "numpy": numpy,
+        "Version": Version,
+        "Tree": Tree,
+        "TreeNode": TreeNode,
+    }  # Namespace for dynamically loaded modules is getting added on demand
 
     ###############################
     ### Attributes of instances ###
@@ -48,8 +55,6 @@ class PipelineInput:
     _additional_directly_injected_values_: dict[str, object]
     _additional_values_: dict[str, object]
 
-
-
     ###################
     ### Constructor ###
     ###################
@@ -60,8 +65,6 @@ class PipelineInput:
         """
         self._parse_input_data_(input_data)
         self._validate_attribute_types_()
-
-
 
     #########################
     ### Getters & setters ###
@@ -114,115 +117,146 @@ class PipelineInput:
     def additional_values(self) -> dict[str, object]:
         return self._additional_values_
 
-
-
     ##########################
     ### Overridden methods ###
     ##########################
     def __repr__(self) -> str:
-        return (f"{self.__class__.__name__}(name={repr(self._name_)}', data_type='{repr(self._data_type_)}', "
-                f"node_count={repr(self.node_count)}, interpolation_interval={repr(self.interpolation_interval)}, "
-                f"function_expression={repr(self.function_expression)}, "
-                f"piecewise_function_expressions={repr(self.piecewise_function_expression)}, "
-                f"sympy_function_expression_simplification='{repr(self.sympy_function_expression_simplification)}', "
-                f"function_callable={repr(self.function_callable)}, "
-                f"interpolation_values={repr(self.interpolation_values)}', "
-                f"interpolant_evaluation_points={repr(self.interpolant_evaluation_points)}, "
-                f"additional_directly_injected_values={repr(self.additional_directly_injected_values)}, "
-                f"additional_values={repr(self.additional_values)}')")
+        return (
+            f"{self.__class__.__name__}(name={repr(self._name_)}', data_type='{repr(self._data_type_)}', "
+            f"node_count={repr(self.node_count)}, interpolation_interval={repr(self.interpolation_interval)}, "
+            f"function_expression={repr(self.function_expression)}, "
+            f"piecewise_function_expressions={repr(self.piecewise_function_expression)}, "
+            f"sympy_function_expression_simplification='{repr(self.sympy_function_expression_simplification)}', "
+            f"function_callable={repr(self.function_callable)}, "
+            f"interpolation_values={repr(self.interpolation_values)}', "
+            f"interpolant_evaluation_points={repr(self.interpolant_evaluation_points)}, "
+            f"additional_directly_injected_values={repr(self.additional_directly_injected_values)}, "
+            f"additional_values={repr(self.additional_values)}')"
+        )
 
     def __str__(self) -> str:
         return self.__repr__()
 
-
-
     def __hash__(self) -> int:
-        return hash((self._name_, self._data_type_, self._node_count_, self._interpolation_interval_,
-                     self._function_expression_, self._piecewise_function_expression_,
-                     self._sympy_function_expression_simplification_, self._function_callable_,
-                     self._interpolation_values_, self._interpolant_evaluation_points_,
-                     self._additional_directly_injected_values_, self._additional_values_))
-
-
+        return hash(
+            (
+                self._name_,
+                self._data_type_,
+                self._node_count_,
+                self._interpolation_interval_,
+                self._function_expression_,
+                self._piecewise_function_expression_,
+                self._sympy_function_expression_simplification_,
+                self._function_callable_,
+                self._interpolation_values_,
+                self._interpolant_evaluation_points_,
+                self._additional_directly_injected_values_,
+                self._additional_values_,
+            )
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (self._name_ == other._name_ and self._data_type_ == other._data_type_
-                    and self._node_count_ == other._node_count_
-                    and jnp.array_equal(self._interpolation_interval_, other._interpolation_interval_)
-                    and self._function_expression_ == other._function_expression_
-                    and self._piecewise_function_expression_ == other._piecewise_function_expression_
-                    and self._sympy_function_expression_simplification_ == other._sympy_function_expression_simplification_
-                    and (self._function_callable_ is None == other._function_callable_ is None)
-                    and jnp.array_equal(self._interpolation_values_, other._interpolation_values_)
-                    and jnp.array_equal(self._interpolant_evaluation_points_, other._interpolant_evaluation_points_)
-                    and self._additional_directly_injected_values_ == other._additional_directly_injected_values_
-                    and self._additional_values_ == other._additional_values_)
-
-
+            return (
+                self._name_ == other._name_
+                and self._data_type_ == other._data_type_
+                and self._node_count_ == other._node_count_
+                and jnp.array_equal(
+                    self._interpolation_interval_, other._interpolation_interval_
+                )
+                and self._function_expression_ == other._function_expression_
+                and self._piecewise_function_expression_
+                == other._piecewise_function_expression_
+                and self._sympy_function_expression_simplification_
+                == other._sympy_function_expression_simplification_
+                and (
+                    self._function_callable_
+                    is None
+                    == other._function_callable_
+                    is None
+                )
+                and jnp.array_equal(
+                    self._interpolation_values_, other._interpolation_values_
+                )
+                and jnp.array_equal(
+                    self._interpolant_evaluation_points_,
+                    other._interpolant_evaluation_points_,
+                )
+                and self._additional_directly_injected_values_
+                == other._additional_directly_injected_values_
+                and self._additional_values_ == other._additional_values_
+            )
 
     #######################
     ### Private methods ###
     #######################
     def _parse_input_data_(self, input_data: PipelineInputData) -> None:
-        eval_name_space: dict[str, object] = DynamicModuleLoader.get_module_namespace() | self._parsing_eval_namespace_
+        eval_name_space: dict[str, object] = (
+            DynamicModuleLoader.get_module_namespace() | self._parsing_eval_namespace_
+        )
 
         self._parse_regular_input_values_(input_data, eval_name_space)
         self._parse_additional_input_values_(input_data, eval_name_space)
-        self._parse_additional_directly_injected_input_values_(input_data, eval_name_space)
+        self._parse_additional_directly_injected_input_values_(
+            input_data, eval_name_space
+        )
 
-
-
-    def _parse_regular_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
+    def _parse_regular_input_values_(
+        self, input_data: PipelineInputData, eval_name_space: dict[str, object]
+    ) -> None:
         for field in fields(PipelineInputData):
             name: str = field.name
             value: str = getattr(input_data, name)
 
-            if name not in ('additional_values', 'additional_directly_injected_values'):
+            if name not in ("additional_values", "additional_directly_injected_values"):
                 self._parse_single_regular_input_value_(name, value, eval_name_space)
 
-
-
-    def _parse_single_regular_input_value_(self, field_name: str, field_value: str, eval_name_space: dict[str, object]) -> None:
+    def _parse_single_regular_input_value_(
+        self, field_name: str, field_value: str, eval_name_space: dict[str, object]
+    ) -> None:
         transformed_field_name: str = f"_{field_name}_"
 
         if field_value:
-            parsed_value: object = self._try_expression_evaluation_(field_value, field_name, eval_name_space)
+            parsed_value: object = self._try_expression_evaluation_(
+                field_value, field_name, eval_name_space
+            )
             setattr(self, transformed_field_name, parsed_value)
         else:
             setattr(self, transformed_field_name, None)
 
-
-
-    def _parse_additional_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
+    def _parse_additional_input_values_(
+        self, input_data: PipelineInputData, eval_name_space: dict[str, object]
+    ) -> None:
         self._additional_values_ = {}
 
         for key, value in input_data.additional_values.items():
-            parsed_value: object = self._try_expression_evaluation_(value, key, eval_name_space)
+            parsed_value: object = self._try_expression_evaluation_(
+                value, key, eval_name_space
+            )
             self._additional_values_[key] = parsed_value
 
-
-
-    def _parse_additional_directly_injected_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
+    def _parse_additional_directly_injected_input_values_(
+        self, input_data: PipelineInputData, eval_name_space: dict[str, object]
+    ) -> None:
         self._additional_directly_injected_values_ = {}
 
         for key, value in input_data.additional_directly_injected_values.items():
-            parsed_value: object = self._try_expression_evaluation_(value, key, eval_name_space)
+            parsed_value: object = self._try_expression_evaluation_(
+                value, key, eval_name_space
+            )
             self._additional_directly_injected_values_[key] = parsed_value
 
-
-
     @staticmethod
-    def _try_expression_evaluation_(expression: str, field_name: str, name_space: dict[str, object]) -> object:
+    def _try_expression_evaluation_(
+        expression: str, field_name: str, name_space: dict[str, object]
+    ) -> object:
         try:
             # Security node: __builtins__ are available by default! Might be a security issue (-> define custom safe build ins).
             return eval(expression, {}, name_space)
         except Exception as e:
             raise EvaluationError(f"Error while evaluating '{expression}': {e}")
-
-
 
     def _validate_attribute_types_(self) -> None:
         type_hints: dict[str, object] = typing.get_type_hints(PipelineInput)
@@ -230,15 +264,17 @@ class PipelineInput:
         for field in fields(PipelineInputData):
             name: str = field.name
 
-            if name not in ('additional_values', 'additional_directly_injected_values'):
+            if name not in ("additional_values", "additional_directly_injected_values"):
                 transformed_name: str = f"_{name}_"
                 self._validate_single_attribute_type(transformed_name, type_hints)
 
-
-
-    def _validate_single_attribute_type(self, field_name: str, type_hints: dict[str, object]) -> None:
+    def _validate_single_attribute_type(
+        self, field_name: str, type_hints: dict[str, object]
+    ) -> None:
         if field_name not in type_hints:
-            raise TypeAnnotationError(f"The attribute '{self.__class__.__name__}.{field_name}' is missing type annotations.")
+            raise TypeAnnotationError(
+                f"The attribute '{self.__class__.__name__}.{field_name}' is missing type annotations."
+            )
 
         field_value: object = getattr(self, field_name)
         type_annotation: object = type_hints[field_name]
@@ -248,16 +284,20 @@ class PipelineInput:
         else:
             self._validate_set_attribute_type_(field_name, field_value, type_annotation)
 
+    def _validate_set_attribute_type_(
+        self, field_name: str, field_value: object, type_annotation: object
+    ) -> None:
+        if not TypingUtils.does_value_match_type_annotation(
+            field_value, type_annotation
+        ):
+            raise TypeError(
+                f"The attribute '{self.__class__.__name__}.{field_name}' of this instance was initialized with a wrong type. "
+                f"Expected is '{type_annotation}' but got '{type(field_value)}'."
+            )
 
-
-    def _validate_set_attribute_type_(self, field_name: str, field_value: object, type_annotation: object) -> None:
-        if not TypingUtils.does_value_match_type_annotation(field_value, type_annotation):
-            raise TypeError(f"The attribute '{self.__class__.__name__}.{field_name}' of this instance was initialized with a wrong type. "
-                            f"Expected is '{type_annotation}' but got '{type(field_value)}'.")
-
-
-
-    def _validate_non_set_attribute_type_(self, field_name: str, type_annotation: object) -> None:
+    def _validate_non_set_attribute_type_(
+        self, field_name: str, type_annotation: object
+    ) -> None:
         type_origin: ParamSpec = typing.get_origin(type_annotation)
         type_args: tuple = typing.get_args(type_annotation)
 
@@ -268,4 +308,6 @@ class PipelineInput:
                 if argument is type(None):
                     return
 
-        raise ValueError(f"The attribute '{self.__class__.__name__}.{field_name}' of this instance is not set although it's required to be set.")
+        raise ValueError(
+            f"The attribute '{self.__class__.__name__}.{field_name}' of this instance is not set although it's required to be set."
+        )

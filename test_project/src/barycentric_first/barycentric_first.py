@@ -31,7 +31,12 @@ def compute_weights(interpolation_nodes: jnp.ndarray) -> jnp.ndarray:
 
 
 @jax.jit
-def interpolate_single(x: float, interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray, weights: jnp.ndarray) -> jnp.ndarray:
+def interpolate_single(
+    x: float,
+    interpolation_nodes: jnp.ndarray,
+    function_values: jnp.ndarray,
+    weights: jnp.ndarray,
+) -> jnp.ndarray:
     """
     Helper function for barycentric_type1_interpolate:
     Evaluates the barycentric interpolation polynomial of the first form at a single point.
@@ -64,14 +69,20 @@ def interpolate_single(x: float, interpolation_nodes: jnp.ndarray, function_valu
     node_polynomial = jnp.prod(diffs)
 
     # Calculate the final value with the first form of the barycentric interpolation formula (Equation (5.9))
-    interpolated_value = node_polynomial * jnp.sum((weights / updated_diffs) * function_values)
+    interpolated_value = node_polynomial * jnp.sum(
+        (weights / updated_diffs) * function_values
+    )
 
     # Return exact function value if x matches a node otherwise return interpolated value
     return jnp.where(jnp.any(bool_diffs), exact_value, interpolated_value)
 
 
 @jax.jit
-def barycentric_type1_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray) -> jnp.ndarray:
+def barycentric_type1_interpolate(
+    evaluation_points: jnp.ndarray,
+    interpolation_nodes: jnp.ndarray,
+    function_values: jnp.ndarray,
+) -> jnp.ndarray:
     """
     Evaluates the barycentric interpolation polynomial of the first form at specified points.
     The main calculation is done in the helper method interpolate_single.
@@ -97,4 +108,6 @@ def barycentric_type1_interpolate(evaluation_points: jnp.ndarray, interpolation_
     weights = compute_weights(interpolation_nodes)
 
     # Compute interpolation value for each evaluation point individually but efficiently
-    return jax.vmap(lambda x: interpolate_single(x, interpolation_nodes, function_values, weights))(evaluation_points)
+    return jax.vmap(
+        lambda x: interpolate_single(x, interpolation_nodes, function_values, weights)
+    )(evaluation_points)

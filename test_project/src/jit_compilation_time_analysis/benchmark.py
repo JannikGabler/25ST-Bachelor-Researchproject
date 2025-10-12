@@ -23,8 +23,6 @@ def generate_nodes(data: PipelineData) -> jnp.ndarray:
     return nodes
 
 
-
-
 node_count = random.randint(100, 9999999)
 interval = (random.uniform(-100, 0), random.uniform(0, 100))
 data_type = jnp.float32
@@ -42,4 +40,3 @@ start = time.perf_counter()
 generate_nodes(data_2)
 end = time.perf_counter()
 print(f"Generation time 2: {(end - start) * 1E06:0.1f} µs")
-
