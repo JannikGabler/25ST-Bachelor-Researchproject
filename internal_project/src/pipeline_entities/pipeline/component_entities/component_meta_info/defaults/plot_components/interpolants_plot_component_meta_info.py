@@ -5,7 +5,7 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 interpolants_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"plots"},
 
-    attributes_allowed_to_be_overridden=set(),
+    attributes_allowed_to_be_overridden={"data_type"},
 
     pre_dynamic_constraints=[],
 

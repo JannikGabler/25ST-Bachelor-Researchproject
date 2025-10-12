@@ -5,6 +5,7 @@ import jax.numpy as jnp
 from dataclasses import dataclass
 from fractions import Fraction
 
+import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 from constants.internal_logic_constants import BaseRoundOffErrorPlotComponentConstants
@@ -49,6 +50,10 @@ class BaseRoundOffErrorPlotComponentUtils:
 
         cls._set_barycentric_weights_(data, pipeline_data)
         cls._set_exact_interpolant_values_(data, pipeline_data)
+
+        # plt.title("Exact interpolant values")
+        # plt.plot(data.evaluation_points, data.interpolant_values_exact)
+        # plt.show()
 
         cls._set_functions_(data, pipeline_data)
         cls._set_function_names_(data, pipeline_data)

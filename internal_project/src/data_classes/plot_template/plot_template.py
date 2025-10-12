@@ -514,6 +514,14 @@ class WrapperBase(ABC):
 
 
 
+    # def __repr__(self) -> str:
+    #     return f"{self.__class__.__name__}(log={repr(self._log_)})"
+    #
+    # def __str__(self) -> str:
+    #     return f"{self.__class__.__name__}(log={str(self._log_)})"
+
+
+
 class FigureWrapper(WrapperBase):
     # Figure-seitige Komfortmethoden
     def show(self, *args, **kwargs):
@@ -611,6 +619,12 @@ class PlotTemplate:
 
 
 
-
+    # def __repr__(self) -> str:
+    #     return (f"{self.__class__.__name__}(subplots_args={repr(self._subplots_args_)}, subplots_kwargs={repr(self._subplots_kwargs_)}, "
+    #             f"external_fig={repr(self._external_fig_)}, external_axes={repr(self._external_axes_)})")
+    #
+    # def __str__(self) -> str:
+    #     return (f"{self.__class__.__name__}(subplots_args={str(self._subplots_args_)}, subplots_kwargs={str(self._subplots_kwargs_)}, "
+    #             f"external_fig={str(self._external_fig_)}, external_axes={str(self._external_axes_)})")
 
 
