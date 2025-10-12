@@ -6,10 +6,6 @@ from exceptions.directory_not_found_error import DirectoryNotFoundError
 from exceptions.evaluation_error import EvaluationError
 
 
-
-
-
-
 # def dynamically_load_files(folder: str | Path, recursive: bool=False) -> None:
 #     if isinstance(folder, str):
 #         folder: Path = Path(folder)

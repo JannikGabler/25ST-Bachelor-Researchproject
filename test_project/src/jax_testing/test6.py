@@ -13,11 +13,15 @@ def aitken_neville_full_array(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.nd
         # Update entries for current order of divided differences
         def inner_loop(i, polynomials_inner):
             node_difference: jnp.ndarray = nodes[i] - nodes[i - k]
-            polynomial_difference: jnp.ndarray = polynomials_outer[i] - polynomials_outer[i - 1]
+            polynomial_difference: jnp.ndarray = (
+                polynomials_outer[i] - polynomials_outer[i - 1]
+            )
 
             summand1: jnp.ndarray = polynomials_outer[i]
-            summand2: jnp.ndarray = - nodes[i] / node_difference * polynomial_difference
-            summand3: jnp.ndarray = jnp.roll(polynomial_difference / node_difference, 1, axis=0)
+            summand2: jnp.ndarray = -nodes[i] / node_difference * polynomial_difference
+            summand3: jnp.ndarray = jnp.roll(
+                polynomial_difference / node_difference, 1, axis=0
+            )
 
             return polynomials_inner.at[i].set(summand1 + summand2 + summand3)
 
@@ -39,16 +43,20 @@ def f(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.ndarray:
         # Update entries for current order of divided differences
         def inner_loop(i, polynomials_inner):
             node_difference: jnp.ndarray = nodes[i] - nodes[i - k]
-            polynomial_difference: jnp.ndarray = polynomials_outer[i] - polynomials_outer[i - 1]
+            polynomial_difference: jnp.ndarray = (
+                polynomials_outer[i] - polynomials_outer[i - 1]
+            )
 
             summand1: jnp.ndarray = polynomials_outer[i]
-            summand2: jnp.ndarray = - nodes[i] / node_difference * polynomial_difference
-            summand3: jnp.ndarray = jnp.roll(polynomial_difference / node_difference, 1, axis=0)
+            summand2: jnp.ndarray = -nodes[i] / node_difference * polynomial_difference
+            summand3: jnp.ndarray = jnp.roll(
+                polynomial_difference / node_difference, 1, axis=0
+            )
 
             return polynomials_inner.at[i].set(summand1 + summand2 + summand3)
 
         # Apply the inner loop to update coefficients for the current order
-        #return jax.lax.fori_loop(k, n, inner_loop, polynomials_outer)
+        # return jax.lax.fori_loop(k, n, inner_loop, polynomials_outer)
         result = polynomials_outer
         for i in range(k, n):
             result = inner_loop(i, result)

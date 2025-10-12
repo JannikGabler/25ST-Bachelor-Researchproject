@@ -2,7 +2,9 @@ import jax.numpy as jnp
 import unittest
 
 from test_interpolation_core_base import TestInterpolationCoreBase
-from functions.defaults.default_interpolants.aitken_neville_interpolant import AitkenNevilleInterpolant
+from functions.defaults.default_interpolants.aitken_neville_interpolant import (
+    AitkenNevilleInterpolant,
+)
 from pipeline_entities.pipeline.component_entities.default_components.default_interpolation_cores.aitken_neville_interpolation_core import (
     AitkenNevilleInterpolationCore,
 )
@@ -29,9 +31,9 @@ class TestAitkenNevilleInterpolationCore(TestInterpolationCoreBase):
     # Override extraction (already good in base: _coefficients_)
 
     def test_linear(self):
-        nodes = jnp.array([0., 1.])
-        values = jnp.array([2., 5.])  # p(x)=2+3x
-        coeffs = jnp.array([2., 3.])
+        nodes = jnp.array([0.0, 1.0])
+        values = jnp.array([2.0, 5.0])  # p(x)=2+3x
+        coeffs = jnp.array([2.0, 3.0])
 
         # quick closure that base class will call as ground truth
         f_true = lambda x: 2.0 + 3.0 * x
@@ -39,16 +41,16 @@ class TestAitkenNevilleInterpolationCore(TestInterpolationCoreBase):
         # patch build_repr just for this case
         self.build_repr = lambda _n, _v: coeffs
 
-        xs = jnp.array([0., 0.2, 1.0])
+        xs = jnp.array([0.0, 0.2, 1.0])
         self._run_case(nodes, values, f_true, xs)
 
     def test_quadratic(self):
-        nodes = jnp.array([0., 1., 2.])
-        values = (nodes**2) + 2*nodes + 1  # p(x)=1+2x+x^2
-        coeffs = jnp.array([1., 2., 1.])
-        f_true = lambda x: (x**2) + 2*x + 1
+        nodes = jnp.array([0.0, 1.0, 2.0])
+        values = (nodes**2) + 2 * nodes + 1  # p(x)=1+2x+x^2
+        coeffs = jnp.array([1.0, 2.0, 1.0])
+        f_true = lambda x: (x**2) + 2 * x + 1
         self.build_repr = lambda _n, _v: coeffs
-        xs = jnp.array([-1., 0., 0.5, 1., 3.])
+        xs = jnp.array([-1.0, 0.0, 0.5, 1.0, 3.0])
         self._run_case(nodes, values, f_true, xs)
 
 

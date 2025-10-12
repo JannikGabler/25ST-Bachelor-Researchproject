@@ -14,11 +14,15 @@ from constants.internal_logic_constants import FilesystemResultStoreConstants
 
 # Import savers so they self-register
 # ! DO NOT REMOVE THESE IMPORTS !
-from file_handling.result_persistence.savers import plot_saver      # noqa: F401
-from file_handling.result_persistence.savers import reports_saver   # noqa: F401
+from file_handling.result_persistence.savers import plot_saver  # noqa: F401
+from file_handling.result_persistence.savers import reports_saver  # noqa: F401
 
-from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
-from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import (
+    PipelineComponentExecutionReport,
+)
+from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import (
+    PipelineComponentInfo,
+)
 
 
 class FilesystemResultStore:
@@ -88,7 +92,7 @@ class FilesystemResultStore:
     def save_run(
         self,
         reports: Iterable[PipelineComponentExecutionReport],
-        policy: SavePolicy | None
+        policy: SavePolicy | None,
     ) -> Path:
         """
         Orchestrates saving both execution reports and plots for a single pipeline run.
@@ -96,7 +100,7 @@ class FilesystemResultStore:
         """
         if policy is None:
             policy = FilesystemResultStoreConstants.POLICY
-        
+
         run_dir = self.prepare_run_dir(policy)
 
         reports = list(reports)
@@ -109,7 +113,7 @@ class FilesystemResultStore:
         self,
         reports: Iterable[PipelineComponentExecutionReport],
         run_dir: Path,
-        policy: SavePolicy
+        policy: SavePolicy,
     ) -> Path:
         """
         Save all component execution reports into a single JSON file.
@@ -121,7 +125,7 @@ class FilesystemResultStore:
         self,
         reports: Iterable[PipelineComponentExecutionReport],
         run_dir: Path,
-        policy: SavePolicy
+        policy: SavePolicy,
     ) -> None:
         """
         Extract plots from each report's PipelineData and save them,
@@ -130,7 +134,9 @@ class FilesystemResultStore:
         plot_saver = get_saver("plot")
 
         for report in reports:
-            comp_info: PipelineComponentInfo = report.component_instantiation_info.component
+            comp_info: PipelineComponentInfo = (
+                report.component_instantiation_info.component
+            )
             comp_id: str = getattr(comp_info, "component_id", "unknown_component")
 
             pdata = report.component_output

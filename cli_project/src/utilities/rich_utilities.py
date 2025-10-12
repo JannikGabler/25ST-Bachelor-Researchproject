@@ -11,10 +11,8 @@ from rich.text import Text
 from rich.live import Live
 
 
-
 class RichUtilities:
     _REFRESH_RATE_: int = 1
-
 
     _console_: Console = Console()
     _panel_opened_: bool = False
@@ -23,10 +21,8 @@ class RichUtilities:
     _is_current_panel_empty_: bool = True
     _lock_: Lock = threading.Lock()
     _live_thread_: Thread
-    #_live_thread_pause_event_: threading.Event = threading.Event()
-    #_live = None
-
-
+    # _live_thread_pause_event_: threading.Event = threading.Event()
+    # _live = None
 
     @classmethod
     def open_panel(cls, title: str):
@@ -44,16 +40,18 @@ class RichUtilities:
 
             cls._console_.print("")
 
-        cls._live_thread_ = Thread(target=RichUtilities._live_worker_operation_, daemon=True)
+        cls._live_thread_ = Thread(
+            target=RichUtilities._live_worker_operation_, daemon=True
+        )
         cls._live_thread_.start()
-
-
 
     @classmethod
     def _live_worker_operation_(cls):
         sleep_delay = 1 / cls._REFRESH_RATE_
 
-        with Live(cls._render_(), refresh_per_second=cls._REFRESH_RATE_, console=cls._console_) as live:
+        with Live(
+            cls._render_(), refresh_per_second=cls._REFRESH_RATE_, console=cls._console_
+        ) as live:
             while cls._panel_opened_:
 
                 with cls._lock_:
@@ -61,25 +59,24 @@ class RichUtilities:
 
                 time.sleep(sleep_delay)
 
-
-
     @classmethod
     def _render_(cls):
         return Panel(cls._current_panel_text_, title=cls._current_panel_title_)
 
-
-
     @classmethod
-    def write_lines_in_panel(cls, lines: str, style: str | None = None, indent_level: int = 0):
+    def write_lines_in_panel(
+        cls, lines: str, style: str | None = None, indent_level: int = 0
+    ):
         if not cls._panel_opened_:
-            raise RuntimeError("Can't write line into panel because there is no panel opened.")
+            raise RuntimeError(
+                "Can't write line into panel because there is no panel opened."
+            )
 
         indent: str = " " * 2 * indent_level
         lines_array = lines.splitlines()
 
         if lines.endswith("\n"):
             lines_array.append("")
-
 
         for i, line in enumerate(lines_array):
             lines_array[i] = f"{indent}{line}"
@@ -103,8 +100,6 @@ class RichUtilities:
         #
         #     cls._is_current_panel_empty_ = False
 
-
-
     @classmethod
     def close_panel(cls):
         if cls._panel_opened_:
@@ -112,16 +107,10 @@ class RichUtilities:
 
             cls._live_thread_.join()
 
-            #final_panel = cls._render_()
-            #cls._console_.print(final_panel)
+            # final_panel = cls._render_()
+            # cls._console_.print(final_panel)
 
             cls._is_current_panel_empty_ = True
-
-
-
-
-
-
 
     # @classmethod
     # def get_user_input(cls, prompt_text: str) -> str:
@@ -159,10 +148,10 @@ class RichUtilities:
     #     #     # 9. Live wieder aktivieren
     #     #     cls._live_thread_pause_event_.set()
 
-
-
     @classmethod
-    def get_yes_no_input(cls, repeat_after_invalid_input: bool=True, default_yes: bool = True) -> bool | None:
+    def get_yes_no_input(
+        cls, repeat_after_invalid_input: bool = True, default_yes: bool = True
+    ) -> bool | None:
         """
         Prompts the user for yes or no. If default_yes is set to True (default), entering nothing will return True.
         If default_yes is set to False, entering nothing will return False.
@@ -170,11 +159,19 @@ class RichUtilities:
         prompt = "-> "
 
         while True:
-            user_input = Prompt.ask(prompt).lower() #input(prompt).lower()
+            user_input = Prompt.ask(prompt).lower()  # input(prompt).lower()
 
-            if user_input == "y" or user_input == "yes" or (default_yes and user_input == ""):
+            if (
+                user_input == "y"
+                or user_input == "yes"
+                or (default_yes and user_input == "")
+            ):
                 return True
-            elif user_input == "n" or user_input == "no" or (not default_yes and user_input == ""):
+            elif (
+                user_input == "n"
+                or user_input == "no"
+                or (not default_yes and user_input == "")
+            ):
                 return False
             elif not repeat_after_invalid_input:
                 return None

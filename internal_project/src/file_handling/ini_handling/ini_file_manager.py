@@ -12,9 +12,9 @@ class INIFileManager:
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError(f"Class '{self.__class__.__name__}' cannot be instantiated.")
-
-
+        raise NotInstantiableError(
+            f"Class '{self.__class__.__name__}' cannot be instantiated."
+        )
 
     ######################
     ### Public methods ###
@@ -25,12 +25,10 @@ class INIFileManager:
             raise FileNotFoundError(f"File '{str(path)}' does not exists.")
 
         file_content: str
-        with open(path, 'r', encoding='utf-8') as file:
+        with open(path, "r", encoding="utf-8") as file:
             file_content: str = file.read()
 
         return INIFormatUtils.split_into_entries(file_content)
-
-
 
     @staticmethod
     def load_file_as_key_value_pairs(path: Path) -> dict[str, str]:
@@ -40,8 +38,6 @@ class INIFileManager:
         entries: list[str] = INIFileManager.load_file_as_entry_list(path)
         return INIFormatUtils.split_entries_into_key_value_pairs(entries)
 
-
-
     # @staticmethod
     # def load_file(path: Path) -> dict[str, str]:
     #     if not (path.is_file() and path.exists()):
@@ -50,14 +46,10 @@ class INIFileManager:
     #     entry_list: list[str] = INIFileManager._collect_entries_from_file_(path)
     #     return INIFileManager._split_entry_list_into_dict_(entry_list)
 
-
-
     # TODO
     @staticmethod
     def save_to_file(to_save: PipelineInput | PipelineInputData, path: Path) -> None:
         pass
-
-
 
     #######################
     ### Private methods ###
@@ -96,7 +88,3 @@ class INIFileManager:
     #             return current_accumulation + string_to_add, True
     #     else:
     #         return current_accumulation, False
-
-
-
-

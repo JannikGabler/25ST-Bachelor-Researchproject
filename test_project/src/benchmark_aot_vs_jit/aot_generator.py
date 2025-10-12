@@ -54,9 +54,9 @@ class AOTGenerator:
         # ──────────────────────────────────────────────────────────────
         dummy_interval = jnp.array([-1.0, 1.0], dtype=dtype)
         self._compiled_generate_nodes = (
-            jax.jit(_generate_nodes_impl)     # → XLA-zulässige HLO
-                .lower(dummy_interval)        # → Low-Level-IR
-                .compile()                    # → ausführbare Binary
+            jax.jit(_generate_nodes_impl)  # → XLA-zulässige HLO
+            .lower(dummy_interval)  # → Low-Level-IR
+            .compile()  # → ausführbare Binary
         )
 
     # --------------------------------------------------------------------- #

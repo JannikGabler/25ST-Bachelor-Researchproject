@@ -5,8 +5,12 @@ import jax.numpy as jnp
 import numpy
 from packaging.version import Version
 
-from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import DirectionalAcyclicGraph
-from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph import (
+    DirectionalAcyclicGraph,
+)
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import (
+    DirectionalAcyclicGraphNode,
+)
 from general_data_structures.tree.tree import Tree
 from general_data_structures.tree.tree_node import TreeNode
 
@@ -15,11 +19,17 @@ from file_handling.result_persistence.save_policy import SavePolicy
 
 class PipelineConfigurationConstants:
     # Namespace for dynamically loaded modules is getting added on demand
-    PARSING_EVAL_NAMESPACE: dict[str, object] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode,
-                                                'DirectionalAcyclicGraph': DirectionalAcyclicGraph,
-                                                'DirectionalAcyclicGraphNode': DirectionalAcyclicGraphNode}
-
+    PARSING_EVAL_NAMESPACE: dict[str, object] = {
+        "jax": jax,
+        "jax.numpy": jnp,
+        "math": math,
+        "numpy": numpy,
+        "Version": Version,
+        "Tree": Tree,
+        "TreeNode": TreeNode,
+        "DirectionalAcyclicGraph": DirectionalAcyclicGraph,
+        "DirectionalAcyclicGraphNode": DirectionalAcyclicGraphNode,
+    }
 
 
 class OldInterpolantsPlotComponentConstants:
@@ -36,14 +46,14 @@ class OldInterpolantsPlotComponentConstants:
         "#a6d854",  # hellgrün
         "#ffd92f",  # gelb
         "#e5c494",  # beige
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grau
     ]
 
     LINE_STYLES = [
         # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
+        "--",  # gestrichelt (dashed)
+        "-.",  # strich-punkt (dashdot)
+        ":",  # gepunktet (dotted)
         (0, (1, 1)),  # sehr feine Punkte
         (0, (5, 5)),  # lange Striche mit Lücken
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
@@ -75,7 +85,7 @@ class InterpolantsPlotComponentConstants:
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grau
     ]
 
     LINE_STYLE_DASH_DISTANCE: float = 2.5
@@ -104,21 +114,20 @@ class AbsoluteErrorPlotComponentConstants:
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grau
     ]
 
     LINE_STYLES = [
         # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
+        "--",  # gestrichelt (dashed)
+        "-.",  # strich-punkt (dashdot)
+        ":",  # gepunktet (dotted)
         (0, (1, 1)),  # sehr feine Punkte
         (0, (5, 5)),  # lange Striche mit Lücken
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
     ]
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
 
 
 class RelativeErrorPlotComponentConstants:
@@ -140,14 +149,14 @@ class RelativeErrorPlotComponentConstants:
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grau
     ]
 
     LINE_STYLES = [
         # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
+        "--",  # gestrichelt (dashed)
+        "-.",  # strich-punkt (dashdot)
+        ":",  # gepunktet (dotted)
         (0, (1, 1)),  # sehr feine Punkte
         (0, (5, 5)),  # lange Striche mit Lücken
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
@@ -178,7 +187,7 @@ class BaseRoundOffErrorPlotComponentConstants:
         "#8da0cb",  # bläulich
         "#e78ac3",  # pink
         "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grau
     ]
 
     LINE_WIDTH: int = 2
@@ -189,10 +198,8 @@ class BaseRoundOffErrorPlotComponentConstants:
     FIGURE_SIZE = (10, 6)
 
 
-
 class AbsoluteRoundOffErrorPlotComponentConstants:
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
 
 
 class RelativeRoundOffErrorPlotComponentConstants:
@@ -200,9 +207,9 @@ class RelativeRoundOffErrorPlotComponentConstants:
 
 
 class FilesystemResultStoreConstants:
-    POLICY = SavePolicy( 
-            mode="soft-state", # or "snapshot"
-            keep_soft_state_n=3,
-            json_indent=2,
-            plot_formats=("svg", "png", "pdf"),
-        )
+    POLICY = SavePolicy(
+        mode="soft-state",  # or "snapshot"
+        keep_soft_state_n=3,
+        json_indent=2,
+        plot_formats=("svg", "png", "pdf"),
+    )

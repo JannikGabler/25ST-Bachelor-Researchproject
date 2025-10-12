@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from data_classes.pipeline_configuration.pipeline_configuration import (
+    PipelineConfiguration,
+)
 from data_classes.pipeline_input.pipeline_input import PipelineInput
 from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 
@@ -10,9 +12,8 @@ class Pipeline:
     pipeline_configuration: PipelineConfiguration
     pipeline_input: PipelineInput
 
-
     def __repr__(self) -> str:
-        dag   = self.pipeline_configuration.components
+        dag = self.pipeline_configuration.components
         nodes = list(dag.topological_traversal())
 
         adj = {}

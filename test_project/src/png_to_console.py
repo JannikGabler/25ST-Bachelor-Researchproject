@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from rich.console import Console
 
+
 # ---------- 1) PNG rendern (ohne Rand) und Layout zurückgeben ----------
 def draw_graph_image(graph, filename="graph.png", seed=42, return_pos=True):
     pos = nx.spring_layout(graph, seed=seed)
@@ -11,15 +12,19 @@ def draw_graph_image(graph, filename="graph.png", seed=42, return_pos=True):
     ax = plt.gca()
     ax.set_axis_off()
     nx.draw(
-        graph, pos,
+        graph,
+        pos,
         with_labels=True,
-        node_color="skyblue", edge_color="gray",
-        node_size=1500, font_size=14,
+        node_color="skyblue",
+        edge_color="gray",
+        node_size=1500,
+        font_size=14,
     )
     plt.savefig(filename, facecolor="white", bbox_inches="tight", pad_inches=0)
     plt.close()
     print(f"Graph saved as {filename}")
     return pos if return_pos else None
+
 
 # ---------- 2) PNG -> Konsole (█/▀/▄) + Labels zentriert in Knoten ----------
 def png_to_console_fullblocks_with_labels(filename, pos, label_map, max_width=120):
@@ -82,7 +87,7 @@ def png_to_console_fullblocks_with_labels(filename, pos, label_map, max_width=12
             if 0 <= rr < rows:
                 for cc in range(text_c - 1, text_c + label_len + 1):
                     if 0 <= cc < cols:
-                        grid[rr][cc] = ' '
+                        grid[rr][cc] = " "
         # Text setzen
         for i, ch in enumerate(label):
             cc = text_c + i
@@ -92,15 +97,30 @@ def png_to_console_fullblocks_with_labels(filename, pos, label_map, max_width=12
     # Konsolenausgabe
     console = Console()
     for row in grid:
-        console.print(''.join(row))
+        console.print("".join(row))
+
 
 # Beispielnutzung
 if __name__ == "__main__":
     G = nx.Graph()
-    G.add_edges_from([
-        ("A", "B"), ("A", "C"), ("B", "D"), ("C", "D"),
-        ("C", "E"), ("E", "F"), ("D", "F"),
-    ])
+    G.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "C"),
+            ("B", "D"),
+            ("C", "D"),
+            ("C", "E"),
+            ("E", "F"),
+            ("D", "F"),
+        ]
+    )
     pos = draw_graph_image(G, filename="graph.png", seed=42, return_pos=True)
-    label_map = {"A": "Alpha", "B": "Beta", "C": "Gamma", "D": "Delta", "E": "Epsilon", "F": "Phi"}
+    label_map = {
+        "A": "Alpha",
+        "B": "Beta",
+        "C": "Gamma",
+        "D": "Delta",
+        "E": "Epsilon",
+        "F": "Phi",
+    }
     png_to_console_fullblocks_with_labels("graph.png", pos, label_map, max_width=120)

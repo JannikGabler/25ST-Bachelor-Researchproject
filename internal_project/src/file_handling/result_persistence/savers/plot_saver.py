@@ -7,8 +7,10 @@ from file_handling.result_persistence.save_policy import SavePolicy
 from file_handling.result_persistence.savers.base import Saver, register_saver
 from file_handling.result_persistence.utils import slugify
 
+
 class PlotSaver(Saver):
     """Saves PlotTemplate-based figures (FigureWrapper) to disk."""
+
     kind = "plot"
 
     def _get_figure_wrapper(self, plot_template: PlotTemplate) -> FigureWrapper:
@@ -22,10 +24,14 @@ class PlotSaver(Saver):
         if fig_attr is None:
             raise AttributeError("PlotTemplate has no 'fig' attribute.")
 
-        wrapper = fig_attr() if callable(fig_attr) else fig_attr  # support legacy callable style TODO should be safe to remove
+        wrapper = (
+            fig_attr() if callable(fig_attr) else fig_attr
+        )  # support legacy callable style TODO should be safe to remove
 
         if not hasattr(wrapper, "savefig"):
-            raise TypeError("PlotTemplate.fig did not provide an object with a 'savefig' method.")
+            raise TypeError(
+                "PlotTemplate.fig did not provide an object with a 'savefig' method."
+            )
         return wrapper  # type: ignore[return-value]
 
     def _base_name(self, plot_template: PlotTemplate) -> str:
@@ -46,8 +52,9 @@ class PlotSaver(Saver):
             i += 1
         return f"{stem}-{i}"
 
-
-    def save(self, plot_template: PlotTemplate, run_dir: Path, policy: SavePolicy) -> Path:
+    def save(
+        self, plot_template: PlotTemplate, run_dir: Path, policy: SavePolicy
+    ) -> Path:
         # Place plots in a 'plots' subfolder of the provided run_dir (component dir or run root)
         plot_dir = run_dir / "plots"
         plot_dir.mkdir(parents=True, exist_ok=True)
@@ -66,7 +73,13 @@ class PlotSaver(Saver):
         for ext in exts:
             out = plot_dir / f"{stem}.{ext}"
             try:
-                fig_wrapper.savefig(out, dpi=dpi, format=ext, bbox_inches="tight", transparent=transparent)
+                fig_wrapper.savefig(
+                    out,
+                    dpi=dpi,
+                    format=ext,
+                    bbox_inches="tight",
+                    transparent=transparent,
+                )
                 if primary_path is None:
                     primary_path = out
             except Exception as e:
@@ -77,5 +90,6 @@ class PlotSaver(Saver):
             raise RuntimeError(f"Could not save plot '{stem}' with formats {exts}.")
 
         return primary_path
+
 
 register_saver(PlotSaver())

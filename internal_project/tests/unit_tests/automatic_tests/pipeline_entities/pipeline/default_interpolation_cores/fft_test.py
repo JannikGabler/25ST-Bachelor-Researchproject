@@ -10,7 +10,9 @@ import importlib
 import jax.numpy as jnp
 
 from data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import (
+    AdditionalComponentExecutionData,
+)
 from pipeline_entities.pipeline.component_entities.default_components.default_interpolation_cores.fft_interpolation_core import (
     FFTInterpolationCore,
 )
@@ -23,6 +25,7 @@ fft_core_module = importlib.import_module(
 
 class _DummyFFTInterpolant:
     """Test double to capture what the core passes to the interpolant."""
+
     def __init__(self, nodes, weights, interval):
         self.nodes = nodes
         self.weights = weights
@@ -52,7 +55,9 @@ class TestFFTInterpolationCore(unittest.TestCase):
         )
 
     @staticmethod
-    def _pipeline_data(nodes: jnp.ndarray, values: jnp.ndarray, interval: jnp.ndarray, dtype) -> PipelineData:
+    def _pipeline_data(
+        nodes: jnp.ndarray, values: jnp.ndarray, interval: jnp.ndarray, dtype
+    ) -> PipelineData:
         pd = PipelineData()
         pd.data_type = dtype
         pd.interpolation_nodes = nodes.astype(dtype)
@@ -90,7 +95,9 @@ class TestFFTInterpolationCore(unittest.TestCase):
 
         # Weights must be FFT(values)/N (complex output)
         expected_weights = jnp.fft.fft(values) / N
-        self.assertTrue(jnp.allclose(pd.interpolant.weights, expected_weights, rtol=1e-6, atol=0.0))
+        self.assertTrue(
+            jnp.allclose(pd.interpolant.weights, expected_weights, rtol=1e-6, atol=0.0)
+        )
 
 
 if __name__ == "__main__":

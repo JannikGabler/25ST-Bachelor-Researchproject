@@ -3,13 +3,17 @@ import jax.numpy as jnp
 from jax.typing import DTypeLike
 
 from data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.second_type_chebyshev_node_generator import \
-    SecondTypeChebyshevNodeGenerator
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
-    AdditionalComponentExecutionData
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.second_type_chebyshev_node_generator import (
+    SecondTypeChebyshevNodeGenerator,
+)
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import (
+    AdditionalComponentExecutionData,
+)
 
 
-def create_input_data(amount_of_nodes: int, data_type: DTypeLike) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
+def create_input_data(
+    amount_of_nodes: int, data_type: DTypeLike
+) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
     pd: PipelineData = PipelineData()
     pd.node_count = amount_of_nodes
     pd.data_type = data_type
@@ -19,9 +23,13 @@ def create_input_data(amount_of_nodes: int, data_type: DTypeLike) -> tuple[list[
 
 
 def create_chebyshev_2_nodes(amount_of_nodes: int, data_type: DTypeLike) -> jnp.ndarray:
-    pipeline_data, additional_execution_data = create_input_data(amount_of_nodes, data_type)
+    pipeline_data, additional_execution_data = create_input_data(
+        amount_of_nodes, data_type
+    )
 
-    generator: SecondTypeChebyshevNodeGenerator = SecondTypeChebyshevNodeGenerator(pipeline_data, additional_execution_data)
+    generator: SecondTypeChebyshevNodeGenerator = SecondTypeChebyshevNodeGenerator(
+        pipeline_data, additional_execution_data
+    )
 
     result_data: PipelineData = generator.perform_action()
     return result_data.interpolation_nodes
@@ -61,7 +69,6 @@ def binary_search(data_type: DTypeLike, exponential_result: int) -> int:
 
     print("")
     return upper_bound
-
 
 
 def get_amount(data_type: DTypeLike) -> int:

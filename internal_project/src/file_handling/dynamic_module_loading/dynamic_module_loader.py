@@ -15,15 +15,13 @@ class DynamicModuleLoader:
     ##########################
     _loaded_modules_: dict[str, Any] = {}
 
-
-
     ###################
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.'")
-
-
+        raise NotInstantiableError(
+            f"The class {repr(self.__class__.__name__)} cannot be instantiated.'"
+        )
 
     ######################
     ### Public methods ###
@@ -37,8 +35,6 @@ class DynamicModuleLoader:
 
         for py_file in path.rglob("*.py"):
             DynamicModuleLoader._load_py_file_(py_file, path)
-
-
 
     @staticmethod
     def get_entity(fully_qualified_name: str):
@@ -60,15 +56,13 @@ class DynamicModuleLoader:
 
                 return entity
 
-        raise ValueError(f"There is not entity loaded with the name '{fully_qualified_name}'.")
-
-
+        raise ValueError(
+            f"There is not entity loaded with the name '{fully_qualified_name}'."
+        )
 
     @staticmethod
     def get_module_namespace() -> dict[str, Any]:
         return DynamicModuleLoader._loaded_modules_
-
-
 
     @staticmethod
     def unload_all_modules() -> None:
@@ -77,8 +71,6 @@ class DynamicModuleLoader:
                 del sys.modules[module_name]
 
         DynamicModuleLoader._loaded_modules_.clear()
-
-
 
     #######################
     ### Private methods ###
@@ -89,7 +81,9 @@ class DynamicModuleLoader:
         module_name = ".".join(rel_path.parts)
 
         if module_name in sys.modules:
-            raise ModuleAlreadyLoadedException(f"A module with the name {module_name} is already loaded.")
+            raise ModuleAlreadyLoadedException(
+                f"A module with the name {module_name} is already loaded."
+            )
 
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         if spec is None or spec.loader is None:
@@ -99,7 +93,9 @@ class DynamicModuleLoader:
         try:
             spec.loader.exec_module(module)
         except Exception as e:
-            raise ImportError(f"Exception while loading the file '{file_path}': {str(e)}.")
+            raise ImportError(
+                f"Exception while loading the file '{file_path}': {str(e)}."
+            )
 
         sys.modules[module_name] = module
         DynamicModuleLoader._loaded_modules_[module_name] = module

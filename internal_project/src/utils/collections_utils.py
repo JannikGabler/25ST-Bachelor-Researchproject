@@ -10,8 +10,6 @@ class CollectionsUtils:
     def __init__(self):
         raise NotInstantiableError("The class 'JaxUtils' can not be instantiated.")
 
-
-
     ######################
     ### Public methods ###
     ######################

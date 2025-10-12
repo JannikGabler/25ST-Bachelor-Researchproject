@@ -9,9 +9,9 @@ class StatisticsUtils:
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
-
-
+        raise NotInstantiableError(
+            f"The class {repr(self.__class__.__name__)} cannot be instantiated."
+        )
 
     ######################
     ### Public methods ###
@@ -29,8 +29,6 @@ class StatisticsUtils:
             mean += (x - mean) / n
         return mean if n > 0 else float("nan")
 
-
-
     @staticmethod
     def empirical_variance(values: list) -> float:
         """
@@ -46,8 +44,6 @@ class StatisticsUtils:
             mean += delta / n
             M2 += delta * (x - mean)
         return M2 / n if n > 0 else float("nan")
-
-
 
     @classmethod
     def empirical_stddev(cls, values: list) -> float:

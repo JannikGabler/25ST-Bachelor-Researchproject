@@ -9,6 +9,7 @@ class BarycentricFirstInterpolant(CompilableFunction):
     """
     TODO
     """
+
     ###############################
     ### Attributes of instances ###
     ###############################
@@ -16,24 +17,24 @@ class BarycentricFirstInterpolant(CompilableFunction):
     _values_: jnp.ndarray
     _weights_: jnp.ndarray
 
-
-
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
+    def __init__(
+        self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray
+    ):
         super().__init__(name)
 
         if len({nodes.shape, values.shape, weights.shape}) >= 2:
-            raise InvalidArgumentException("The shapes of the given nodes, values and weight arrays differ, although "
-               f"they're required to be equal (shape of nodes: {nodes.shape}, shape of values: {values.shape}, shape of "
-               f"weights: {weights.shape}).")
+            raise InvalidArgumentException(
+                "The shapes of the given nodes, values and weight arrays differ, although "
+                f"they're required to be equal (shape of nodes: {nodes.shape}, shape of values: {values.shape}, shape of "
+                f"weights: {weights.shape})."
+            )
 
         self._nodes_ = nodes
         self._values_ = values
         self._weights_ = weights
-
-
 
     ##########################
     ### Overridden methods ###
@@ -41,31 +42,31 @@ class BarycentricFirstInterpolant(CompilableFunction):
     def _get_internal_evaluate_function_(self, **kwargs) -> callable:
         return self._internal_evaluate_
 
-
-
     def __repr__(self) -> str:
-        return (f"BarycentricFirstInterpolant(nodes={repr(self._nodes_)}, values={repr(self._values_)}, "
-                f"weights={repr(self._weights_)})")
+        return (
+            f"BarycentricFirstInterpolant(nodes={repr(self._nodes_)}, values={repr(self._values_)}, "
+            f"weights={repr(self._weights_)})"
+        )
 
     def __str__(self) -> str:
         return self.__repr__()
 
-
-
     def __hash__(self) -> int:
         return hash((self._nodes_, self._values_, self._weights_))
-
-
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (jnp.array_equal(self._nodes_, other._nodes_, equal_nan=True).item()
-                    and jnp.array_equal(self._values_, other._values_, equal_nan=True).item()
-                    and jnp.array_equal(self._weights_, other._weights_, equal_nan=True).item())
-
-
+            return (
+                jnp.array_equal(self._nodes_, other._nodes_, equal_nan=True).item()
+                and jnp.array_equal(
+                    self._values_, other._values_, equal_nan=True
+                ).item()
+                and jnp.array_equal(
+                    self._weights_, other._weights_, equal_nan=True
+                ).item()
+            )
 
     #######################
     ### Private methods ###
@@ -87,17 +88,15 @@ class BarycentricFirstInterpolant(CompilableFunction):
 
         def _evaluate_single_(point: jnp.ndarray) -> jnp.ndarray:
             differences: jnp.ndarray = point - nodes
-            exact_matches: jnp.ndarray = (differences == 0.0)
+            exact_matches: jnp.ndarray = differences == 0.0
 
             return jnp.where(
                 jnp.any(exact_matches),
                 calc_exact_match_value(exact_matches),
-                calc_node_polynomial_value(point) * calc_sum(differences)
+                calc_node_polynomial_value(point) * calc_sum(differences),
             )
 
         return jax.vmap(_evaluate_single_)(evaluation_points)
-
-
 
     # def _interpolate_single(self, x: float) -> jnp.ndarray:
     #     """
@@ -156,4 +155,3 @@ class BarycentricFirstInterpolant(CompilableFunction):
     #         return False
     #     else:
     #         return jnp.array_equal(self._weights_, other._weights_) and jnp.array_equal(self._nodes_, other._nodes_)
-

@@ -7,7 +7,15 @@ from rich.text import Text
 def draw_graph_image(graph, filename="graph.png"):
     plt.figure(figsize=(6, 6))
     pos = nx.spring_layout(graph)
-    nx.draw(graph, pos, with_labels=True, node_color="skyblue", edge_color="gray", node_size=1500, font_size=14)
+    nx.draw(
+        graph,
+        pos,
+        with_labels=True,
+        node_color="skyblue",
+        edge_color="gray",
+        node_size=1500,
+        font_size=14,
+    )
     plt.savefig(filename)
     plt.close()
     print(f"Graph saved as {filename}")
@@ -81,15 +89,17 @@ def ascii_graph_rich(graph):
 if __name__ == "__main__":
     # Beispielgraph
     G = nx.Graph()
-    G.add_edges_from([
-        ("A", "B"),
-        ("A", "C"),
-        ("B", "D"),
-        ("C", "D"),
-        ("C", "E"),
-        ("E", "F"),
-        ("D", "F"),
-    ])
+    G.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "C"),
+            ("B", "D"),
+            ("C", "D"),
+            ("C", "E"),
+            ("E", "F"),
+            ("D", "F"),
+        ]
+    )
 
     draw_graph_image(G)  # Optional: PNG speichern
     ascii_graph_rich(G)  # ASCII + rich Ausgabe

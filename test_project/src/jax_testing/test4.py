@@ -18,7 +18,7 @@ def hasan(nodes, values) -> jnp.ndarray:
         def inner_loop(i, coef_inner):
             numerator = coef_outer[i] - coef_outer[i - 1]
             denominator = nodes[i] - nodes[i - j]
-            return coef_inner.at[i].set(numerator/denominator)
+            return coef_inner.at[i].set(numerator / denominator)
 
         # Apply the inner loop to update coefficients for the current order
         coef_outer = jax.lax.fori_loop(j, n, inner_loop, coef_outer)
@@ -30,23 +30,22 @@ def hasan(nodes, values) -> jnp.ndarray:
     return coefficients
 
 
-
 def newton_coeffs(nodes, values) -> jnp.ndarray:
     n = nodes.shape[0]
 
     # 1) Matrix der paarweisen Differenzen D[i,k] = nodes[i] - nodes[k]
-    D = nodes[:, None] - nodes[None, :]       # Shape (n,n)
-    #print(D)
+    D = nodes[:, None] - nodes[None, :]  # Shape (n,n)
+    # print(D)
 
     # 2) Baue D' so, dass cumprod über Spalte j exakt prod_{k<j}(x_i - x_k) liefert:
     #    D'[:,0] = 1,  D'[:,j] = D[:, j-1]  für j=1..n-1
     ones = jnp.ones((n, 1), dtype=nodes.dtype)
-    Dprime = jnp.concatenate([ones, D[:, :n-1]], axis=1)  # Shape (n,n)
-    #print(Dprime)
+    Dprime = jnp.concatenate([ones, D[:, : n - 1]], axis=1)  # Shape (n,n)
+    # print(Dprime)
 
     # 3) N = kumuliertes Produkt über die Spalten von D'
     N = jnp.cumprod(Dprime, axis=1)  # Shape (n,n), lower triangular
-    #print(N)
+    # print(N)
 
     # 4) Löse das untere Dreieckssystem N a = values
     #    (kann auch mit jax.scipy.linalg.solve_triangular gemacht werden)
@@ -82,7 +81,7 @@ def divided_differences(nodes, values) -> jnp.ndarray:
             k,  # start
             n,  # stop (exklusiv)
             body_i,
-            (k, coeffs)  # carry: das aktuelle k und coeffs
+            (k, coeffs),  # carry: das aktuelle k und coeffs
         )
         return new_coeffs
 
@@ -91,18 +90,15 @@ def divided_differences(nodes, values) -> jnp.ndarray:
     return coeffs
 
 
-
 def python_loops(nodes, values) -> jnp.ndarray:
     n = nodes.shape[0]
     # Wir arbeiten "in-place" auf coeffs
     coeffs = values.copy()
 
-
     for k in range(1, n):
         for i in range(n, k, -1):
             update = (coeffs[i] - coeffs[i - 1]) / (nodes[i] - nodes[i - k])
             coeffs = coeffs.at[i].set(update)
-
 
     return coeffs
 
@@ -127,21 +123,19 @@ def jannik(nodes, values) -> jnp.ndarray:
 
         return new_coeffs
 
-
     return jax.lax.fori_loop(1, n, body_k, initial_coeffs)
 
 
-#def divided_differences_eager() -> jnp.ndarray:
+# def divided_differences_eager() -> jnp.ndarray:
 
 # newton_coeffs()
 # divided_differences()
 
 # Testaufruf ohne JAX-Tracer:
-#result = divided_differences_eager()
+# result = divided_differences_eager()
 
 
-
-#result = jax.jit(divided_differences)()
+# result = jax.jit(divided_differences)()
 
 operations = [hasan, divided_differences, jannik]
 
@@ -162,7 +156,6 @@ for e in range(6):
 
     print("Compiled.\n")
 
-
     for i, comp in enumerate(compiled):
         start = time.perf_counter()
 
@@ -173,9 +166,6 @@ for e in range(6):
         duration = end - start
         print(f"Duration {i}: {duration}")
 
-
-
-
     # start: float = time.perf_counter()
     # result3 = compiled3(nodes, values)
     # result3.block_until_ready()
@@ -185,16 +175,13 @@ for e in range(6):
     #
     # print(f"Duration of compiled3: {duration3}")
 
-#print(f"Result3: {result3}")
+# print(f"Result3: {result3}")
 
-#equal: bool = jax.jit(lambda: jnp.allclose(result1, result2, atol=1E-03, rtol=1E-03))().lower().compile().item() and jax.jit(lambda: jnp.allclose(result2, result3, atol=1E-03, rtol=1E-03))().lower().compile().item()
-#equal: bool = jnp.allclose(result1, result2, atol=1E-03, rtol=1E-03).item() and jnp.allclose(result2, result3, atol=1E-03, rtol=1E-03).item()
+# equal: bool = jax.jit(lambda: jnp.allclose(result1, result2, atol=1E-03, rtol=1E-03))().lower().compile().item() and jax.jit(lambda: jnp.allclose(result2, result3, atol=1E-03, rtol=1E-03))().lower().compile().item()
+# equal: bool = jnp.allclose(result1, result2, atol=1E-03, rtol=1E-03).item() and jnp.allclose(result2, result3, atol=1E-03, rtol=1E-03).item()
 
-#print(f"Equal? {equal}")
-
+# print(f"Equal? {equal}")
 
 
 # equal: bool = jnp.array_equal(result1, result2).item()
 # print(equal)
-
-

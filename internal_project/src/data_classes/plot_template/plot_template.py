@@ -150,6 +150,7 @@ import types
 #         """Hilfsfunktion zur Inspektion im Debugging."""
 #         return {'fig': list(self._fig_ops), 'ax': list(self._ax_ops)}
 import weakref
+
 # from __future__ import annotations
 #
 # from typing import Any, Callable, List, Tuple, Dict, Optional
@@ -449,21 +450,15 @@ class WrapperBase(ABC):
     _owner_: PlotTemplate
     _log_: list
 
-
-
     def __init__(self, owner: PlotTemplate) -> None:
         self._owner_ = owner
         self._log_ = []
-
-
 
     def __getattr__(self, name: str) -> object:
         if name.startswith("_"):
             return super().__getattribute__(name)
 
         return self._get_attr_of_internal_obj_(name)
-
-
 
     def __setattr__(self, name, value) -> None:
         if name.startswith("_"):
@@ -475,8 +470,6 @@ class WrapperBase(ABC):
             self._log_.append(("setattr", name, deepcopy(value)))
             setattr(internal_obj, name, value)
 
-
-
     def _get_attr_of_internal_obj_(self, name: str) -> object:
         self._owner_._fix_internal_state_()
         internal_obj = self._get_internal_object_()
@@ -484,6 +477,7 @@ class WrapperBase(ABC):
 
         # Method?
         if isinstance(attr, types.MethodType):
+
             def wrapper(*args, **kwargs):
                 if name not in ["show", "savefig"]:
                     self._log_.append(("call", name, deepcopy(args), deepcopy(kwargs)))
@@ -493,8 +487,6 @@ class WrapperBase(ABC):
 
         return attr
 
-
-
     def _replay_operations_on_internal_object_(self) -> None:
         """Spielt die geloggten Operationen auf ein anderes Objekt ab"""
         internal_obj = self._get_internal_object_()
@@ -503,23 +495,18 @@ class WrapperBase(ABC):
                 args, kwargs = rest
                 getattr(internal_obj, name)(*args, **kwargs)
             elif op == "setattr":
-                value, = rest
+                (value,) = rest
                 setattr(internal_obj, name, value)
-
-
 
     @abstractmethod
     def _get_internal_object_(self) -> plt.Figure | plt.Axes:
         pass
-
-
 
     # def __repr__(self) -> str:
     #     return f"{self.__class__.__name__}(log={repr(self._log_)})"
     #
     # def __str__(self) -> str:
     #     return f"{self.__class__.__name__}(log={str(self._log_)})"
-
 
 
 class FigureWrapper(WrapperBase):
@@ -536,10 +523,8 @@ class FigureWrapper(WrapperBase):
         """Delegiert an fig.suptitle(...)."""
         super()._get_attr_of_internal_obj_("suptitle")(*args, **kwargs)
 
-
     def _get_internal_object_(self) -> plt.Figure:
         return PlotTemplate._internal_figure_axes_dict_[self._owner_][0]
-
 
 
 class AxesWrapper(WrapperBase):
@@ -573,16 +558,14 @@ class AxesWrapper(WrapperBase):
         """Delegiert an ax.legend(...)."""
         super()._get_attr_of_internal_obj_("legend")(*args, **kwargs)
 
-
-
     def _get_internal_object_(self) -> plt.Axes:
         return PlotTemplate._internal_figure_axes_dict_[self._owner_][1]
 
 
-
 class PlotTemplate:
-    _internal_figure_axes_dict_: dict[object, tuple[plt.Figure, plt.Axes]] = weakref.WeakKeyDictionary()
-
+    _internal_figure_axes_dict_: dict[object, tuple[plt.Figure, plt.Axes]] = (
+        weakref.WeakKeyDictionary()
+    )
 
     _subplots_args_: tuple[Any, ...]
     _subplots_kwargs_: dict[str, Any]
@@ -590,15 +573,11 @@ class PlotTemplate:
     _external_fig_: FigureWrapper
     _external_axes_: AxesWrapper
 
-
-
     def __init__(self, *args, **kwargs):
         self._subplots_args_ = deepcopy(args)
         self._subplots_kwargs_ = deepcopy(kwargs)
         self._external_fig_ = FigureWrapper(self)
         self._external_axes_ = AxesWrapper(self)
-
-
 
     @property
     def fig(self) -> FigureWrapper:
@@ -608,16 +587,12 @@ class PlotTemplate:
     def ax(self) -> AxesWrapper:
         return self._external_axes_
 
-
-
     def _fix_internal_state_(self) -> None:
         if self not in self._internal_figure_axes_dict_:
             fig, ax = plt.subplots(*self._subplots_args_, **self._subplots_kwargs_)
             self._internal_figure_axes_dict_[self] = (fig, ax)
             self._external_axes_._replay_operations_on_internal_object_()
             self._external_fig_._replay_operations_on_internal_object_()
-
-
 
     # def __repr__(self) -> str:
     #     return (f"{self.__class__.__name__}(subplots_args={repr(self._subplots_args_)}, subplots_kwargs={repr(self._subplots_kwargs_)}, "
@@ -626,5 +601,3 @@ class PlotTemplate:
     # def __str__(self) -> str:
     #     return (f"{self.__class__.__name__}(subplots_args={str(self._subplots_args_)}, subplots_kwargs={str(self._subplots_kwargs_)}, "
     #             f"external_fig={str(self._external_fig_)}, external_axes={str(self._external_axes_)})")
-
-

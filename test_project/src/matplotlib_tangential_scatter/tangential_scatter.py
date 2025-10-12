@@ -16,12 +16,18 @@ for i in range(cols):
         y = origin_y + j * 2
 
         # Kreis in Display-Koordinaten erzeugen (Pixel)
-        circle = mpatches.Circle((0, 0), radius_px,
-                                 transform=transforms.IdentityTransform(),
-                                 fill=False, edgecolor="blue")
+        circle = mpatches.Circle(
+            (0, 0),
+            radius_px,
+            transform=transforms.IdentityTransform(),
+            fill=False,
+            edgecolor="blue",
+        )
 
         # Kreis an richtige Datenposition verschieben
-        circle.set_transform(ax.transData + plt.gca().transData.inverted() + ax.transData)
+        circle.set_transform(
+            ax.transData + plt.gca().transData.inverted() + ax.transData
+        )
         # ^^ Trick: zuerst "keine Skalierung", dann mit Datenkoordinaten kombinieren
 
         # Verschieben auf die richtige Stelle

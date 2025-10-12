@@ -16,14 +16,19 @@ class _FakePipelineData:
 
 
 class TestChebyshevInterpolationMatrixCore(unittest.TestCase):
-    def _make_core_with_fake_pd(self, nodes: jnp.ndarray) -> tuple[ChebyshevInterpolationMatrixCore, _FakePipelineData]:
+    def _make_core_with_fake_pd(
+        self, nodes: jnp.ndarray
+    ) -> tuple[ChebyshevInterpolationMatrixCore, _FakePipelineData]:
         pd = _FakePipelineData(nodes)
         # Bypass heavy base-class init: allocate object & inject required attrs
-        core = ChebyshevInterpolationMatrixCore.__new__(ChebyshevInterpolationMatrixCore)
+        core = ChebyshevInterpolationMatrixCore.__new__(
+            ChebyshevInterpolationMatrixCore
+        )
         core._pipeline_data_ = [pd]
 
         # Use the internal (JAX) function as the compiled callable (mirrors AOTC pattern)
         internal = ChebyshevInterpolationMatrixCore._internal_perform_action_(core)
+
         # In the class, _internal_perform_action_ uses self._pipeline_data_; we need a closure/callable:
         def _call():
             return ChebyshevInterpolationMatrixCore._internal_perform_action_(core)

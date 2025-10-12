@@ -26,7 +26,9 @@ class TestNodeGeneratorBase(unittest.TestCase):
     CORE_CLS = None  # override in child
 
     # hooks to implement in child
-    def build_expected_nodes(self, node_count: int, interval: jnp.ndarray, dtype) -> jnp.ndarray:
+    def build_expected_nodes(
+        self, node_count: int, interval: jnp.ndarray, dtype
+    ) -> jnp.ndarray:
         raise NotImplementedError
 
     @staticmethod
@@ -48,7 +50,9 @@ class TestNodeGeneratorBase(unittest.TestCase):
         pd.interpolation_nodes = None
         return pd
 
-    def _run_case(self, node_count: int, interval, dtype=jnp.float32, rtol=1e-7, atol=0.0):
+    def _run_case(
+        self, node_count: int, interval, dtype=jnp.float32, rtol=1e-7, atol=0.0
+    ):
         self.assertIsNotNone(self.CORE_CLS, "Subclass must set CORE_CLS")
 
         interval_arr = jnp.array(interval, dtype=dtype)

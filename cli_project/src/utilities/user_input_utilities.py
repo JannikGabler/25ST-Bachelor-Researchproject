@@ -7,7 +7,6 @@ class UserInputUtilities:
 
     # TODO: __init__
 
-
     # @classmethod
     # def get_yes_no_input(cls, repeat_after_invalid_input: bool=True) -> bool | None:
     #     prompt = "-> "
@@ -23,14 +22,3 @@ class UserInputUtilities:
     #             return None
 
     pass
-
-
-
-
-
-
-
-
-
-
-

@@ -7,6 +7,7 @@ import jax.numpy as jnp
 from dataclasses import is_dataclass, asdict
 from typing import Any, get_origin, get_args
 
+
 def slugify(text: str) -> str:
     """
     Convert an arbitrary string into a filesystem-safe slug.
@@ -29,6 +30,7 @@ def slugify(text: str) -> str:
     while "__" in safe:
         safe = safe.replace("__", "_")
     return safe or "artifact"
+
 
 def type_repr(t) -> str | None:
     """
@@ -65,7 +67,8 @@ def type_repr(t) -> str | None:
     except Exception:
         # Last-resort readable fallback
         return repr(t)
-    
+
+
 def callable_repr(obj: Any) -> str:
     """
     Produce a readable identifier for callables (functions, methods, builtins, or callable instances).
@@ -93,6 +96,7 @@ def callable_repr(obj: Any) -> str:
     except Exception:
         return repr(obj)
 
+
 def classlike_repr(obj: Any) -> str:
     """
     Wrapper around `type_repr` that tolerates failures and returns `repr(obj)` as fallback.
@@ -109,6 +113,7 @@ def classlike_repr(obj: Any) -> str:
         return type_repr(obj)
     except Exception:
         return repr(obj)
+
 
 def ndarray_like_to_list(arr):
     """
@@ -131,7 +136,12 @@ def ndarray_like_to_list(arr):
         # Last resort: convert to bytes length / shape summary to avoid crashes
         shape = getattr(arr, "shape", None)
         dtype = getattr(arr, "dtype", None)
-        return {"__array__": "unserializable", "shape": tuple(shape) if shape else None, "dtype": str(dtype)}
+        return {
+            "__array__": "unserializable",
+            "shape": tuple(shape) if shape else None,
+            "dtype": str(dtype),
+        }
+
 
 def dtype_to_str(dt) -> str:
     """
@@ -149,6 +159,7 @@ def dtype_to_str(dt) -> str:
         return str(dt)
     except Exception:
         return repr(dt)
+
 
 def to_jsonable(obj: Any, _seen: set[int] | None = None) -> Any:
     """
@@ -191,25 +202,31 @@ def to_jsonable(obj: Any, _seen: set[int] | None = None) -> Any:
     # NumPy / JAX arrays
     if jnp is not None and isinstance(obj, (jnp.ndarray,)):  # type: ignore[arg-type]
         return ndarray_like_to_list(obj)
-    if np is not None and isinstance(obj, (np.ndarray,)):    # type: ignore[arg-type]
+    if np is not None and isinstance(obj, (np.ndarray,)):  # type: ignore[arg-type]
         return ndarray_like_to_list(obj)
 
     # NumPy / JAX scalars
-    if np is not None and isinstance(obj, (np.generic,)):    # type: ignore[arg-type]
+    if np is not None and isinstance(obj, (np.generic,)):  # type: ignore[arg-type]
         return obj.item()
-    if jnp is not None and hasattr(jnp, "scalar_types") and isinstance(obj, tuple(getattr(jnp, "scalar_types", ()))):  # defensive
+    if (
+        jnp is not None
+        and hasattr(jnp, "scalar_types")
+        and isinstance(obj, tuple(getattr(jnp, "scalar_types", ())))
+    ):  # defensive
         try:
             return obj.item()
         except Exception:
             pass
 
     # dtypes
-    if np is not None and isinstance(obj, (np.dtype,)):      # type: ignore[arg-type]
+    if np is not None and isinstance(obj, (np.dtype,)):  # type: ignore[arg-type]
         return dtype_to_str(obj)
 
     # Containers
     if isinstance(obj, dict):
-        return {str(to_jsonable(k, _seen)): to_jsonable(v, _seen) for k, v in obj.items()}
+        return {
+            str(to_jsonable(k, _seen)): to_jsonable(v, _seen) for k, v in obj.items()
+        }
     if isinstance(obj, (list, tuple, set, frozenset)):
         return [to_jsonable(x, _seen) for x in obj]
 
@@ -240,11 +257,12 @@ def to_jsonable(obj: Any, _seen: set[int] | None = None) -> Any:
         # Guard against huge data: recurse but it will handle arrays/dicts, etc.
         return {
             "__class__": f"{cls.__module__}.{cls.__qualname__}",
-            **{k: to_jsonable(v, _seen) for k, v in public.items()}
+            **{k: to_jsonable(v, _seen) for k, v in public.items()},
         }
     except Exception:
         # Last resort: readable string
         return repr(obj)
+
 
 def _is_trivial(v: Any) -> bool:
     """
@@ -263,6 +281,7 @@ def _is_trivial(v: Any) -> bool:
     if isinstance(v, dict) and len(v) == 0:
         return True
     return False
+
 
 def prune_trivial(obj: Any) -> Any:
     """

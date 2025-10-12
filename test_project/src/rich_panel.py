@@ -60,9 +60,12 @@ from utilities.rich_utilities import RichUtilities
 def main():
     RichUtilities.open_panel("Live-Protokoll")
     for i in range(5):
-        RichUtilities.write_lines_in_panel(f"[green]Schritt {i + 1} abgeschlossen[/green]")
+        RichUtilities.write_lines_in_panel(
+            f"[green]Schritt {i + 1} abgeschlossen[/green]"
+        )
         time.sleep(1)
     RichUtilities.close_panel()
+
 
 if __name__ == "__main__":
     main()

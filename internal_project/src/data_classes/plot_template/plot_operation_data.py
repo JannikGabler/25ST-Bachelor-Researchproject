@@ -12,5 +12,3 @@ class PlotOperationData:
     color: str | None = None
     label: str | None = None
     zorder: float | None = None
-
-

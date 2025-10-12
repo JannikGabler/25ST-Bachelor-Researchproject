@@ -3,7 +3,9 @@ import unittest
 from unittest.mock import MagicMock
 import jax.numpy as jnp
 from data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import (
+    AdditionalComponentExecutionData,
+)
 
 
 class TestInterpolationCoreBase(unittest.TestCase):
@@ -20,7 +22,13 @@ class TestInterpolationCoreBase(unittest.TestCase):
 
     # ---- Hooks each subclass must implement ----
     def build_repr(self, nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.ndarray: ...
-    def eval_with_repr(self, xs: jnp.ndarray, nodes: jnp.ndarray, values: jnp.ndarray, repr_: jnp.ndarray) -> jnp.ndarray: ...
+    def eval_with_repr(
+        self,
+        xs: jnp.ndarray,
+        nodes: jnp.ndarray,
+        values: jnp.ndarray,
+        repr_: jnp.ndarray,
+    ) -> jnp.ndarray: ...
 
     # ---- Common helpers ----
     @staticmethod
@@ -60,7 +68,9 @@ class TestInterpolationCoreBase(unittest.TestCase):
         self.assertIsInstance(pd.interpolant, self.INTERPOLANT_CLS)
 
         # Representation matches expected
-        expected_repr = self.build_repr(nodes.astype(dtype), values.astype(dtype)).astype(dtype)
+        expected_repr = self.build_repr(
+            nodes.astype(dtype), values.astype(dtype)
+        ).astype(dtype)
 
         # grab actual repr from interpolant (each subclass knows where to read it)
         actual_repr = self._extract_repr_from_interpolant(pd.interpolant).astype(dtype)
@@ -68,7 +78,9 @@ class TestInterpolationCoreBase(unittest.TestCase):
 
         # Numeric correctness (evaluate using the repr)
         expected = f_true(xs.astype(dtype))
-        actual = self.eval_with_repr(xs.astype(dtype), nodes.astype(dtype), values.astype(dtype), actual_repr)
+        actual = self.eval_with_repr(
+            xs.astype(dtype), nodes.astype(dtype), values.astype(dtype), actual_repr
+        )
         self.assertTrue(jnp.allclose(expected, actual, rtol=rtol, atol=0.0))
 
     # Subclasses can override if their interpolant stores repr differently

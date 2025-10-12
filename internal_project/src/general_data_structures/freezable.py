@@ -9,15 +9,11 @@ class Freezable(ABC):
     ###############################
     _frozen_: bool = False
 
-
-
     #########################
     ### Getters & setters ###
     #########################
     def freeze(self):
         self._frozen_ = True
-
-
 
     #######################
     ### Private methods ###
