@@ -11,10 +11,3 @@ class Constraint(ABC):
     @abstractmethod
     def get_error_message(self) -> str | None:
         pass
-
-    # def __init__(self):
-    #     self.__init_constraint_type__()
-
-    # @abstractmethod
-    # def __init_constraint_type__(self):
-    #     pass

@@ -27,7 +27,6 @@ class InterpolantEvaluationPlotComponentUtils:
         plot_points, y_limits = cls._create_plot_data_(pipeline_data)
 
         template: PlotTemplate = cls._init_plot_()
-        # cls._plot_interpolation_points_(template, pipeline_data[0])
 
         cls._plot_original_function_(
             template, plot_points, pipeline_data[0].original_function, y_limits

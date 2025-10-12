@@ -101,22 +101,3 @@ class BarycentricSecondInterpolationCore(InterpolationCore):
             return weights.at[i].set(wj)
 
         return jax.lax.fori_loop(0, n, body, initial_weights)
-
-    # def _internal_perform_action_(self) -> jnp.ndarray:
-    #     data_type: DTypeLike = self._pipeline_data_[0].data_type
-    #     nodes: jnp.ndarray = self._pipeline_data_[0].interpolation_nodes.astype(data_type)
-    #
-    #     # Create a square matrix where each entry [j, k] is the difference between node j and node k
-    #     # Note that the diagonal entries are all zero, since each node is subtracted from itself
-    #     pairwise_diff: jnp.ndarray = nodes[:, None] - nodes[None, :]
-    #
-    #     # Create a boolean matrix with False on the diagonal and True elsewhere
-    #     # This is used to exclude self-differences (which are zero) from the product
-    #     bool_diff: jnp.ndarray = ~jnp.eye(len(nodes), dtype=bool)
-    #
-    #     # Replace diagonal entries (which are zero) with 1.0 to avoid affecting the product
-    #     # Then compute the product across each row (over all k ≠ j)
-    #     product: jnp.ndarray = jnp.prod(jnp.where(bool_diff, pairwise_diff, 1.0), axis=1)
-    #
-    #     # Divide 1.0 by the product to get the barycentric weights (Equation (5.6))
-    #     return 1.0 / product

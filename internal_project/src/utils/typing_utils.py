@@ -157,19 +157,3 @@ class TypingUtils:
             type_annotation is jax.numpy.ndarray
             and isinstance(value, jax.numpy.ndarray)
         )
-
-    # @staticmethod
-    # def _does_value_match_generic_class_annotation_(value: Any, type_origin: Any, type_args: tuple) -> bool:
-    #     if type_origin is None or not isinstance(value, type_origin):
-    #         return False
-    #
-    #     value_type_args = getattr(value, "__orig_class__", None)
-    #     if value_type_args is not None:
-    #         value_type_args = typing.get_args(value_type_args)
-    #         return all(
-    #             TypingUtils.does_value_match_type_annotation(v, a)
-    #             for v, a in zip(value_type_args, type_args)
-    #         )
-    #
-    #     # Fallback: Accept, because we cannot check further and value is an instance of type_origin
-    #     return True

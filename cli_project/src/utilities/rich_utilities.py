@@ -92,13 +92,6 @@ class RichUtilities:
                 else:
                     cls._current_panel_text_.append(Text("\n"))
                     cls._current_panel_text_.append(text_line)
-        # with cls._lock_:
-        #     if cls._is_current_panel_empty_:
-        #         cls._current_panel_text_.append(lines)
-        #     else:
-        #         cls._current_panel_text_.append("\n" + lines)
-        #
-        #     cls._is_current_panel_empty_ = False
 
     @classmethod
     def close_panel(cls):
@@ -111,42 +104,6 @@ class RichUtilities:
             # cls._console_.print(final_panel)
 
             cls._is_current_panel_empty_ = True
-
-    # @classmethod
-    # def get_user_input(cls, prompt_text: str) -> str:
-    #     return Prompt.ask("-> ")
-    #
-    #     # # 1. Live pausieren
-    #     # cls._live_thread_pause_event_.clear()
-    #     #
-    #     # # 2. Live-Instanz beenden
-    #     # if hasattr(cls, "_live_instance_") and cls._live_instance_ is not None:
-    #     #     cls._live_instance_.stop()
-    #     #     cls._live_instance_ = None
-    #     #
-    #     # # 3. Terminal kurz "beruhigen"
-    #     # time.sleep(0.05)
-    #     #
-    #     # # 4. Cursor anzeigen
-    #     # cls._console_.show_cursor(True)
-    #     #
-    #     # try:
-    #     #     # 5. Prompt-Zeile ausgeben
-    #     #     cls._console_.print(f"[bold cyan]→ {prompt_text}[/bold cyan]", end=" ")
-    #     #
-    #     #     # 6. Eingabe holen
-    #     #     user_input = input()
-    #     #
-    #     #     return user_input
-    #     # finally:
-    #     #     # 7. Cursor ausblenden
-    #     #     cls._console_.show_cursor(False)
-    #     #
-    #     #     # 8. Panel offen halten für nächste Schritte
-    #     #     cls._panel_opened_ = True
-    #     #
-    #     #     # 9. Live wieder aktivieren
-    #     #     cls._live_thread_pause_event_.set()
 
     @classmethod
     def get_yes_no_input(

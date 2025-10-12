@@ -7,12 +7,9 @@ from pipeline_entities.pipeline.component_entities.constraints.abstracts.pre_dyn
     PreDynamicConstraint,
 )
 
-# from pipeline_entities.constraints.pipeline_component.mixed_constraint import MixedConstraint
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.static_constraint import (
     StaticConstraint,
 )
-
-# ALLOW_ALL = object()
 
 
 @dataclass(frozen=True)

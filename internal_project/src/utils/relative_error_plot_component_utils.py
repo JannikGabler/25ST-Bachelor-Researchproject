@@ -94,7 +94,7 @@ class RelativeErrorPlotComponentUtils:
 
     @staticmethod
     def _init_plot_() -> PlotTemplate:
-        # keep previous (10, 6) figure size TODO: make this a constant defined in the config file
+        # TODO: make this a constant defined in the config file
         return PlotTemplate(figsize=(10, 6))
 
     @staticmethod

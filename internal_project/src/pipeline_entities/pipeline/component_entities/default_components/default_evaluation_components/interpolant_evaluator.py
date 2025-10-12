@@ -29,7 +29,6 @@ class InterpolantEvaluator(EvaluatorComponent):
     ###############################
     ### Attributes of instances ###
     ###############################
-    # _interpolant_evaluation_points_: jnp.ndarray
     _compiled_interpolant_: CompiledFunction
 
     ###################
@@ -71,13 +70,6 @@ class InterpolantEvaluator(EvaluatorComponent):
 
         data.interpolant_values = interpolant_values
         return data
-        # data: PipelineData = self._pipeline_data_[0]
-        #
-        # interpolant: CompilableFunction = data.interpolant
-        # compiled_interpolant: CompiledFunction = interpolant.compile(len(self._interpolant_evaluation_points_), data.data_type, **overridden_attributes)
-        #
-        # data.interpolant_values = compiled_interpolant.evaluate(self._interpolant_evaluation_points_)
-        # return data
 
     ##########################
     ### Overridden methods ###

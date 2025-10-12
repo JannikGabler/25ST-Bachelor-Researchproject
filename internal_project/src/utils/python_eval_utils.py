@@ -20,7 +20,6 @@ class PythonEvalUtils:
         expression: str, name_space: dict[str, object]
     ) -> object:
         try:
-            # Security node: __builtins__ are available by default! Might be a security issue (-> define custom safe build ins).
             return eval(expression, {}, name_space)
         except Exception as e:
             raise EvaluationError(f"Error while evaluating {repr(expression)}.")

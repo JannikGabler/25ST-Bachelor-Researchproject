@@ -305,30 +305,3 @@ class PlotUtils:
             connectable_indices_segments.append(connectable_indices)
 
         return connectable_indices_segments, single_point_indices
-
-
-# s: float = 600
-#
-# plt.figure(figsize=(6, 4))
-#
-# x_factor = 2
-# y_factor = 3
-#
-#
-#
-#
-# plt.scatter(0, 0, s=s)
-# plt.scatter(x_factor, y_factor, s=s)
-# plt.scatter(x_factor, -y_factor, s=s)
-# plt.scatter(-x_factor, y_factor, s=s)
-# plt.scatter(-x_factor, -y_factor, s=s)
-#
-# dx, dy = PlotUtils.scatter_touch_distance(-x_factor, x_factor, -y_factor, y_factor, s)
-#
-# plt.scatter(2.75 * dx, 0, s=s)
-# plt.scatter(0, 2.75 * dy, s=s)
-#
-# # plt.yticks([0.5 * i - 1.5 for i in range(7)])
-# # plt.xticks([0.5 * i - 1.5 for i in range(7)])
-#
-# plt.show()

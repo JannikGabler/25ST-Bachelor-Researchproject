@@ -84,4 +84,3 @@ class PlotComponent(PipelineComponent, ABC):
         subprocess.Popen(
             [sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file]
         )
-        # subprocess.Popen([sys.executable, __file__, "--child", data_file])

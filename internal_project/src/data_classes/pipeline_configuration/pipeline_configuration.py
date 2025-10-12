@@ -73,17 +73,6 @@ class PipelineConfiguration:
         self._check_for_static_constraint_violations_()
         self._check_for_prohibited_override_()
 
-    # def __init__(self, pipeline_configuration_data: PipelineConfigurationData) -> None:
-    #     self._pipeline_name_ = pipeline_configuration_data.name
-    #     self._supported_program_version_ = pipeline_configuration_data.supported_program_version
-    #     self._components_ = self.__get_components_from_ids__(pipeline_configuration_data.components)
-    #
-    #     self._components_.freeze()
-    #
-    #     irregularity = self.__determine_irregularity_in_pipeline_configuration_data__()
-    #     if irregularity:
-    #         raise InvalidConfigurationDataException(irregularity)
-
     ######################
     ### Public methods ###
     ######################
@@ -337,22 +326,6 @@ class PipelineConfiguration:
             raise NoSuchPipelineComponentError(
                 f"There is no Pipeline component registered with the ID '{node_value[1]}'."
             )
-
-    # def _map_component_id_tree_to_component_info_tree_(self, component_ids: Tree[str]) -> Tree[PipelineComponentInfo]:
-    #     value_mapping: Callable[[str], PipelineComponentInfo] = self._map_component_id_to_meta_info_
-    #     return component_ids.value_map(value_mapping)
-    #
-    #
-    #
-    # def _map_component_id_to_meta_info_(self, id: str) -> PipelineComponentInfo:
-    #     from pipeline_entities.component_entities.component_registry.component_registry import ComponentRegistry
-    #
-    #     meta_info: PipelineComponentInfo | None = ComponentRegistry.get_component(id)
-    #
-    #     if meta_info:
-    #         return meta_info
-    #     else:
-    #         raise NoSuchPipelineComponentError(f"There is no Pipeline component registered with the ID '{id}'.")
 
     def _check_for_static_constraint_violations_(self) -> None:
         for node in self._components_:

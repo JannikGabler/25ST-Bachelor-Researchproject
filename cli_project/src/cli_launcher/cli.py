@@ -189,11 +189,6 @@ class CLI:
                 f"Specified path for the pipeline config file is no file: '{self.pipeline_config_file.absolute()}'"
             )
 
-        # self.arg_parser.error(
-        #     f"Insufficient arguments were provided. "
-        #     "Either a pipeline directory or pipeline config and pipeline input files must be specified. "
-        #     f"Execute '{self.arg_parser.prog} --help' for more information.")
-
     def _parse_input_file_in_argument_namespace_(
         self, arg_namespace: Namespace
     ) -> None:

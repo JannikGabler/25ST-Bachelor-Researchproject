@@ -31,5 +31,4 @@ class Pipeline:
             ]
             labels[comp_id] = f"{comp_name} {comp_id}"
 
-        # 3) delegate to your ASCII‐drawing helper
         return DirectionalAcyclicGraphUtils.ascii_dag(adj, labels)

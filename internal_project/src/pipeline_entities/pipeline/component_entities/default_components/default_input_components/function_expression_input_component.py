@@ -40,20 +40,3 @@ class FunctionExpressionInputComponent(InputPipelineComponent):
         pipeline_data.original_function = compilable_function
 
         return pipeline_data
-
-    #######################
-    ### Private methods ###
-    #######################
-    # def _create_jax_lambda_(self) -> callable:
-    #     pipeline_input: PipelineInput = self._additional_execution_info_.pipeline_input
-    #
-    #     function_expression: str = pipeline_input.function_expression
-    #     simplify_expression: bool = pipeline_input.sympy_function_expression_simplification
-    #
-    #     x = sympy.symbols("x")
-    #     expr: Expr = sympy.sympify(function_expression, evaluate=simplify_expression)
-    #
-    #     scalar_lambda = sympy.lambdify(x, expr, modules="jax")
-    #
-    #     # Vectorize scalar lambda
-    #     return jax.vmap(scalar_lambda)

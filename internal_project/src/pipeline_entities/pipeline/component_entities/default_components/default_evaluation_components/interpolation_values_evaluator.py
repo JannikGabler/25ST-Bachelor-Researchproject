@@ -53,17 +53,6 @@ class InterpolationValuesEvaluator(EvaluatorComponent):
             amount_of_evaluation_points, data_type, **overridden_attributes
         )
 
-        # self._compiled_jax_callable_ = jax.jit(self._internal_perform_action_).lower().compile()
-
-        # nodes: jnp.ndarray = self._pipeline_data_[0].interpolation_nodes
-        # function_callable: Callable[[jnp.ndarray], jnp.ndarray] = self._pipeline_data_[0].function_callable
-        # specified_data_type: type = self._pipeline_data_[0].data_type
-        #
-        # if specified_data_type == nodes.dtype:
-        #     self._compiled_jax_callable_ = self._create_compiled_callable_(nodes, function_callable)
-        # else:
-        #     self._compiled_jax_callable_ = self._create_data_type_converting_compiled_callable_(nodes, function_callable, specified_data_type)
-
     ######################
     ### Public methods ###
     ######################
@@ -94,37 +83,3 @@ class InterpolationValuesEvaluator(EvaluatorComponent):
 
     def __hash__(self):
         return hash(self.__class__.__name__)
-
-    #######################
-    ### Private methods ###
-    #######################
-    # def _internal_perform_action_(self) -> jnp.ndarray:
-    #     data_type: DTypeLike = self._pipeline_data_[0].data_type
-    #     function_callable: callable = self._pipeline_data_[0].original_function
-    #     interpolation_nodes: jnp.ndarray = self._pipeline_data_[0].interpolation_nodes
-    #
-    #     return function_callable(interpolation_nodes.astype(data_type))
-
-    # @staticmethod
-    # def _create_compiled_callable_(interpolation_nodes: jnp.ndarray, function_callable: Callable[[jnp.ndarray], jnp.ndarray]) -> callable:
-    #
-    #     def _internal_perform_action_() -> jnp.ndarray:
-    #         return function_callable(interpolation_nodes)
-    #
-    #     return (
-    #         jax.jit(_internal_perform_action_)  # → XLA-compatible HLO
-    #         .lower()  # → Low-Level-IR
-    #         .compile()  # → executable Binary
-    #     )
-
-    # @staticmethod
-    # def _create_data_type_converting_compiled_callable_(interpolation_nodes: jnp.ndarray, function_callable: Callable[[jnp.ndarray], jnp.ndarray],
-    #         new_data_type: type) -> callable:
-    #
-    #
-    #
-    #     return (
-    #         jax.jit(_internal_perform_action_)  # → XLA-compatible HLO
-    #         .lower()  # → Low-Level-IR
-    #         .compile()  # → executable Binary
-    #     )

@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from exceptions.frozen_instance_error import FrozenInstanceError
 

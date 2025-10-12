@@ -275,8 +275,6 @@ class InterpolantPlotComponentUtils:
                     scatter_x_values.extend(intermediate_points)
 
                 scatter_x_values = jnp.array(scatter_x_values)
-                # compiled_function = data.functions[function_index].compile(len(scatter_x_values), left_segment_border.dtype)
-                # actual_y_values: jnp.ndarray = compiled_function.evaluate(scatter_x_values)
                 actual_y_values = PlotUtils.evaluate_function(
                     data.functions[function_index],
                     data.data_types[function_index],
