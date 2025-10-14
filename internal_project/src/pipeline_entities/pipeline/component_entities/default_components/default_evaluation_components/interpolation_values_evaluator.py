@@ -1,73 +1,47 @@
 import jax.numpy as jnp
 
 from jax.typing import DTypeLike
-
 from functions.abstracts.compilable_function import CompilableFunction
 from functions.abstracts.compiled_function import CompiledFunction
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.evaluation_components.interpolation_values_evaluator_meta_info import (
-    interpolation_values_evaluator_meta_info,
-)
-from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import (
-    EvaluatorComponent,
-)
-from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import (
-    pipeline_component,
-)
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import (
-    AdditionalComponentExecutionData,
-)
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.evaluation_components.interpolation_values_evaluator_meta_info import interpolation_values_evaluator_meta_info
+from pipeline_entities.pipeline.component_entities.default_component_types.evaluator_component import EvaluatorComponent
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
 from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
-@pipeline_component(
-    id="interpolation values evaluator",
-    type=EvaluatorComponent,
-    meta_info=interpolation_values_evaluator_meta_info,
-)
+@pipeline_component(id="interpolation values evaluator", type=EvaluatorComponent, meta_info=interpolation_values_evaluator_meta_info)
 class InterpolationValuesEvaluator(EvaluatorComponent):
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _compiled_original_function_: CompiledFunction
 
+
     ###################
     ### Constructor ###
     ###################
-    def __init__(
-        self,
-        pipeline_data: list[PipelineData],
-        additional_execution_info: AdditionalComponentExecutionData,
-    ) -> None:
+    def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
         super().__init__(pipeline_data, additional_execution_info)
-
         amount_of_evaluation_points: int = self._pipeline_data_[0].node_count
         data_type: DTypeLike = self._pipeline_data_[0].data_type
-        overridden_attributes: dict[str, object] = (
-            self._additional_execution_info_.overridden_attributes
-        )
+        overridden_attributes: dict[str, object] = self._additional_execution_info_.overridden_attributes
+        compilable_original_function: CompilableFunction = self._pipeline_data_[0].original_function
+        self._compiled_original_function_ = compilable_original_function.compile(amount_of_evaluation_points, data_type, **overridden_attributes)
 
-        compilable_original_function: CompilableFunction = self._pipeline_data_[
-            0
-        ].original_function
-        self._compiled_original_function_ = compilable_original_function.compile(
-            amount_of_evaluation_points, data_type, **overridden_attributes
-        )
 
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
         data: PipelineData = self._pipeline_data_[0]
-        interpolation_nodes: jnp.ndarray = data.interpolation_nodes.astype(
-            data.data_type
-        )
-
-        interpolation_values: jnp.ndarray = self._compiled_original_function_.evaluate(
-            interpolation_nodes
-        )
-
+        interpolation_nodes: jnp.ndarray = data.interpolation_nodes.astype(data.data_type)
+        interpolation_values: jnp.ndarray = self._compiled_original_function_.evaluate(interpolation_nodes)
         data.interpolation_values = interpolation_values
         return data
+
 
     ##########################
     ### Overridden methods ###
