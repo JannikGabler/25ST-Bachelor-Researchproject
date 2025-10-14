@@ -6,12 +6,22 @@ from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_c
 
 @pipeline_component(id="function callable input", type=InputPipelineComponent, meta_info=function_callable_input_component_meta_info)
 class FunctionCallableInputComponent(InputPipelineComponent):
+    """
+    Pipeline component that attaches a callable function from the pipeline input to the pipeline data.
+    """
 
 
     ##########################
     ### Overridden methods ###
     ##########################
     def perform_action(self) -> PipelineData:
+        """
+        Attach the original function to the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data containing the original function.
+        """
+
         pipeline_data: PipelineData = self._pipeline_data_[0]
         function_callable: callable = (self._additional_execution_info_.pipeline_input.function_callable)
         pipeline_data.original_function = function_callable

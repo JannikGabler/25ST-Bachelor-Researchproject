@@ -7,8 +7,19 @@ from data_classes.pipeline_input.pipeline_input import PipelineInput
 
 @pipeline_component(id="base input", type=InputPipelineComponent, meta_info=base_input_pipeline_component_meta_info)
 class BaseInputPipelineComponent(InputPipelineComponent):
+    """
+    Pipeline component that initializes the base input data for interpolation.
+    It transfers information from the pipeline input into the pipeline data object.
+    """
 
     def perform_action(self) -> PipelineData:
+        """
+        Transfer pipeline input values into the pipeline data object.
+
+        Returns:
+            PipelineData: Updated pipeline data populated with input values.
+        """
+
         pipeline_data: PipelineData = self._pipeline_data_[0]
         pipeline_input: PipelineInput = self._additional_execution_info_.pipeline_input
 

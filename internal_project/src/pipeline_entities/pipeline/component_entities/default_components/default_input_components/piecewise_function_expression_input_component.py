@@ -9,12 +9,22 @@ from data_classes.pipeline_input.pipeline_input import PipelineInput
 
 @pipeline_component(id="piecewise function expression input", type=InputPipelineComponent, meta_info=piecewise_function_expression_input_component_meta_info)
 class PiecewiseFunctionExpressionInputComponent(InputPipelineComponent):
+    """
+    Pipeline component that creates a compilable piecewise-defined function from symbolic expressions and assigns it to the pipeline data.
+    """
 
 
     ##########################
     ### Overridden methods ###
     ##########################
     def perform_action(self) -> PipelineData:
+        """
+        Convert piecewise function expressions from the pipeline input into a compilable SymPy-based function and store it in the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data containing the compilable piecewise function.
+        """
+
         pipeline_data: PipelineData = self._pipeline_data_[0]
         pipeline_input: PipelineInput = self._additional_execution_info_.pipeline_input
         function_expressions: list[tuple[tuple[float, float], str]] = pipeline_input.piecewise_function_expression
