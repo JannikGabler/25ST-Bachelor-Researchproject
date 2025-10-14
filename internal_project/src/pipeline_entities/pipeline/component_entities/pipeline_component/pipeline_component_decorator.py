@@ -5,7 +5,7 @@ from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_c
 from pipeline_entities.pipeline.component_entities.component_registry.component_registry import ComponentRegistry
 
 
-def pipeline_component(id: str, type: type, meta_info: ComponentMetaInfo):
+def pipeline_component(id: str, type: type, meta_info: ComponentMetaInfo) -> type[PipelineComponent]:
     """
     Class decorator to register a pipeline component.
 
