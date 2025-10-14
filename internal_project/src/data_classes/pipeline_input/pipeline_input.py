@@ -14,14 +14,24 @@ from general_data_structures.tree.tree import Tree
 from general_data_structures.tree.tree_node import TreeNode
 from exceptions.evaluation_error import EvaluationError
 from exceptions.type_annotation_error import TypeAnnotationError
-from file_handling.dynamic_module_loading.dynamic_module_loader import (
-    DynamicModuleLoader,
-)
+from file_handling.dynamic_module_loading.dynamic_module_loader import DynamicModuleLoader
 from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from utils.typing_utils import TypingUtils
 
 
 class PipelineInput:
+    """
+    Parsed pipeline input container. Stores typed function definitions, interpolation settings,
+    evaluation points, and additional values after parsing and optional expression evaluation.
+
+    Raises:
+        EvaluationError: If evaluation of an expression fails.
+        TypeError: If an attribute of an instance is initialized with a wrong type.
+        TypeAnnotationError: If a required attribute is missing type annotations.
+        ValueError: If the attribute of an instance is not set although it is required to be set.
+    """
+
+
     ###########################
     ### Attributes of class ###
     ###########################
@@ -33,7 +43,8 @@ class PipelineInput:
         "Version": Version,
         "Tree": Tree,
         "TreeNode": TreeNode,
-    }  # Namespace for dynamically loaded modules is getting added on demand
+    }
+
 
     ###############################
     ### Attributes of instances ###
@@ -55,6 +66,7 @@ class PipelineInput:
     _additional_directly_injected_values_: dict[str, object]
     _additional_values_: dict[str, object]
 
+
     ###################
     ### Constructor ###
     ###################
@@ -66,56 +78,142 @@ class PipelineInput:
         self._parse_input_data_(input_data)
         self._validate_attribute_types_()
 
+
     #########################
     ### Getters & setters ###
     #########################
     @property
     def name(self) -> str | None:
+        """
+        The name of the pipeline input.
+
+        Returns:
+            str: Pipeline name.
+        """
+
         return self._name_
 
     @property
     def data_type(self) -> DTypeLike:
+        """
+        The data type.
+
+        Returns:
+            DTypeLike: Data type.
+        """
+
         return self._data_type_
 
     @property
     def node_count(self) -> int:
+        """
+        The number of interpolation nodes.
+
+        Returns:
+            int: Node count.
+        """
+
         return self._node_count_
 
     @property
     def interpolation_interval(self) -> jnp.ndarray:
+        """
+        The interpolation interval.
+
+        Returns:
+            jnp.ndarray: Interval boundaries as an array.
+        """
+
         return self._interpolation_interval_
 
     @property
     def function_expression(self) -> str | None:
+        """
+        The function expression as a string.
+
+        Returns:
+            str | None: Expression string or None if not set.
+        """
+
         return self._function_expression_
 
     @property
     def piecewise_function_expression(self) -> list[tuple[tuple[any, any], str]] | None:
+        """
+        The piecewise function expression.
+
+        Returns:
+            list[tuple[tuple[float, float], str]] | None: List of interval-expression pairs or None if not set.
+        """
+
         return self._piecewise_function_expression_
 
     @property
     def sympy_function_expression_simplification(self) -> bool | None:
+        """
+        Whether SymPy simplification should be applied.
+
+        Returns:
+            bool | None: True/False if set, otherwise None.
+        """
+
         return self._sympy_function_expression_simplification_
 
     @property
     def function_callable(self) -> Callable[[jnp.ndarray], jnp.ndarray] | None:
+        """
+        Callable version of the function.
+
+        Returns:
+            Callable[[jnp.ndarray], jnp.ndarray] | None: Callable function or None if not set.
+        """
+
         return self._function_callable_
 
     @property
     def interpolation_values(self) -> jnp.ndarray | None:
+        """
+        The interpolation values.
+
+        Returns:
+            jnp.ndarray | None: Values or None if not set.
+        """
+
         return self._interpolation_values_
 
     @property
     def interpolant_evaluation_points(self):
+        """
+        The points at which the interpolant is evaluated.
+
+        Returns:
+            jnp.ndarray | None: Evaluation points or None if not set.
+        """
+
         return self._interpolant_evaluation_points_
 
     @property
     def additional_directly_injected_values(self) -> dict[str, object]:
+        """
+        Additional injected values.
+
+        Returns:
+            dict[str, object]: Additional injected values.
+        """
+
         return self._additional_directly_injected_values_
 
     @property
     def additional_values(self) -> dict[str, object]:
+        """
+        Additional evaluated values.
+
+        Returns:
+            dict[str, object]: Additional evaluated values.
+        """
+
         return self._additional_values_
+
 
     ##########################
     ### Overridden methods ###
@@ -203,6 +301,7 @@ class PipelineInput:
             input_data, eval_name_space
         )
 
+
     def _parse_regular_input_values_(
         self, input_data: PipelineInputData, eval_name_space: dict[str, object]
     ) -> None:
@@ -212,6 +311,7 @@ class PipelineInput:
 
             if name not in ("additional_values", "additional_directly_injected_values"):
                 self._parse_single_regular_input_value_(name, value, eval_name_space)
+
 
     def _parse_single_regular_input_value_(
         self, field_name: str, field_value: str, eval_name_space: dict[str, object]
@@ -237,6 +337,7 @@ class PipelineInput:
             )
             self._additional_values_[key] = parsed_value
 
+
     def _parse_additional_directly_injected_input_values_(
         self, input_data: PipelineInputData, eval_name_space: dict[str, object]
     ) -> None:
@@ -258,6 +359,7 @@ class PipelineInput:
         except Exception as e:
             raise EvaluationError(f"Error while evaluating '{expression}': {e}")
 
+
     def _validate_attribute_types_(self) -> None:
         type_hints: dict[str, object] = typing.get_type_hints(PipelineInput)
 
@@ -267,6 +369,7 @@ class PipelineInput:
             if name not in ("additional_values", "additional_directly_injected_values"):
                 transformed_name: str = f"_{name}_"
                 self._validate_single_attribute_type(transformed_name, type_hints)
+
 
     def _validate_single_attribute_type(
         self, field_name: str, type_hints: dict[str, object]
@@ -284,6 +387,7 @@ class PipelineInput:
         else:
             self._validate_set_attribute_type_(field_name, field_value, type_annotation)
 
+
     def _validate_set_attribute_type_(
         self, field_name: str, field_value: object, type_annotation: object
     ) -> None:
@@ -294,6 +398,7 @@ class PipelineInput:
                 f"The attribute '{self.__class__.__name__}.{field_name}' of this instance was initialized with a wrong type. "
                 f"Expected is '{type_annotation}' but got '{type(field_value)}'."
             )
+
 
     def _validate_non_set_attribute_type_(
         self, field_name: str, type_annotation: object
@@ -307,6 +412,7 @@ class PipelineInput:
             for argument in type_args:
                 if argument is type(None):
                     return
+
 
         raise ValueError(
             f"The attribute '{self.__class__.__name__}.{field_name}' of this instance is not set although it's required to be set."
