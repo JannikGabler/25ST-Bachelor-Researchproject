@@ -13,11 +13,9 @@ from data_classes.pipeline_data.pipeline_data import PipelineData
 
 @pipeline_component(id="barycentric1 interpolation", type=InterpolationCore, meta_info=barycentric_first_interpolation_core_meta_info)
 class BarycentricFirstInterpolationCore(InterpolationCore):
-    """
-    Computes the barycentric weights for the first form of the barycentric interpolation formula.
-
-    Returns:
-        1D array containing the barycentric weights.
+    """"
+    Pipeline component that constructs the first form of the barycentric interpolation.
+    It computes the barycentric weights and attaches the resulting interpolant to the pipeline data.
     """
 
 
@@ -31,12 +29,17 @@ class BarycentricFirstInterpolationCore(InterpolationCore):
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the barycentric first interpolation core.
+
+        Args:
+            pipeline_data (list[PipelineData]): Input pipeline data.
+            additional_execution_data (AdditionalComponentExecutionData): Additional execution data.
+        """
+
         super().__init__(pipeline_data, additional_execution_data)
-
         data_type = pipeline_data[0].data_type
-
         nodes_dummy = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
-
         self._compiled_jax_callable_ = (jax.jit(self._internal_perform_action_).lower(nodes_dummy).compile())
 
 
@@ -44,17 +47,19 @@ class BarycentricFirstInterpolationCore(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        """
+        Compute barycentric weights, build the barycentric interpolant object, and attach it to the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data with the barycentric interpolant assigned.
+        """
+
         pd: PipelineData = self._pipeline_data_[0]
-
         nodes: jnp.ndarray = pd.interpolation_nodes.astype(pd.data_type)
-
         weights: jnp.ndarray = self._compiled_jax_callable_(nodes)
         block_until_ready(weights)
-
         interpolant = BarycentricFirstInterpolant(name="Barycentric1", nodes=pd.interpolation_nodes, values=pd.interpolation_values, weights=weights)
-
         pd.interpolant = interpolant
-
         return pd
 
 
@@ -64,7 +69,6 @@ class BarycentricFirstInterpolationCore(InterpolationCore):
     @staticmethod
     def _internal_perform_action_(nodes) -> jnp.ndarray:
         n: int = nodes.shape[0]
-
         initial_weights: jnp.ndarray = jnp.empty_like(nodes)
 
         def body(i: int, weights: jnp.ndarray) -> jnp.ndarray:

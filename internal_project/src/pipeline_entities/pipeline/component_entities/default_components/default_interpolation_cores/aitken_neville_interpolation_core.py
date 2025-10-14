@@ -14,7 +14,8 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
 @pipeline_component(id="aitken neville interpolation", type=InterpolationCore, meta_info=aitken_neville_interpolation_core_meta_info)
 class AitkenNevilleInterpolationCore(InterpolationCore):
     """
-    TODO
+    Pipeline component that constructs the Aitken–Neville interpolation.
+    It computes the coefficients and attaches the resulting interpolant to the pipeline data.
     """
 
 
@@ -28,35 +29,42 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the Aitken–Neville interpolation core.
+
+        Args:
+            pipeline_data (list[PipelineData]): Input pipeline data.
+            additional_execution_data (AdditionalComponentExecutionData): Additional execution data.
+
+        Returns:
+            None
+        """
+
         super().__init__(pipeline_data, additional_execution_data)
-
         data_type: DTypeLike = pipeline_data[0].data_type
-
         nodes_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
         values_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_values, dtype=data_type)
-
-        self._compiled_jax_callable_ = (
-            jax.jit(self._internal_perform_action_)
-            .lower(nodes_dummy, values_dummy)
-            .compile()
-        )
+        self._compiled_jax_callable_ = (jax.jit(self._internal_perform_action_).lower(nodes_dummy, values_dummy).compile())
 
 
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        """
+        Compute Aitken–Neville interpolation coefficients, build the interpolant object, and attach it to the pipeline data.
 
+        Returns:
+        PipelineData: Updated pipeline data with the interpolant assigned.
+        """
+
+        pipeline_data: PipelineData = self._pipeline_data_[0]
         data_type: DTypeLike = pipeline_data.data_type
         nodes = pipeline_data.interpolation_nodes.astype(data_type)
         values = pipeline_data.interpolation_values.astype(data_type)
-
         coefficients: jnp.ndarray = self._compiled_jax_callable_(nodes, values)
         block_until_ready(coefficients)
-
         interpolant = AitkenNevilleInterpolant("Aitken-Neville", coefficients)
-
         pipeline_data.interpolant = interpolant
         return pipeline_data
 
@@ -64,7 +72,6 @@ class AitkenNevilleInterpolationCore(InterpolationCore):
     @staticmethod
     def _internal_perform_action_(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.ndarray:
         n: int = len(nodes)
-
         initial_polynomials = jnp.zeros((n, n)).at[:, 0].set(values)
 
         def outer_loop(k, polynomials_outer):

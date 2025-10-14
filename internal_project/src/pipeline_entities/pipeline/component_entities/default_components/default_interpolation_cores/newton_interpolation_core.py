@@ -15,10 +15,8 @@ from data_classes.pipeline_data.pipeline_data import PipelineData
 @pipeline_component(id="newton interpolation", type=InterpolationCore, meta_info=newton_interpolation_core_meta_info)
 class NewtonInterpolationCore(InterpolationCore):
     """
-    Computes the coefficients of the Newton interpolation polynomial using divided differences.
-
-    Returns:
-         coefficients: 1D array of coefficients computed via divided differences.
+    Pipeline component that constructs the Newton interpolation.
+    It computes the coefficients via divided differences and attaches the resulting interpolant to the pipeline data.
     """
 
 
@@ -32,13 +30,18 @@ class NewtonInterpolationCore(InterpolationCore):
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the Newton interpolation core.
+
+        Args:
+            pipeline_data (list[PipelineData]): Input pipeline data.
+            additional_execution_data (AdditionalComponentExecutionData): Additional execution data.
+        """
+
         super().__init__(pipeline_data, additional_execution_data)
-
         data_type: DTypeLike = pipeline_data[0].data_type
-
         nodes_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
         values_dummy: jnp.ndarray = jnp.empty_like(pipeline_data[0].interpolation_values, dtype=data_type)
-
         self._compiled_jax_callable_ = (jax.jit(self._internal_perform_action_).lower(nodes_dummy, values_dummy).compile())
 
 
@@ -46,6 +49,13 @@ class NewtonInterpolationCore(InterpolationCore):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        """
+        Compute the coefficients, build the interpolant object, and attach it to the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data with the interpolant assigned.
+        """
+
         pd: PipelineData = self._pipeline_data_[0]
 
         nodes: jnp.ndarray = pd.interpolation_nodes.astype(pd.data_type)
