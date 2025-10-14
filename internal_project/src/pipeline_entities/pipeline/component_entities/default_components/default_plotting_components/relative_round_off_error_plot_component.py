@@ -7,6 +7,9 @@ from constants.internal_logic_constants import RelativeRoundOffErrorPlotComponen
 
 @pipeline_component(id="relative round off error plotter", type=PlotComponent, meta_info=relative_round_off_error_plot_component_meta_info)
 class RelativeRoundOffErrorPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the relative round off error plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = RelativeRoundOffErrorPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = RelativeRoundOffErrorPlotComponentConstants

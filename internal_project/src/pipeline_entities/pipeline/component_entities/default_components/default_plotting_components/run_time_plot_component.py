@@ -18,12 +18,28 @@ class RunTimePlotComponent(InterpolationCore):
 
 
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData):
+        """
+        Initialize the runtime plot component.
+
+        Args:
+            pipeline_data (list[PipelineData]): Data from the pipeline execution.
+            additional_execution_data (AdditionalComponentExecutionData): Contains execution timing reports for components.
+        """
+
         super().__init__(pipeline_data, additional_execution_data)
         self._additional_execution_data = additional_execution_data
         self._pipeline_data = pipeline_data
 
 
     def perform_action(self) -> PipelineData:
+        """
+        Generate bar charts showing initialization and execution times
+        for all interpolation methods in the pipeline.
+
+        Returns:
+            PipelineData: The unmodified pipeline data after plotting.
+        """
+
         execution_reports = list(self._additional_execution_data.component_execution_reports.values())
 
         interpolant_reports = [report for report in execution_reports if issubclass(report.component_instantiation_info.component.component_type, InterpolationCore)

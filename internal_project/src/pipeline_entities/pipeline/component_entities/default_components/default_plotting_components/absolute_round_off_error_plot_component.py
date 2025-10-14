@@ -7,6 +7,9 @@ from utils.absolute_round_off_error_plot_component_utils import AbsoluteRoundOff
 
 @pipeline_component(id="absolute round off error plotter", type=PlotComponent, meta_info=absolute_round_off_error_plot_component_meta_info)
 class AbsoluteRoundOffErrorPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the absolute round off error plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = AbsoluteRoundOffErrorPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = AbsoluteRoundOffErrorPlotComponentConstants

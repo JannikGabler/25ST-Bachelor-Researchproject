@@ -6,7 +6,10 @@ from constants.internal_logic_constants import RelativeErrorPlotComponentConstan
 
 
 @pipeline_component(id="relative error plotter", type=PlotComponent, meta_info=relative_error_plot_component_meta_info)
-class AbsoluteErrorPlotComponent(PlotComponent):
+class RelativeErrorPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the relative error plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = RelativeErrorPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = RelativeErrorPlotComponentConstants

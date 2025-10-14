@@ -7,6 +7,9 @@ from constants.internal_logic_constants import AbsoluteErrorPlotComponentConstan
 
 @pipeline_component(id="absolute error plotter", type=PlotComponent, meta_info=absolut_error_plot_component_meta_info)
 class AbsoluteErrorPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the absolute error plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = AbsoluteErrorPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = AbsoluteErrorPlotComponentConstants

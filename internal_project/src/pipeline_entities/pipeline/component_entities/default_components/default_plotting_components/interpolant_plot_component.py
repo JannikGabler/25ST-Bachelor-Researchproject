@@ -7,6 +7,9 @@ from constants.internal_logic_constants import InterpolantsPlotComponentConstant
 
 @pipeline_component(id="interpolant plotter", type=PlotComponent, meta_info=interpolants_plot_component_meta_info)
 class InterpolantPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the interpolant plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = InterpolantPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = InterpolantsPlotComponentConstants

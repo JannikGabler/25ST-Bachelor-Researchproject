@@ -7,6 +7,9 @@ from utils.interpolant_evaluation_plot_component_utils import InterpolantEvaluat
 
 @pipeline_component(id="interpolant evaluation plotter", type=PlotComponent, meta_info=interpolant_evaluation_plot_component_meta_info)
 class InterpolantEvaluationPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the interpolant evaluation plot.
+    """
 
     PLOT_COMPONENT_UTILS_CLASS = InterpolantEvaluationPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = OldInterpolantsPlotComponentConstants
