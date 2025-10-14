@@ -36,10 +36,7 @@ class Pipeline:
             comp_id = getattr(comp, "component_id", "error reading id!")
             comp_name = getattr(inst, "component_name", "error reading name!")
 
-            adj[comp_id] = [
-                getattr(succ.value.component, "component_id", "error reading id!")
-                for succ in node.successors
-            ]
+            adj[comp_id] = [getattr(succ.value.component, "component_id", "error reading id!") for succ in node.successors]
             labels[comp_id] = f"{comp_name} {comp_id}"
 
         return DirectionalAcyclicGraphUtils.ascii_dag(adj, labels)
