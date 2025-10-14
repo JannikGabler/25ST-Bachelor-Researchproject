@@ -7,8 +7,24 @@ from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 class PipelineComponentMeta(ABCMeta):
+    """
+    Metaclass that validates PipelineComponent subclasses.
+    Ensures the constructor signature is (pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData).
+    """
 
     def __init__(cls, name, bases, namespace, **kwargs):
+        """
+        Validate the subclass constructor of a non-abstract PipelineComponent.
+
+        Args:
+            name (str): Class name.
+            bases (tuple[type, ...]): Base classes.
+            namespace (dict): Class namespace.
+
+        Raises:
+            TypeError: If the subclass has a constructor with invalid parameters.
+        """
+
         super().__init__(name, bases, namespace)
 
         if not inspect.isabstract(cls):

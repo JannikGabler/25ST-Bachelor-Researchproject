@@ -6,6 +6,21 @@ from pipeline_entities.pipeline.component_entities.component_registry.component_
 
 
 def pipeline_component(id: str, type: type, meta_info: ComponentMetaInfo):
+    """
+    Class decorator to register a pipeline component.
+
+    Args:
+        id (str): Component identifier.
+        type (type): Component type.
+        meta_info (ComponentMetaInfo): Metadata describing the component.
+
+    Returns:
+        type[PipelineComponent]: The decorated class with attached PipelineComponentInfo.
+
+    Raises:
+        TypeError: If the decorated class is not a subclass of `PipelineComponent`.
+        NoneError: If any of the arguments (`id`, `type`, `meta_info`) is None.
+    """
 
     _registered_classes_ = set()
 
