@@ -12,7 +12,7 @@ from pipeline_entities.pipeline_execution.dataclasses.additional_component_execu
 @pipeline_component(id="aitken neville evaluator", type=EvaluatorComponent, meta_info=aitken_neville_evaluator_meta_info)
 class AitkenNevilleEvaluator(EvaluatorComponent):
     """
-    TODO
+    Pipeline component that evaluates the Aitken–Neville interpolant at the specified evaluation points and writes the results to the pipeline data.
     """
 
 
@@ -26,6 +26,14 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_data: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the Aitken–Neville evaluator and compile the JAX callable used to compute interpolant values.
+
+        Args:
+            pipeline_data (list[PipelineData]): Pipeline data list containing interpolation inputs.
+            additional_execution_data (AdditionalComponentExecutionData): Additional execution context.
+        """
+
         super().__init__(pipeline_data, additional_execution_data)
         data_type = self._pipeline_data_[0].data_type
         nodes_dummy = jnp.empty_like(pipeline_data[0].interpolation_nodes, dtype=data_type)
@@ -38,6 +46,13 @@ class AitkenNevilleEvaluator(EvaluatorComponent):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        """
+        Evaluate the interpolant using the compiled JAX callable and store the resulting values in the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data with `interpolant_values` set.
+        """
+
         pipeline_data: PipelineData = self._pipeline_data_[0]
         data_type = pipeline_data.data_type
         nodes = pipeline_data.interpolation_nodes.astype(data_type)

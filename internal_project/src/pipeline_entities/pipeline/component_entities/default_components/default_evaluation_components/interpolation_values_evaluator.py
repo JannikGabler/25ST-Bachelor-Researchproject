@@ -12,7 +12,9 @@ from data_classes.pipeline_data.pipeline_data import PipelineData
 
 @pipeline_component(id="interpolation values evaluator", type=EvaluatorComponent, meta_info=interpolation_values_evaluator_meta_info)
 class InterpolationValuesEvaluator(EvaluatorComponent):
-
+    """
+    Pipeline component that evaluates the original function at the interpolation nodes and stores the resulting values in the pipeline data.
+    """
 
     ###############################
     ### Attributes of instances ###
@@ -24,6 +26,14 @@ class InterpolationValuesEvaluator(EvaluatorComponent):
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the interpolation values evaluator by compiling the original function from the pipeline data.
+
+        Args:
+            pipeline_data (list[PipelineData]): Pipeline data containing the original function and nodes.
+            additional_execution_info (AdditionalComponentExecutionData): Additional execution data.
+        """
+
         super().__init__(pipeline_data, additional_execution_info)
         amount_of_evaluation_points: int = self._pipeline_data_[0].node_count
         data_type: DTypeLike = self._pipeline_data_[0].data_type
@@ -36,6 +46,13 @@ class InterpolationValuesEvaluator(EvaluatorComponent):
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        """
+        Evaluate the compiled original function at the interpolation nodes and store the results in the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data with `interpolation_values` set.
+        """
+
         data: PipelineData = self._pipeline_data_[0]
         interpolation_nodes: jnp.ndarray = data.interpolation_nodes.astype(data.data_type)
         interpolation_values: jnp.ndarray = self._compiled_original_function_.evaluate(interpolation_nodes)
