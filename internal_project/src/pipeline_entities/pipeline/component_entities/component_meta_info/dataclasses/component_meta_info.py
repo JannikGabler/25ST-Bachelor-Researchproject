@@ -1,19 +1,12 @@
 from dataclasses import dataclass
-
-from pipeline_entities.pipeline.component_entities.constraints.abstracts.post_dynamic_constraint import (
-    PostDynamicConstraint,
-)
-from pipeline_entities.pipeline.component_entities.constraints.abstracts.pre_dynamic_constraint import (
-    PreDynamicConstraint,
-)
-
-from pipeline_entities.pipeline.component_entities.constraints.abstracts.static_constraint import (
-    StaticConstraint,
-)
+from pipeline_entities.pipeline.component_entities.constraints.abstracts.post_dynamic_constraint import PostDynamicConstraint
+from pipeline_entities.pipeline.component_entities.constraints.abstracts.pre_dynamic_constraint import PreDynamicConstraint
+from pipeline_entities.pipeline.component_entities.constraints.abstracts.static_constraint import StaticConstraint
 
 
 @dataclass(frozen=True)
 class ComponentMetaInfo:
+
     attributes_modifying: set[str]
 
     attributes_allowed_to_be_overridden: set[str]  # | ALLOW_ALL # TODO
