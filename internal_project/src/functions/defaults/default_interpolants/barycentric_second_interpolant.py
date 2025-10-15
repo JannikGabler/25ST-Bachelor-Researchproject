@@ -30,6 +30,7 @@ class BarycentricSecondInterpolant(CompilableFunction):
             nodes: Interpolation nodes.
             values: Function values at the nodes.
             weights: Barycentric weights for the second form.
+
         Raises:
             InvalidArgumentException: If the shapes of nodes, values, and weights differ.
         """
