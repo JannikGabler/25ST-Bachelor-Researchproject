@@ -10,6 +10,11 @@ from pipeline_entities.pipeline.component_entities.default_components.default_te
 
 
 class ComponentRegistry:
+    """
+    Global registry for pipeline components.
+    The registry maps component IDs to their corresponding `PipelineComponentInfo` objects. It provides methods to
+    register default and custom components, retrieve them, and clear the registry.
+    """
 
 
     ###########################
@@ -22,6 +27,11 @@ class ComponentRegistry:
     ### Constructor ###
     ###################
     def __init__(self):
+        """
+        Raises:
+            NotInstantiableError: Always raised when initialized to indicate that this class is not meant to be instantiated.
+        """
+
         raise NotInstantiableError("The class 'ComponentRegistry' can not be instantiated.")
 
 
@@ -30,6 +40,13 @@ class ComponentRegistry:
     ######################
     @staticmethod
     def register_default_components() -> None:
+        """
+        Register all default pipeline components (inputs, evaluators, node generators, interpolation cores, test and plotting components).
+
+        Returns:
+            None
+        """
+
         ComponentRegistry._register_default_input_components_()
         ComponentRegistry._register_default_evaluation_components_()
         ComponentRegistry._register_default_node_generators_()
@@ -40,6 +57,20 @@ class ComponentRegistry:
 
     @staticmethod
     def register_component(component_info: PipelineComponentInfo) -> None:
+        """
+        Register a single component in the registry.
+
+        Args:
+            component_info (PipelineComponentInfo): The component information to register.
+
+        Returns:
+            None
+
+        Raises:
+            NoneError: If `component_info` is None.
+            NoneError: If a component with the same ID is already registered.
+        """
+
         if component_info is None:
             raise NoneError("The parameter 'component_info' can not be None.")
         elif ComponentRegistry.is_component_id_registered(component_info.component_id):
@@ -51,21 +82,55 @@ class ComponentRegistry:
 
     @staticmethod
     def is_component_id_registered(component_id: str) -> bool:
+        """
+        Check if a component ID is already registered.
+
+        Args:
+            component_id (str): The component ID to check.
+
+        Returns:
+            bool: True if the ID is already registered, False otherwise.
+        """
+
         return component_id.lower() in ComponentRegistry.__dictionary__
 
 
     @staticmethod
     def get_component(component_id: str) -> PipelineComponentInfo | None:
+        """
+        Retrieve a registered component by its ID.
+
+        Args:
+            component_id (str): The ID of the component.
+
+        Returns:
+            PipelineComponentInfo | None: The component information if found, otherwise None.
+        """
+
         return ComponentRegistry.__dictionary__.get(component_id.lower())
 
 
     @staticmethod
     def get_all_components() -> list[PipelineComponentInfo]:
+        """
+        Retrieve all registered components.
+
+        Returns:
+            list[PipelineComponentInfo]: A list of all registered components.
+        """
+
         return list(ComponentRegistry.__dictionary__.values())
 
 
     @staticmethod
     def clear() -> None:
+        """
+        Clear the registry by removing all registered components.
+
+        Returns:
+            None
+        """
+
         ComponentRegistry.__dictionary__.clear()
 
 
