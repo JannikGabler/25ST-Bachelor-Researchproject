@@ -8,13 +8,13 @@ from utils.ini_format_utils import INIFormatUtils
 
 class INIFileManager:
 
+
     ###################
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError(
-            f"Class '{self.__class__.__name__}' cannot be instantiated."
-        )
+        raise NotInstantiableError(f"Class '{self.__class__.__name__}' cannot be instantiated.")
+
 
     ######################
     ### Public methods ###
@@ -30,6 +30,7 @@ class INIFileManager:
 
         return INIFormatUtils.split_into_entries(file_content)
 
+
     @staticmethod
     def load_file_as_key_value_pairs(path: Path) -> dict[str, str]:
         if not (path.is_file() and path.exists()):
@@ -38,7 +39,7 @@ class INIFileManager:
         entries: list[str] = INIFileManager.load_file_as_entry_list(path)
         return INIFormatUtils.split_entries_into_key_value_pairs(entries)
 
-    # TODO
+
     @staticmethod
     def save_to_file(to_save: PipelineInput | PipelineInputData, path: Path) -> None:
         pass

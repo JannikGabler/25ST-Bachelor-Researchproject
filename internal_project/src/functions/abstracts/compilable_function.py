@@ -22,34 +22,33 @@ class CompilableFunction(ABC):
     :ivar _data_type_: The data type used for calculations after compilation.
     :type _data_type_: DTypeLike
     """
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _name_: str | None
     _data_type_: DTypeLike
 
+
     def __init__(self, name: str) -> None:
         self._name_ = name
+
 
     ######################
     ### Public methods ###
     ######################
-    def compile(
-        self, amount_of_evaluation_points: int, data_type: DTypeLike, **kwargs
-    ) -> CompiledFunction:
+    def compile(self, amount_of_evaluation_points: int, data_type: DTypeLike, **kwargs) -> CompiledFunction:
         shape: tuple[int] = (amount_of_evaluation_points,)
         self._data_type_ = data_type
 
-        internal_evaluation_function: callable = self._get_internal_evaluate_function_(
-            **kwargs
-        )
+        internal_evaluation_function: callable = self._get_internal_evaluate_function_(**kwargs)
 
         dummy_array: jnp.ndarray = jnp.empty(shape, dtype=data_type)
-        compiled_jax_callable: callable = (
-            jax.jit(internal_evaluation_function).lower(dummy_array).compile()
-        )
+        compiled_jax_callable: callable = (jax.jit(internal_evaluation_function).lower(dummy_array).compile())
 
         return CompiledFunction(compiled_jax_callable, shape, data_type)
+
 
     #########################
     ### Getters & setters ###
@@ -57,6 +56,7 @@ class CompilableFunction(ABC):
     @property
     def name(self) -> str:
         return self._name_
+
 
     #######################
     ### Private methods ###

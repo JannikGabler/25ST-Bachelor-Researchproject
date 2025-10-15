@@ -1,6 +1,4 @@
-from jax import block_until_ready
 from jax.typing import DTypeLike
-
 
 import jax.numpy as jnp
 
@@ -21,6 +19,8 @@ class CompiledFunction:
     :ivar used_data_type: The data type expected for the evaluation points array.
     :type used_data_type: DTypeLike
     """
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
@@ -28,19 +28,15 @@ class CompiledFunction:
     _required_evaluation_points_shape_: tuple[int]
     _used_data_type_: DTypeLike
 
+
     ###################
     ### Constructor ###
     ###################
-    def __init__(
-        self,
-        compiled_jax_callable: callable,
-        required_evaluation_points_shape: tuple[int],
-        used_data_type: DTypeLike,
-    ) -> None:
-
+    def __init__(self, compiled_jax_callable: callable, required_evaluation_points_shape: tuple[int], used_data_type: DTypeLike) -> None:
         self._compiled_jax_callable_ = compiled_jax_callable
         self._required_evaluation_points_shape_ = required_evaluation_points_shape
         self._used_data_type_ = used_data_type
+
 
     ######################
     ### Public methods ###
@@ -64,6 +60,7 @@ class CompiledFunction:
 
         return result
 
+
     #########################
     ### Getters & setters ###
     #########################
@@ -71,9 +68,11 @@ class CompiledFunction:
     def required_evaluation_points_shape(self) -> tuple[int]:
         return self._required_evaluation_points_shape_
 
+
     @property
     def used_data_type(self) -> DTypeLike:
         return self._used_data_type_
+
 
     ##########################
     ### Overridden methods ###
@@ -85,25 +84,18 @@ class CompiledFunction:
             f"used_data_type={repr(self._used_data_type_)})"
         )
 
+
     def __str__(self) -> str:
         return self.__repr__()
 
+
     def __hash__(self) -> int:
-        return hash(
-            (
-                self._compiled_jax_callable_,
-                self._required_evaluation_points_shape_,
-                self._used_data_type_,
-            )
-        )
+        return hash((self._compiled_jax_callable_, self._required_evaluation_points_shape_, self._used_data_type_))
+
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (
-                self._compiled_jax_callable_ is other._compiled_jax_callable_
-                and self._required_evaluation_points_shape_
-                == other._required_evaluation_points_shape_
-                and self._used_data_type_ == other._used_data_type_
-            )
+            return (self._compiled_jax_callable_ is other._compiled_jax_callable_ and self._required_evaluation_points_shape_
+                    == other._required_evaluation_points_shape_ and self._used_data_type_ == other._used_data_type_)

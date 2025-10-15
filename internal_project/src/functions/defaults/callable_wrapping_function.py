@@ -6,10 +6,13 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 
 class CallableWrappingFunction(CompilableFunction):
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _callable_: callable
+
 
     ###################
     ### Constructor ###
@@ -19,20 +22,25 @@ class CallableWrappingFunction(CompilableFunction):
 
         self._callable_ = cal
 
+
     ##########################
     ### Overridden methods ###
     ##########################
     def _get_internal_evaluate_function_(self, **kwargs) -> callable:
         return self._callable_
 
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(callable={repr(self._callable_)})"
+
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(callable={str(self._callable_)})"
 
+
     def __hash__(self):
         return hash(self._callable_)
+
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
