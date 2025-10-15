@@ -9,7 +9,9 @@ from exceptions.not_instantiable_error import NotInstantiableError
 
 
 class DynamicModuleLoader:
-
+    """
+    Utility class for dynamically loading Python modules from a directory. This class is a static utility and is not instantiable.
+    """
 
     ##########################
     ### Attribute of class ###
@@ -21,6 +23,11 @@ class DynamicModuleLoader:
     ### Constructor ###
     ###################
     def __init__(self) -> None:
+        """
+        Raises:
+            NotInstantiableError: Always raised when attempting to instantiate the class.
+        """
+
         raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.'")
 
 
@@ -29,6 +36,18 @@ class DynamicModuleLoader:
     ######################
     @staticmethod
     def load_directory(path: Path):
+        """
+        Load all Python modules found under the given directory.
+
+        Args:
+            path (Path): Root directory to scan for files.
+
+        Raises:
+            DirectoryNotFoundError: If the provided path does not exist or is not a directory.
+            ModuleAlreadyLoadedException: If a module with the same name has already been loaded.
+            ImportError: If a file cannot be loaded or an exception occurs during execution.
+        """
+
         path = path.resolve()
 
         if not (path.is_dir() and path.exists()):
@@ -41,9 +60,18 @@ class DynamicModuleLoader:
     @staticmethod
     def get_entity(fully_qualified_name: str):
         """
-        Gibt eine Funktion (oder beliebiges Attribut) aus dem importierten Modul zurück.
-        z.B. import_path = "test_module.test_file.test_func"
+        Return an attribute from a previously loaded module.
+
+        Args:
+            fully_qualified_name (str): Dotted path to the target.
+
+        Returns:
+            Any: The resolved attribute from the loaded module.
+
+        Raises:
+            ValueError: If no loaded module/attribute matches the given name.
         """
+
         parts = fully_qualified_name.split(".")
 
         for i in range(len(parts), 0, -1):
@@ -63,11 +91,25 @@ class DynamicModuleLoader:
 
     @staticmethod
     def get_module_namespace() -> dict[str, Any]:
+        """
+        Return the internal namespace of loaded modules.
+
+        Returns:
+            dict[str, Any]: Mapping of module names to loaded module objects.
+        """
+
         return DynamicModuleLoader._loaded_modules_
 
 
     @staticmethod
     def unload_all_modules() -> None:
+        """
+        Unload all modules that were loaded via this loader and clear the namespace.
+
+        Returns:
+            None
+        """
+
         for module_name in list(DynamicModuleLoader._loaded_modules_):
             if module_name in sys.modules:
                 del sys.modules[module_name]

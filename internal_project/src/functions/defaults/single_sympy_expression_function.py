@@ -6,6 +6,10 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 
 class SingleSympyExpressionFunction(CompilableFunction):
+    """
+    Compilable function that represents a single mathematical expression. The class uses SymPy to parse a string into a
+    symbolic expression, optionally simplifies it, and then converts the result into a JAX-compatible callable.
+    """
 
 
     ###############################
@@ -19,6 +23,13 @@ class SingleSympyExpressionFunction(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, function_expression: str, simplify_expression: bool):
+        """
+        Args:
+            name: Display name of the function.
+            function_expression: The mathematical expression as a string.
+            simplify_expression: Whether SymPy should simplify expressions on parsing.
+        """
+
         super().__init__(name)
 
         self._function_expression_ = function_expression

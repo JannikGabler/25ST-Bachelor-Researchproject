@@ -8,19 +8,8 @@ from functions.abstracts.compiled_function import CompiledFunction
 
 
 class CompilableFunction(ABC):
-    # TODO: outdated python doc
     """
-    Represents an abstract base class designed to create interpolants that can be compiled
-    for performance optimization. This class outlines a structure for defining interpolants
-    that can support fast evaluation after JIT compilation. Users are expected to implement
-    the necessary internal evaluation function(s).
-
-    The class allows for:
-      - Compiling interpolants for efficient evaluation over specified points.
-      - Customizing evaluation behavior by implementing abstract methods.
-
-    :ivar _data_type_: The data type used for calculations after compilation.
-    :type _data_type_: DTypeLike
+    Abstract base class for functions that can be compiled with JAX for efficient evaluation.
     """
 
 
@@ -32,6 +21,11 @@ class CompilableFunction(ABC):
 
 
     def __init__(self, name: str) -> None:
+        """
+        Args:
+            name: Name of the function.
+        """
+
         self._name_ = name
 
 
@@ -39,6 +33,18 @@ class CompilableFunction(ABC):
     ### Public methods ###
     ######################
     def compile(self, amount_of_evaluation_points: int, data_type: DTypeLike, **kwargs) -> CompiledFunction:
+        """
+        Compile the function for efficient evaluation on JAX arrays.
+
+        Args:
+            amount_of_evaluation_points (int): Number of evaluation points.
+            data_type (DTypeLike): Data type of the evaluation arrays.
+            **kwargs: Additional arguments passed to the internal evaluation function.
+
+        Returns:
+            CompiledFunction: A compiled function ready for fast evaluation.
+        """
+
         shape: tuple[int] = (amount_of_evaluation_points,)
         self._data_type_ = data_type
 
@@ -55,6 +61,12 @@ class CompilableFunction(ABC):
     #########################
     @property
     def name(self) -> str:
+        """
+        Return the name of the function.
+
+        Returns:
+            str: the name of the compilable function.
+        """
         return self._name_
 
 

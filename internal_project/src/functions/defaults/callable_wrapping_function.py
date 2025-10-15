@@ -1,11 +1,12 @@
-import jax
-import sympy
-from sympy import Expr
-
 from functions.abstracts.compilable_function import CompilableFunction
 
 
 class CallableWrappingFunction(CompilableFunction):
+    """
+    Wrapper around a user-provided callable. This class allows arbitrary Python callables to be embedded into the pipeline.
+    Through the compilation mechanism of the base class, the callable can be JIT-compiled with JAX for efficient evaluation,
+    provided that the given callable is JAX-compatible.
+    """
 
 
     ###############################
@@ -18,6 +19,12 @@ class CallableWrappingFunction(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, cal: callable):
+        """
+        Args:
+            name: Display name of the function.
+            cal: A Python callable that maps jax.numpy arrays to jax.numpy arrays.
+        """
+
         super().__init__(name)
 
         self._callable_ = cal

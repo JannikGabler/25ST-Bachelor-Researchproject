@@ -7,7 +7,8 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 class NewtonInterpolant(CompilableFunction):
     """
-    TODO
+    Compilable interpolant that evaluates polynomials using the Newton interpolation form. The class stores interpolation nodes and the
+    corresponding divided differences and  provides efficient evaluation via a Horner-like scheme.
     """
 
 
@@ -22,6 +23,16 @@ class NewtonInterpolant(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, nodes: jnp.ndarray, divided_differences: jnp.ndarray):
+        """
+        Args:
+            name: Display name of the interpolant.
+            nodes: Interpolation nodes.
+            divided_differences: Precomputed divided differences.
+
+        Raises:
+            InvalidArgumentException: If the shapes of nodes and divided differences differ.
+        """
+
         super().__init__(name)
 
         if nodes.shape != divided_differences.shape:

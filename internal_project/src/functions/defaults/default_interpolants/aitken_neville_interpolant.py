@@ -6,7 +6,9 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 class AitkenNevilleInterpolant(CompilableFunction):
     """
-    TODO
+    Compilable interpolant that evaluates polynomials using the Aitken–Neville scheme. This class stores precomputed coefficients of the
+    Aitken–Neville interpolation and provides efficient evaluation of the interpolant at arbitrary points. It supports both standard Horner-like
+    evaluation and a compensated version to reduce numerical error.
     """
 
 
@@ -20,6 +22,12 @@ class AitkenNevilleInterpolant(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, coefficients: jnp.ndarray):
+        """
+        Args:
+            name: Display name of the interpolant.
+            coefficients: The coefficients.
+        """
+
         super().__init__(name)
         self._coefficients_ = coefficients
 

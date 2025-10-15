@@ -7,12 +7,19 @@ from utils.ini_format_utils import INIFormatUtils
 
 
 class INIFileManager:
-
+    """
+    Utility class for reading and writing INI files. This class is a static utility and is not instantiable.
+    """
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self):
+        """
+        Raises:
+            NotInstantiableError: Always raised when attempting to instantiate the class.
+        """
+
         raise NotInstantiableError(f"Class '{self.__class__.__name__}' cannot be instantiated.")
 
 
@@ -21,6 +28,19 @@ class INIFileManager:
     ######################
     @staticmethod
     def load_file_as_entry_list(path: Path) -> list[str]:
+        """
+        Load a file and return its content split into logical entries.
+
+        Args:
+            path (Path): Path to the file.
+
+        Returns:
+            list[str]: The list of parsed entry strings.
+
+        Raises:
+            FileNotFoundError: If the path does not exist or is not a file.
+        """
+
         if not (path.is_file() and path.exists()):
             raise FileNotFoundError(f"File '{str(path)}' does not exists.")
 
@@ -33,6 +53,19 @@ class INIFileManager:
 
     @staticmethod
     def load_file_as_key_value_pairs(path: Path) -> dict[str, str]:
+        """
+        Load a file and return its key–value pairs.
+
+        Args:
+            path (Path): Path to the file.
+
+        Returns:
+            dict[str, str]: Mapping of keys to values parsed from the file.
+
+        Raises:
+            FileNotFoundError: If the path does not exist or is not a file.
+        """
+
         if not (path.is_file() and path.exists()):
             raise FileNotFoundError(f"File '{str(path)}' does not exists.")
 
@@ -42,4 +75,15 @@ class INIFileManager:
 
     @staticmethod
     def save_to_file(to_save: PipelineInput | PipelineInputData, path: Path) -> None:
+        """
+        Save a pipeline input object to a file.
+
+        Args:
+            to_save (PipelineInput | PipelineInputData): The object to serialize.
+            path (Path): Target file path.
+
+        Returns:
+            None
+        """
+
         pass

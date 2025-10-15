@@ -7,7 +7,8 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 class BarycentricSecondInterpolant(CompilableFunction):
     """
-    TODO
+    Compilable interpolant that evaluates the second barycentric interpolation form. The class stores interpolation nodes, function values,
+    and precomputed barycentric weights, and provides an efficient vectorized evaluation of the interpolant.
     """
 
 
@@ -23,6 +24,16 @@ class BarycentricSecondInterpolant(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
+        """
+        Args:
+            name: Display name of the interpolant.
+            nodes: Interpolation nodes.
+            values: Function values at the nodes.
+            weights: Barycentric weights for the second form.
+        Raises:
+            InvalidArgumentException: If the shapes of nodes, values, and weights differ.
+        """
+
         super().__init__(name)
 
         if len({nodes.shape, values.shape, weights.shape}) >= 2:

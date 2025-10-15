@@ -6,6 +6,11 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 
 class PiecewiseSympyExpressionFunction(CompilableFunction):
+    """
+    Compilable function that represents a piecewise-defined mathematical expression. It uses SymPy to construct a piecewise
+    expression from interval-expression pairs and converts this expression into a JAX-compatible callable for efficient,
+    vectorized evaluation.
+    """
 
 
     ###############################
@@ -19,6 +24,13 @@ class PiecewiseSympyExpressionFunction(CompilableFunction):
     ### Constructor ###
     ###################
     def __init__(self, name: str, function_expressions: list[tuple[tuple[float, float], str]], simplify_expression: bool) -> None:
+        """
+        Args:
+            name: Display name of the function.
+            function_expressions: Sequence of (interval, expression) pairs, where each interval is (lower, upper) and the expression is a SymPy-parsable string.
+            simplify_expression: Whether SymPy should simplify expressions on parsing.
+        """
+
         super().__init__(name)
 
         self._function_expressions_ = function_expressions
