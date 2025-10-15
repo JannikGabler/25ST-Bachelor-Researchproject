@@ -5,6 +5,14 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import MinPredecessorsConstraint
 
 
+"""
+Component meta information for the Aitken–Neville evaluator. 
+This component modifies the attribute interpolant_values and allows overriding of the attributes interpolant_evaluation_points, interpolant and data_type. 
+It has no pre-dynamic constraints. A post-dynamic constraint ensures that interpolant_values is a jax.numpy array with the correct dtype. 
+Furthermore, it requires the attributes data_type, node_count, interpolation_nodes, interpolation_values and interpolant_evaluation_points to be present in 
+the pipeline data and enforces that the component has exactly one predecessor. 
+Multiple executions for time measurements are allowed.
+"""
 aitken_neville_evaluator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolant_values"},
 

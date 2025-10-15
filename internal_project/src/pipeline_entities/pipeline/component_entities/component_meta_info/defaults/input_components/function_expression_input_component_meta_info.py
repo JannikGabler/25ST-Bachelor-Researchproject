@@ -4,6 +4,14 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import MinPredecessorsConstraint
 
 
+"""
+Component meta information for the function expression input component. 
+This component modifies the attribute original_function and allows it to be overridden. 
+It has pre-dynamic constraints that require the keys function_expression and sympy_function_expression_simplification to be provided in the pipeline input, 
+while it has no post-dynamic constraints. 
+Furthermore, it enforces through static constraints that the component has exactly one predecessor. 
+Multiple executions for time measurements are not allowed.
+"""
 function_expression_input_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"original_function"},
 

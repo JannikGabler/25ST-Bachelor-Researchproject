@@ -3,6 +3,13 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.dataclass
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.attribute_required_constraint import AttributeRequiredConstraint
 
 
+"""
+Component meta information for the relative round-off error plot component.
+This component modifies the "plots" artifact group and allows overriding of the attributes y_threshold and y_limit.
+It requires the attributes data_type, node_count, interpolation_interval, interpolation_nodes, interpolation_values, and interpolant to be 
+present in the pipeline data.
+In addition, it does not allow multiple executions for time measurements.
+"""
 relative_round_off_error_plot_component_meta_info: ComponentMetaInfo = (
     ComponentMetaInfo(
         attributes_modifying={"plots"},

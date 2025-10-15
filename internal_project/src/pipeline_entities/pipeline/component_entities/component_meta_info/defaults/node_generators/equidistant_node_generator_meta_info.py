@@ -5,6 +5,14 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import MinPredecessorsConstraint
 
 
+"""
+Component meta information for the equidistant node generator. 
+This component modifies the attribute interpolation_nodes and allows overriding of the attributes data_type, node_count and interpolation_interval. 
+A post-dynamic constraint ensures that interpolation_nodes is a jax.numpy array with the correct dtype.
+Furthermore it requires the attributes data_type, node_count and interpolation_interval to be present in the pipeline data and it enforces that the 
+component has exactly one predecessor.
+Multiple executions for time measurements are allowed.
+"""
 equidistant_node_generator_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolation_nodes"},
 

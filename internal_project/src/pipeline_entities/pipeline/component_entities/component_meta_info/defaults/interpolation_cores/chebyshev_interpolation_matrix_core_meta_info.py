@@ -4,6 +4,12 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import MinPredecessorsConstraint
 
 
+"""
+Component meta information for the Chebyshev interpolation matrix core component.
+This component modifies the "interpolation_matrix" artifact group and allows overriding of the attributes interpolation_nodes, data_type, and node_count.
+It requires the attributes interpolation_nodes, data_type, and node_count to be present in the pipeline data.
+In addition, it allows multiple executions for time measurements.
+"""
 chebyshev_interpolation_matrix_core_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolation_matrix"},
 

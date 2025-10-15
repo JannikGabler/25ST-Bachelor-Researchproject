@@ -4,6 +4,14 @@ from pipeline_entities.pipeline.component_entities.constraints.default_constrain
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.min_predecessors_constraint import MinPredecessorsConstraint
 
 
+"""
+Component meta information for the barycentric first interpolation core. 
+This component modifies the attribute interpolant and allows overriding of the attributes interpolation_nodes, interpolation_values, data_type and node_count. 
+It has no pre-dynamic and post-dynamic constraints. 
+Furthermore, it requires the attributes interpolation_nodes, interpolation_values, data_type and node_count to be present in the pipeline data and enforces 
+that the component has exactly one predecessor. 
+Multiple executions for time measurements are allowed.
+"""
 barycentric_first_interpolation_core_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"interpolant"},
 

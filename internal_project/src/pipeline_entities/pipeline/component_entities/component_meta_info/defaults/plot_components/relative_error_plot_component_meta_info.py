@@ -2,6 +2,12 @@ from pipeline_entities.pipeline.component_entities.component_meta_info.dataclass
 from pipeline_entities.pipeline.component_entities.constraints.default_constraints.static_constraints.attribute_required_constraint import AttributeRequiredConstraint
 
 
+"""
+Component meta information for the relative error plot component. 
+This component allows overriding of the attributes y_limit, y_scale and y_scale_base. 
+It requires the attributes data_type, interpolation_interval, original_function and interpolant to be present in the pipeline data. 
+In addition, it does not allow multiple executions for time measurements.
+"""
 relative_error_plot_component_meta_info: ComponentMetaInfo = ComponentMetaInfo(
     attributes_modifying={"plots"},
 
