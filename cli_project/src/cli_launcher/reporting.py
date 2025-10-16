@@ -88,11 +88,16 @@ def _table(rows: list[tuple[str, list[str]]], left_header: str, right_header: st
 
 def format_report(report: PipelineComponentExecutionReport, previous_rows: list[tuple[str, list[str]]] | None = None) -> tuple[str, list[tuple[str, list[str]]]]:
     """
-    Formats the report of one component as a string
-    :param report: The PipelineComponentExecutionReport of a single component
-    :param previous_rows: The rows containing the output of the previous report
-    :returns tuple[str, list[tuple[str, list[str]]]]: the formatted report as a string and the rows that the report (and its predecessors) already covered
+    Formats the report of one component as a string.
+
+    Args:
+       report: The PipelineComponentExecutionReport of a single component.
+       previous_rows: The rows containing the output of the previous report.
+
+    Returns:
+        tuple[str, list[tuple[str, list[str]]]]: the formatted report as a string and the rows that the report (and its predecessors) already covered.
     """
+
     title = _title(report)
     times = _times(report)
 
@@ -120,6 +125,16 @@ def format_report(report: PipelineComponentExecutionReport, previous_rows: list[
 
 
 def format_all_reports(reports: list[PipelineComponentExecutionReport]) -> str:
+    """
+    Format a sequence of component execution reports into a string.
+
+    Args:
+        reports (list[PipelineComponentExecutionReport]): Reports to format in execution order.
+
+    Returns:
+        str: The concatenated textual representation of all reports.
+    """
+
     info = _info()
     previous_rows = None
     formatted_reports = [info]

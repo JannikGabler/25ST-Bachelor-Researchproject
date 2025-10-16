@@ -25,7 +25,16 @@ from utilities.user_output_utilities import UserOutputUtilities
 
 
 class CLI:
+    """
+    Command-line interface for building and running interpolation pipelines. Parses CLI arguments, loads pipeline configuration
+    and input files, sets up internal logic, builds and executes the pipeline, and finally renders an execution report.
 
+    Attributes:
+        arg_parser (ArgumentParser): The argument parser for CLI options.
+        directory (Path | None): Path to the pipeline directory.
+        pipeline_config_file (Path | None): Path to the pipeline configuration file.
+        pipeline_input_file (Path | None): Path to the pipeline input file.
+    """
 
     arg_parser: ArgumentParser
 
@@ -35,6 +44,13 @@ class CLI:
 
 
     def __init__(self) -> None:
+        """
+        Initialize the CLI by creating the argument parser and registering parameters.
+
+        Returns:
+            None
+        """
+
         self.arg_parser = self._create_argument_parser_()
         self._register_cli_parameters_()
 
@@ -45,6 +61,20 @@ class CLI:
 
 
     def start(self) -> None:
+        """
+        Run the CLI workflow end-to-end.
+        Steps:
+            1) Parse arguments and validate inputs.
+            2) Show a security prompt and, if accepted, set up internal logic.
+            3) Load and parse the pipeline configuration and input files.
+            4) Build the pipeline and execute it.
+            5) Print results to the console.
+            6) Store results to disk and finalize the run.
+
+        Returns:
+            None
+        """
+
         argument_namespace: Namespace = self.arg_parser.parse_args()
         self._parse_argument_namespace_(argument_namespace)
         self._print_argument_parsing_success_()
