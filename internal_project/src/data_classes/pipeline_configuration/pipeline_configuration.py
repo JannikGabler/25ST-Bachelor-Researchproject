@@ -27,6 +27,11 @@ if TYPE_CHECKING:
 
 
 class PipelineConfiguration:
+    """
+    The pipeline configuration that parses the PipelineConfigurationData. It validates types,
+    builds the component DAG, enforces static constraints, and prohibits disallowed attribute overrides before
+    freezing the structure.
+    """
 
 
     ###############################
@@ -46,6 +51,22 @@ class PipelineConfiguration:
     ### Constructor ###
     ###################
     def __init__(self, input_data: PipelineConfigurationData) -> None:
+        """
+        Args:
+            input_data: Configuration input data to be parsed.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If the attribute of an instance is not set although it is required to be set.
+            TypeError: If an attribute of an instance is initialized with a wrong type.
+            TypeAnnotationError: If a required attribute is missing type annotations.
+            PipelineConstraintViolationException: If a component's static constraint is violated.
+            ProhibitedAttributeOverrideException: If an attribute override is not allowed.
+            NoSuchPipelineComponentError: If a referenced component id is not registered.
+        """
+
         self._parse_input_data_(input_data)
         self._validate_attribute_types_()
 
@@ -59,10 +80,30 @@ class PipelineConfiguration:
     ### Public methods ###
     ######################
     def get_all_component_names(self) -> list[str]:
+        """
+        Returns the names of all components contained in the configuration.
+
+        Returns:
+            list[str]: Component names.
+        """
+
         return [node.value.component_name for node in self._components_]
 
 
     def get_component_node_by_component_name(self, component_name: str) -> DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]:
+        """
+        Look up and return the component node by its name.
+
+        Args:
+            component_name (str): The component's name within this configuration.
+
+        Returns:
+            DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]: The matching node.
+
+        Raises:
+            NoSuchPipelineComponentError: If no component with the given name exists in this configuration.
+        """
+
         for node in self._components_:
             if node.value.component_name == component_name:
                 return node
@@ -75,26 +116,61 @@ class PipelineConfiguration:
     #########################
     @property
     def name(self) -> str:
+        """
+        The configured pipeline name.
+
+        Returns:
+            str: Pipeline name.
+        """
+
         return self._name_
 
 
     @property
     def supported_program_version(self) -> Version:
+        """
+        The supported program version for which this configuration is valid.
+
+        Returns:
+            Version: Supported version.
+        """
+
         return self._supported_program_version_
 
 
     @property
     def components(self) -> DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]:
-        return self._components_  # __components__ is frozen (immutable)
+        """
+        The frozen (immutable) components of this configuration.
+
+        Returns:
+            DirectionalAcyclicGraph[PipelineComponentInstantiationInfo]: DAG of component instantiations.
+        """
+
+        return self._components_
 
 
     @property
     def runs_for_component_execution_time_measurements(self) -> int:
+        """
+        Number of runs to use when measuring component execution time.
+
+        Returns:
+            int: Run count.
+        """
+
         return self._runs_for_component_execution_time_measurements_
 
 
     @property
     def additional_values(self) -> dict[str, Any]:
+        """
+        Arbitrary additional configuration values.
+
+        Returns:
+            dict[str, Any]: Additional key-value pairs.
+        """
+
         return self._additional_values_
 
 
