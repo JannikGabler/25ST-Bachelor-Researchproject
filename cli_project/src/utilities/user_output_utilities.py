@@ -2,7 +2,7 @@ from colorama import Fore
 
 
 class UserOutputUtilities:
-    # TODO __init__
+
 
     @classmethod
     def print_header(cls, msg: str, color: Fore = Fore.RESET):
@@ -10,11 +10,13 @@ class UserOutputUtilities:
         colored_msg = cls.color_string_into_color(formatted_msg, color)
         print(colored_msg)
 
+
     @classmethod
     def print_sub_header(cls, msg: str, color: Fore = Fore.RESET):
         formatted_msg = f"\n --- {msg} ---"
         colored_msg = cls.color_string_into_color(formatted_msg, color)
         print(colored_msg)
+
 
     @classmethod
     def print_text(cls, msg: str, level: int = 1, color: Fore = Fore.RESET):
@@ -30,6 +32,7 @@ class UserOutputUtilities:
 
         colored_msg = cls.color_string_into_color("\n".join(lines), color)
         print(colored_msg)
+
 
     @classmethod
     def color_string_into_color(cls, string: str, color: Fore) -> str:
