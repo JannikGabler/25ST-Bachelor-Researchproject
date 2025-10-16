@@ -63,7 +63,8 @@ def _rows(data: PipelineData | None, previous: list[tuple[str, list[str]]] | Non
 
 def _table(rows: list[tuple[str, list[str]]], left_header: str, right_header: str) -> tuple[list[str], int]:
     if not rows:
-        return out := ["<Nothing new>"], len(out[0])
+        out = ["<Nothing new>"]
+        return out, len(out[0])
 
     left_width = len(left_header)
     right_width = len(right_header)
