@@ -23,6 +23,8 @@ class PipelineConfigurationConstants:
 
 
 class OldInterpolantsPlotComponentConstants:
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
     AMOUNT_OF_EVALUATION_POINTS: int = 250
 
     Y_LIMIT_FACTOR: float = 1.0
@@ -49,12 +51,13 @@ class OldInterpolantsPlotComponentConstants:
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
     ]
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
     FIGURE_SIZE = (10, 6)
 
 
 class InterpolantsPlotComponentConstants:
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
     AMOUNT_OF_EVALUATION_POINTS: int = 800
     AMOUNT_OF_INF_SCATTER_POINTS: int = 150
 
@@ -80,12 +83,13 @@ class InterpolantsPlotComponentConstants:
 
     LINE_STYLE_DASH_DISTANCE: float = 2.5
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
     FIGURE_SIZE = (10, 6)
 
 
 class AbsoluteErrorPlotComponentConstants:
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     LINE_WIDTH: int = 2
@@ -116,12 +120,13 @@ class AbsoluteErrorPlotComponentConstants:
         (0, (5, 5)),  # lange Striche mit Lücken
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
     ]
-
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
 
 class RelativeErrorPlotComponentConstants:
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     LINE_WIDTH: int = 2
@@ -153,7 +158,6 @@ class RelativeErrorPlotComponentConstants:
         (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
     ]
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
 class BaseRoundOffErrorPlotComponentConstants:
@@ -184,18 +188,22 @@ class BaseRoundOffErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
     LINE_STYLE_DASH_DISTANCE: float = 1
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+    #SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     FIGURE_SIZE = (10, 6)
 
 
 
 class AbsoluteRoundOffErrorPlotComponentConstants:
+    SHOW_PLOT: bool = True
+
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
 
 class RelativeRoundOffErrorPlotComponentConstants:
+    SHOW_PLOT: bool = True
+
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 

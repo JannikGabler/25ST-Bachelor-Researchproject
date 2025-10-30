@@ -42,6 +42,7 @@ class PlotComponent(PipelineComponent, ABC):
     PLOT_COMPONENT_CONSTANTS_CLASS = None
     PLOT_COMPONENT_UTILS_CLASS = None
 
+
     
     def perform_action(self) -> PipelineData:
         if self.PLOT_COMPONENT_CONSTANTS_CLASS is None or self.PLOT_COMPONENT_UTILS_CLASS is None:
@@ -51,14 +52,17 @@ class PlotComponent(PipelineComponent, ABC):
         if template is None:
             raise Exception(f"PlotTemplate of {self.__class__.__name__} is None!\n(object: {self.__repr__()})")
 
-        if self.PLOT_COMPONENT_CONSTANTS_CLASS.SHOW_PLOT_IN_SEPARATE_PROCESS:
-            self._start_sub_process_(template)
-        else:
-            template.fig.show()
-            plt.show(block=True)
+        if self.PLOT_COMPONENT_CONSTANTS_CLASS.SHOW_PLOT:
+            if self.PLOT_COMPONENT_CONSTANTS_CLASS.SHOW_PLOT_IN_SEPARATE_PROCESS:
+                self._start_sub_process_(template)
+            else:
+                template.fig.show()
+                plt.show(block=True)
 
         self._pipeline_data_[0].plots = [template]
         return self._pipeline_data_[0]
+
+
 
     #######################
     ### Private methods ###
