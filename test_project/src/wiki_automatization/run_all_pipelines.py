@@ -56,9 +56,9 @@ def run_interpolation_pipeline(folder: Path):
 def copy_plot_files(src_folder: Path, dest_folder: Path):
     """Kopiert beide plot.png Dateien in den Ausgabepfad."""
     plots = [
-        OUTPUT_ROOT / "runs/latest/components/interpolant plotter/plots/plot.svg",
-        OUTPUT_ROOT / "runs/latest/components/absolute error plotter/plots/plot.svg",
-        OUTPUT_ROOT / "runs/latest/components/absolute round off error plotter/plots/plot.svg",
+        OUTPUT_ROOT / "runs/latest/components/interpolant plotter/plots/plot.png",
+        OUTPUT_ROOT / "runs/latest/components/absolute error plotter/plots/plot.png",
+        OUTPUT_ROOT / "runs/latest/components/absolute round off error plotter/plots/plot.png",
     ]
     for i, plot in enumerate(plots):
         if plot.exists():
