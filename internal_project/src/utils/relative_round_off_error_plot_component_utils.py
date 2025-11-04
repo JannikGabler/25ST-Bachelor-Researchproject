@@ -40,7 +40,7 @@ class RelativeRoundOffErrorPlotComponentUtils:
     def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
         template: PlotTemplate = BaseRoundOffErrorPlotComponentUtils.plot_data(pipeline_data, additional_data, cls._set_relative_round_off_errors_)
 
-        template.fig.suptitle(f"Relative round-off error plot")
+        template.fig.suptitle("Relative floating-point error plot")
         template.ax.set_xlabel("$x$")
         template.ax.set_ylabel("$\\delta f(x)$")
         template.fig.tight_layout()
