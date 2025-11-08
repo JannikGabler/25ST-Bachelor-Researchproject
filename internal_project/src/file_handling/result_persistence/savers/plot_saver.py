@@ -60,7 +60,6 @@ class PlotSaver(Saver):
         stem = self._unique_stem(plot_dir, stem)
 
         exts: list[str] = list(policy.plot_formats)
-        dpi = 150
         transparent = False
 
         fig_wrapper: FigureWrapper = self._get_figure_wrapper(plot_template)
@@ -69,13 +68,7 @@ class PlotSaver(Saver):
         for ext in exts:
             out = plot_dir / f"{stem}.{ext}"
             try:
-                fig_wrapper.savefig(
-                    out,
-                    dpi=dpi,
-                    format=ext,
-                    bbox_inches="tight",
-                    transparent=transparent,
-                )
+                fig_wrapper.savefig(out, format=ext, transparent=transparent)
                 if primary_path is None:
                     primary_path = out
             except Exception as e:

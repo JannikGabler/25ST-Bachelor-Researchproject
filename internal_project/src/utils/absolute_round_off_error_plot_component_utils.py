@@ -44,7 +44,7 @@ class AbsoluteRoundOffErrorPlotComponentUtils:
 
         template: PlotTemplate = BaseRoundOffErrorPlotComponentUtils.plot_data(pipeline_data, additional_data, cls._set_absolute_round_off_errors_)
 
-        template.fig.suptitle(f"Absolute round-off error plot")
+        template.fig.suptitle("Absolute floating-point error plot")
         template.ax.set_xlabel("$x$")
         template.ax.set_ylabel("$\Delta f(x)$")
         template.fig.tight_layout()

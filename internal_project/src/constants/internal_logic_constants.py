@@ -37,6 +37,7 @@ class OldInterpolantsPlotComponentConstants:
     Constants defining default parameters for the old interpolants plot component, including evaluation points, colors, line styles, and plotting options.
     """
 
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     AMOUNT_OF_EVALUATION_POINTS: int = 250
 
@@ -64,8 +65,6 @@ class OldInterpolantsPlotComponentConstants:
         (0, (3, 5, 1, 5)),  # lines with light dots
     ]
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
     FIGURE_SIZE = (10, 6)
 
 
@@ -74,6 +73,8 @@ class InterpolantsPlotComponentConstants:
     Constants defining default parameters for interpolants plot component, including evaluation points, axis limits, colors, line styles, and plotting options.
     """
 
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     AMOUNT_OF_EVALUATION_POINTS: int = 800
     AMOUNT_OF_INF_SCATTER_POINTS: int = 150
@@ -100,8 +101,6 @@ class InterpolantsPlotComponentConstants:
 
     LINE_STYLE_DASH_DISTANCE: float = 2.5
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
     FIGURE_SIZE = (10, 6)
 
 
@@ -110,6 +109,8 @@ class AbsoluteErrorPlotComponentConstants:
     Constants defining default parameters for absolute error plot component, including evaluation points, line width, colors, line styles, and plotting options.
     """
 
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
@@ -142,14 +143,14 @@ class AbsoluteErrorPlotComponentConstants:
         (0, (3, 5, 1, 5)),  # lines with light dots
     ]
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
-
 
 class RelativeErrorPlotComponentConstants:
     """
     Constants defining default parameters for relative error plot component, including evaluation points, line width, colors, line styles, and plotting options.
     """
 
+    SHOW_PLOT: bool = True
+    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
@@ -182,14 +183,12 @@ class RelativeErrorPlotComponentConstants:
         (0, (3, 5, 1, 5)),
     ]
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
 class BaseRoundOffErrorPlotComponentConstants:
     """
     Constants defining default parameters for base round-off error plot components, including evaluation points, axis limits, colors, and line styles.
     """
-
 
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
@@ -218,7 +217,7 @@ class BaseRoundOffErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
     LINE_STYLE_DASH_DISTANCE: float = 1
 
-    SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
+    #SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     FIGURE_SIZE = (10, 6)
 
@@ -228,6 +227,7 @@ class AbsoluteRoundOffErrorPlotComponentConstants:
     Constants defining default parameters for absolute round-off error plot components, including plotting options and process configuration.
     """
 
+    SHOW_PLOT: bool = True
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
@@ -237,6 +237,7 @@ class RelativeRoundOffErrorPlotComponentConstants:
     Constants defining default parameters for relative round-off error plot components, including plotting options and process configuration.
     """
 
+    SHOW_PLOT: bool = True
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
