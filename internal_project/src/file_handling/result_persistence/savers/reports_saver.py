@@ -8,32 +8,18 @@ from typing import Any, Iterable
 from file_handling.result_persistence.save_policy import SavePolicy
 from file_handling.result_persistence.savers.base import Saver, register_saver
 
-from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import (
-    PipelineComponentInfo,
-)
-from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import (
-    PipelineComponentInstantiationInfo,
-)
-from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import (
-    PipelineComponentExecutionReport,
-)
+from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 
 from file_handling.result_persistence.utils import type_repr, to_jsonable, prune_trivial
 
 
 def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
-    """
-    Convert a PipelineComponentExecutionReport into a JSON-serializable dict.
-    Keeps it lean and stable; avoids dumping large PipelineData contents.
-    """
-    comp_inst_info: PipelineComponentInstantiationInfo = (
-        rep.component_instantiation_info
-    )
+    comp_inst_info: PipelineComponentInstantiationInfo = rep.component_instantiation_info
     comp_info: PipelineComponentInfo = comp_inst_info.component
 
-    comp_name = getattr(comp_inst_info, "component_name", None) or getattr(
-        comp_info, "name", None
-    )
+    comp_name = getattr(comp_inst_info, "component_name", None) or getattr(comp_info, "name", None)
     comp_id = getattr(comp_info, "component_id", None)
     comp_type = type_repr(getattr(comp_info, "component_type", None))
     comp_class = type_repr(getattr(comp_info, "component_class", None))
@@ -50,7 +36,6 @@ def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
             "name": comp_name,
             "type": comp_type,
             "class": comp_class,
-            # could add more metadata (version, tags, etc.)
         },
         "timing": {
             "init_time": rep.component_init_time,
@@ -66,19 +51,22 @@ class ReportsSaver(Saver):
 
     kind = "reports"
 
-    def save(
-        self,
-        artifact: (
-            Iterable[PipelineComponentExecutionReport]
-            | PipelineComponentExecutionReport
-        ),
-        run_dir: Path,
-        policy: SavePolicy,
-    ) -> Path:
+    def save(self, artifact: (Iterable[PipelineComponentExecutionReport] | PipelineComponentExecutionReport), run_dir: Path, policy: SavePolicy) -> Path:
+        """
+        Serialize and save one or multiple PipelineComponentExecutionReport objects into a single JSON file within the 'reports' subdirectory.
+
+        Args:
+            artifact (Iterable[PipelineComponentExecutionReport] | PipelineComponentExecutionReport): Single report or iterable of reports to serialize.
+            run_dir (Path): Target run directory where the 'reports' folder will be created.
+            policy (SavePolicy): Save policy defining JSON formatting options (e.g., indentation).
+
+        Returns:
+            Path: Path to the generated JSON file (e.g. <run>/reports/reports.json).
+        """
+
         reports_dir = run_dir / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        # Normalize to list
         if isinstance(artifact, PipelineComponentExecutionReport):
             payload = [_serialize_report(artifact)]
         else:

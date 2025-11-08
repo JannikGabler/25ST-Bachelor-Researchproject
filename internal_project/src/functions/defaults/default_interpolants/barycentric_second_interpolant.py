@@ -7,8 +7,10 @@ from functions.abstracts.compilable_function import CompilableFunction
 
 class BarycentricSecondInterpolant(CompilableFunction):
     """
-    TODO
+    Compilable interpolant that evaluates the second barycentric interpolation form. The class stores interpolation nodes, function values,
+    and precomputed barycentric weights, and provides an efficient vectorized evaluation of the interpolant.
     """
+
 
     ###############################
     ### Attributes of instances ###
@@ -17,12 +19,22 @@ class BarycentricSecondInterpolant(CompilableFunction):
     _values_: jnp.ndarray
     _weights_: jnp.ndarray
 
+
     ###################
     ### Constructor ###
     ###################
-    def __init__(
-        self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray
-    ):
+    def __init__(self, name: str, nodes: jnp.ndarray, values: jnp.ndarray, weights: jnp.ndarray):
+        """
+        Args:
+            name: Display name of the interpolant.
+            nodes: Interpolation nodes.
+            values: Function values at the nodes.
+            weights: Barycentric weights for the second form.
+
+        Raises:
+            InvalidArgumentException: If the shapes of nodes, values, and weights differ.
+        """
+
         super().__init__(name)
 
         if len({nodes.shape, values.shape, weights.shape}) >= 2:
@@ -36,11 +48,13 @@ class BarycentricSecondInterpolant(CompilableFunction):
         self._values_ = values
         self._weights_ = weights
 
+
     ##########################
     ### Overridden methods ###
     ##########################
     def _get_internal_evaluate_function_(self, **kwargs) -> callable:
         return self._internal_evaluate_
+
 
     def __repr__(self) -> str:
         return (
@@ -48,25 +62,22 @@ class BarycentricSecondInterpolant(CompilableFunction):
             f"weights={repr(self._weights_)})"
         )
 
+
     def __str__(self) -> str:
         return self.__repr__()
 
+
     def __hash__(self) -> int:
         return hash((self._nodes_, self._values_, self._weights_))
+
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (
-                jnp.array_equal(self._nodes_, other._nodes_, equal_nan=True).item()
-                and jnp.array_equal(
-                    self._values_, other._values_, equal_nan=True
-                ).item()
-                and jnp.array_equal(
-                    self._weights_, other._weights_, equal_nan=True
-                ).item()
-            )
+            return (jnp.array_equal(self._nodes_, other._nodes_, equal_nan=True).item() and jnp.array_equal(self._values_, other._values_, equal_nan=True).item()
+                    and jnp.array_equal(self._weights_, other._weights_, equal_nan=True).item())
+
 
     #######################
     ### Private methods ###
@@ -83,11 +94,6 @@ class BarycentricSecondInterpolant(CompilableFunction):
             exact_match_index: jnp.ndarray = jnp.argmax(exact_matches)
             exact_match_value: jnp.ndarray = values[exact_match_index]
 
-            return jnp.where(
-                jnp.any(exact_matches),
-                exact_match_value,
-                jnp.sum((weights * values) / differences)
-                / jnp.sum(weights / differences),
-            )
+            return jnp.where(jnp.any(exact_matches), exact_match_value, jnp.sum((weights * values) / differences) / jnp.sum(weights / differences))
 
         return jax.vmap(_evaluate_single_)(evaluation_points)
