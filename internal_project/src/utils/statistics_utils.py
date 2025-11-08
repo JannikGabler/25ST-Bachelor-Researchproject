@@ -4,13 +4,21 @@ from exceptions.not_instantiable_error import NotInstantiableError
 
 
 class StatisticsUtils:
+    """
+    Utility helpers for simple streaming statistics (mean, variance, stddev). This class is not meant to be instantiated.
+    """
+
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
+        """
+        Raises:
+            NotInstantiableError: Always raised when initialized to indicate that this class is not meant to be instantiated.
+        """
 
+        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
 
 
     ######################
@@ -19,7 +27,13 @@ class StatisticsUtils:
     @staticmethod
     def mean(values: list) -> float:
         """
-        TODO
+        Computes the arithmetic mean.
+
+        Args:
+            values (list): Values to aggregate.
+
+        Returns:
+            float: Mean value or NaN if empty.
         """
 
         n = 0
@@ -30,11 +44,16 @@ class StatisticsUtils:
         return mean if n > 0 else float("nan")
 
 
-
     @staticmethod
     def empirical_variance(values: list) -> float:
         """
-        TODO
+        Computes the empirical variance.
+
+        Args:
+            values (list): Values to aggregate.
+
+        Returns:
+            float: Variance or NaN if empty.
         """
 
         n = 0
@@ -48,11 +67,16 @@ class StatisticsUtils:
         return M2 / n if n > 0 else float("nan")
 
 
-
     @classmethod
     def empirical_stddev(cls, values: list) -> float:
         """
-        TODO
+        Computes the empirical standard deviation.
+
+        Args:
+            values (list): Values to aggregate.
+
+        Returns:
+            float: Standard deviation or NaN if empty.
         """
 
         var = StatisticsUtils.empirical_variance(values)

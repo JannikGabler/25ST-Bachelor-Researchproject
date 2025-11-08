@@ -8,13 +8,20 @@ from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 
 
 class PipelineInputFileManager:
+    """
+    Utility class for loading pipeline input files. This class is a static utility and is not instantiable.
+    """
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError(f"{self.__class__.__name__} cannot be instantiated.")
+        """
+        Raises:
+            NotInstantiableError: Always raised when attempting to instantiate the class.
+        """
 
+        raise NotInstantiableError(f"{self.__class__.__name__} cannot be instantiated.")
 
 
     ######################
@@ -22,12 +29,22 @@ class PipelineInputFileManager:
     ######################
     @staticmethod
     def load_from_file(path: Path) -> PipelineInputData:
+        """
+        Load pipeline input data from the file.
+
+        Args:
+            path (Path): Path to the file.
+
+        Returns:
+            PipelineInputData: The pipeline input object.
+        """
+
         data: PipelineInputData = PipelineInputData()
 
         entries: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(path)
 
         for key, value in entries.items():
-            if key.startswith('§'):
+            if key.startswith("§"):
                 PipelineInputFileManager._handle_direct_injecting_key_value_pair_in_loading_(key, value, data)
             else:
                 PipelineInputFileManager._handle_regular_key_value_pair_in_loading_(key, value, data)
@@ -35,12 +52,20 @@ class PipelineInputFileManager:
         return data
 
 
-
-    # TODO
     @staticmethod
     def save_to_file(to_save: PipelineInput | PipelineInputData, path: Path) -> None:
-        pass
+        """
+        Save a pipeline input object to a file.
 
+        Args:
+            to_save (PipelineInput | PipelineInputData): The object to serialize.
+            path (Path): Target file path.
+
+        Returns:
+            None
+        """
+
+        pass
 
 
     #######################
@@ -52,7 +77,6 @@ class PipelineInputFileManager:
             setattr(data, key, value)
         else:
             data.additional_values[key] = value
-
 
 
     @staticmethod

@@ -1,17 +1,11 @@
 from abc import ABC
-
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component import PipelineComponent
 
 
 class InputPipelineComponent(PipelineComponent, ABC):
+    """
+    Abstract base class for input components in the pipeline.
+    Input components are responsible for injecting or transferring input data into the pipeline data structure.
+    """
+
     pass
-
-    # _pipeline_input_: PipelineInput
-    #
-    #
-    #
-    # def __init__(self, pipeline_input: PipelineInput, pipeline_data: PipelineData):
-    #     super().__init__(pipeline_data)
-    #     self._pipeline_input_ = pipeline_input
-
-

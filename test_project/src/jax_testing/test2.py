@@ -7,7 +7,7 @@ n = len(nodes)
 
 for k in range(1, len(nodes)):
     array1 = nodes[k:]
-    array2 = nodes[:n-k]
+    array2 = nodes[: n - k]
     print(array1)
     print(array2)
     node_differences: jnp.ndarray = array1 - array2

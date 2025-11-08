@@ -9,12 +9,16 @@ from constants.internal_logic_constants import InterpolantsPlotComponentConstant
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.plot_template.plot_template import PlotTemplate
 from functions.abstracts.compilable_function import CompilableFunction
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
-    AdditionalComponentExecutionData
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
+
 from utils.plot_utils import PlotUtils
 
 
 class InterpolantPlotComponentUtils:
+    """
+    Utility helpers for creating and configuring interpolant plots in the pipeline.
+    """
+
     @dataclass
     class _Data_:
         amount_of_functions_to_plot: int | None = None
@@ -31,36 +35,39 @@ class InterpolantPlotComponentUtils:
         connectable_segments: list[tuple[list[list[int]], list[list[int]]]] | None = None
 
 
-
-    # TODO: __init__
-
-
-
     @classmethod
     def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
+        """
+        Create the interpolant plot for the given pipeline data.
+
+        Args:
+            pipeline_data (list[PipelineData]): Data containing original and interpolant functions.
+            additional_data (AdditionalComponentExecutionData): Extra information for plot annotation.
+
+        Returns:
+            PlotTemplate: Configured plot with interpolants, nodes, and metadata.
+        """
+
         pd: PipelineData = pipeline_data[0]
         data: InterpolantPlotComponentUtils._Data_ = cls._Data_()
         template: PlotTemplate = PlotTemplate(figsize=InterpolantsPlotComponentConstants.FIGURE_SIZE)
 
         data.amount_of_functions_to_plot = len(pipeline_data) + 1
-        data.evaluation_points = PlotUtils.create_plot_points(pd.interpolation_interval,
-                                                              InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
+        data.evaluation_points = PlotUtils.create_plot_points(pd.interpolation_interval, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS)
         data.functions = [pd.original_function] + [pd.interpolant for pd in pipeline_data]
         data.data_types = [pd.data_type] + [_pd_.data_type for _pd_ in pipeline_data]
         data.function_values = cls._calc_function_values_(data, pipeline_data)
         data.function_names = [pd.original_function.name] + [pd.interpolant.name for pd in pipeline_data]
         data.y_limits = cls._calc_y_limits_(data.function_values[0])
         cls._clean_up_function_values_(data)
-        data.scatter_size = PlotUtils.scatter_size_for_equidistant_circles(
-            InterpolantsPlotComponentConstants.AMOUNT_OF_INF_SCATTER_POINTS, InterpolantsPlotComponentConstants.FIGURE_SIZE[0])
-        data.scatter_x_distance = PlotUtils.scatter_distance_for_equidistant_circles(
-            InterpolantsPlotComponentConstants.AMOUNT_OF_INF_SCATTER_POINTS, pd.interpolation_interval[1] - pd.interpolation_interval[0])
+        data.scatter_size = PlotUtils.scatter_size_for_equidistant_circles(InterpolantsPlotComponentConstants.AMOUNT_OF_INF_SCATTER_POINTS, InterpolantsPlotComponentConstants.FIGURE_SIZE[0])
+        data.scatter_x_distance = PlotUtils.scatter_distance_for_equidistant_circles(InterpolantsPlotComponentConstants.AMOUNT_OF_INF_SCATTER_POINTS, pd.interpolation_interval[1] - pd.interpolation_interval[0])
         data.scatter_y_distance = cls._calc_scatter_y_distance_(template, data)
         data.borders = cls._calc_borders_(data, pd.interpolation_interval)
 
         data.connectable_segments = []
         for i, function_values in enumerate(data.function_values):
-            segments_to_plot, segments_to_scatter = cls._extract_indices_of_connectable_segments_(function_values)
+            segments_to_plot, segments_to_scatter = (cls._extract_indices_of_connectable_segments_(function_values))
             data.connectable_segments.append((segments_to_plot, segments_to_scatter))
 
         cls._plot_interpolation_points_(template, pd)
@@ -83,13 +90,11 @@ class InterpolantPlotComponentUtils:
         return template
 
 
-
     @staticmethod
     def _calc_function_values_(data: _Data_, pipeline_data: list[PipelineData]) -> jnp.ndarray:
         function_values: jnp.ndarray = jnp.empty((data.amount_of_functions_to_plot, InterpolantsPlotComponentConstants.AMOUNT_OF_EVALUATION_POINTS))
 
-        v: jnp.ndarray = PlotUtils.evaluate_function(pipeline_data[0].original_function, pipeline_data[0].data_type,
-                                                     data.evaluation_points)
+        v: jnp.ndarray = PlotUtils.evaluate_function(pipeline_data[0].original_function, pipeline_data[0].data_type, data.evaluation_points,)
         function_values = function_values.at[0].set(v.astype(jnp.float32))
 
         for i, pd in enumerate(pipeline_data):
@@ -97,7 +102,6 @@ class InterpolantPlotComponentUtils:
             function_values = function_values.at[i + 1].set(v.astype(jnp.float32))
 
         return function_values
-
 
 
     @staticmethod
@@ -111,7 +115,6 @@ class InterpolantPlotComponentUtils:
         return jnp.array([min_value - difference, max_value + difference])
 
 
-
     @staticmethod
     def _clean_up_function_values_(data: _Data_) -> None:
         for i, function_values in enumerate(data.function_values):
@@ -120,16 +123,14 @@ class InterpolantPlotComponentUtils:
             data.function_values = data.function_values.at[i].set(cleaned_values)
 
 
-
     @staticmethod
     def _calc_scatter_y_distance_(template: PlotTemplate, data: _Data_) -> jnp.ndarray:
         scatter_y_distance_inch: float = math.sqrt(data.scatter_size / math.pi) / 72
-        height_in_inches: float = InterpolantsPlotComponentConstants.FIGURE_SIZE[1] / template.fig.dpi
+        height_in_inches: float = (InterpolantsPlotComponentConstants.FIGURE_SIZE[1] / template.fig.dpi)
 
         numerator = data.y_limits[1] - data.y_limits[0]
-        denominator = 100 * height_in_inches / scatter_y_distance_inch - 2 * data.amount_of_functions_to_plot
+        denominator = (100 * height_in_inches / scatter_y_distance_inch - 2 * data.amount_of_functions_to_plot)
         return 3 * numerator / denominator
-
 
 
     @staticmethod
@@ -140,7 +141,6 @@ class InterpolantPlotComponentUtils:
         borders = borders.at[1, 0].set(data.y_limits[0] - data.amount_of_functions_to_plot * data.scatter_y_distance)
         borders = borders.at[1, 1].set(data.y_limits[1] + data.amount_of_functions_to_plot * data.scatter_y_distance)
         return borders
-
 
 
     @staticmethod
@@ -173,7 +173,6 @@ class InterpolantPlotComponentUtils:
         return segments_to_plot, segments_to_scatter
 
 
-
     @staticmethod
     def _plot_interpolation_points_(template: PlotTemplate, pipeline_data: PipelineData) -> None:
         interpolation_nodes: jnp.ndarray = pipeline_data.interpolation_nodes
@@ -181,22 +180,19 @@ class InterpolantPlotComponentUtils:
 
         size = PlotUtils.adaptive_scatter_size(len(interpolation_nodes), modifier=0.7)
 
-        template.ax.scatter(interpolation_nodes, interpolation_values, color='red', s=size, label="Interpolation nodes",
-                            zorder=10)
-
+        template.ax.scatter(interpolation_nodes, interpolation_values, color="red", s=size, label="Interpolation nodes", zorder=10)
 
 
     @classmethod
     def _plot_segments_(cls, template: PlotTemplate, data: _Data_) -> None:
         for function_index, segments in enumerate(data.connectable_segments):
-            line_width, line_style, color, alpha, z_order = cls._create_plot_parameters_(function_index, data)
+            line_width, line_style, color, alpha, z_order = (cls._create_plot_parameters_(function_index, data))
 
             for plot_segment in segments[0]:
                 x_values = jnp.array([data.evaluation_points[index] for index in plot_segment])
                 y_values = jnp.array([data.function_values[function_index][index] for index in plot_segment])
 
-                template.ax.plot(x_values, y_values, linewidth=line_width, linestyle=line_style, color=color,
-                                 alpha=alpha, zorder=z_order)
+                template.ax.plot(x_values, y_values, linewidth=line_width, linestyle=line_style, color=color, alpha=alpha, zorder=z_order)
 
             for scatter_segment in segments[1]:
                 left_segment_border = data.evaluation_points[scatter_segment[0]]
@@ -207,25 +203,22 @@ class InterpolantPlotComponentUtils:
                     right_segment_border = data.evaluation_points[scatter_segment[-1]]
                     scatter_x_values.append(right_segment_border)
 
-                    amount_of_intermediate_points = jnp.floor((right_segment_border - left_segment_border) / data.scatter_x_distance)
-                    intermediate_points = left_segment_border + jnp.arange(1, amount_of_intermediate_points + 1) * data.scatter_x_distance
+                    amount_of_intermediate_points = jnp.floor((right_segment_border - left_segment_border)/ data.scatter_x_distance)
+                    intermediate_points = (left_segment_border + jnp.arange(1, amount_of_intermediate_points + 1) * data.scatter_x_distance)
                     scatter_x_values.extend(intermediate_points)
 
                 scatter_x_values = jnp.array(scatter_x_values)
-                # compiled_function = data.functions[function_index].compile(len(scatter_x_values), left_segment_border.dtype)
-                # actual_y_values: jnp.ndarray = compiled_function.evaluate(scatter_x_values)
                 actual_y_values = PlotUtils.evaluate_function(data.functions[function_index], data.data_types[function_index], scatter_x_values)
                 actual_y_values = PlotUtils.clamp_function_values(actual_y_values, data.y_limits)
 
                 for x_value, actual_y_value in zip(scatter_x_values, actual_y_values):
 
                     if jnp.isneginf(actual_y_value):
-                        y_value = data.y_limits[0] - function_index * data.scatter_y_distance
+                        y_value = (data.y_limits[0] - function_index * data.scatter_y_distance)
                         template.ax.scatter(x_value, y_value, color=color, s=data.scatter_size, zorder=10)
                     else:
-                        y_value = data.y_limits[1] + function_index * data.scatter_y_distance
+                        y_value = (data.y_limits[1] + function_index * data.scatter_y_distance)
                         template.ax.scatter(x_value, y_value, color=color, s=data.scatter_size, zorder=10)
-
 
 
     @classmethod
@@ -236,11 +229,10 @@ class InterpolantPlotComponentUtils:
         line_width: float = 4 if function_index == 0 else 2
         line_style: str = line_styles[function_index]
         color: str = colors[function_index % len(colors)]
-        alpha: float = 1 #0.6 if function_index == 0 else 1
+        alpha: float = 1
         z_order: int = function_index
 
         return line_width, line_style, color, alpha, z_order
-
 
 
     @staticmethod
@@ -254,14 +246,13 @@ class InterpolantPlotComponentUtils:
         return line_styles
 
 
-
     @classmethod
     def _set_legend_(cls, template: PlotTemplate, data: _Data_) -> None:
-        custom_lines: list = [Line2D([0], [0], color='red', marker='o', markersize=8, linestyle='None')]
+        custom_lines: list = [Line2D([0], [0], color="red", marker="o", markersize=8, linestyle="None")]
         labels = ["Nodes"]
 
         for function_index in range(data.amount_of_functions_to_plot):
-            line_width, line_style, color, alpha, z_order = cls._create_plot_parameters_(function_index, data)
+            line_width, line_style, color, alpha, z_order = (cls._create_plot_parameters_(function_index, data))
             label: str = data.function_names[function_index]
 
             line = Line2D([0], [0], color=color, linewidth=line_width)
@@ -269,11 +260,3 @@ class InterpolantPlotComponentUtils:
             labels.append(label)
 
         template.ax.legend(custom_lines, labels)
-
-
-
-
-
-
-
-

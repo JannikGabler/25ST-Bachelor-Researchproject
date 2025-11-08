@@ -14,21 +14,34 @@ from utils.collections_utils import CollectionsUtils
 from utils.directional_acyclic_graph_utils import DirectionalAcyclicGraphUtils
 from utils.ini_format_utils import INIFormatUtils
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
+
 
 class DirectionalAcyclicGraph(Generic[T], Freezable):
+    """
+    Directed acyclic graph (DAG) consisting of nodes connected by directed edges.
+    """
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _entry_nodes_: list[DirectionalAcyclicGraphNode[T]]
 
 
-
     ###################
     ### Constructor ###
     ###################
-    def __init__(self, argument: DirectionalAcyclicGraphNode[T] | list[DirectionalAcyclicGraphNode[T]] | str | None = None) -> None:
+    def __init__(self, argument: (DirectionalAcyclicGraphNode[T] | list[DirectionalAcyclicGraphNode[T]] | str | None) = None) -> None:
+        """
+        Args:
+            argument: Initialization input, which may be a single node, a list of nodes, a string representation, or None for an empty graph.
+
+        Returns:
+            None
+        """
+
         self._entry_nodes_ = []
 
         if argument is not None:
@@ -39,30 +52,57 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
             elif isinstance(argument, str):
                 self._init_from_str_(argument)
             else:
-                raise TypeError(f"Got argument of type '{type(argument)}' but must be a DirectionalAcyclicGraphNode[T], "
-                                f"list[DirectionalAcyclicGraphNode[T]], str or None.")
-
+                raise TypeError(
+                    f"Got argument of type '{type(argument)}' but must be a DirectionalAcyclicGraphNode[T], "
+                    f"list[DirectionalAcyclicGraphNode[T]], str or None."
+                )
 
 
     ######################
     ### Public methods ###
     ######################
     def add_node(self, node: DirectionalAcyclicGraphNode[T]) -> None:
+        """
+        Add the given node to the graph.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[T]): Node to add.
+
+        Raises:
+            DuplicateError: If the node is already contained in the graph.
+        """
+
         if self.contains_node(node):
             raise DuplicateError(f"Cannot add '{str(node)}' to graph because it is already contained in the graph.")
 
-        new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph([node])
+        new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = (DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph([node]))
         self._entry_nodes_.extend(new_entry_nodes)
 
 
-
     def add_node_from_value(self, value: T) -> None:
+        """
+        Create a new node from the given value and add it to the graph.
+
+        Args:
+            value (T): Value to wrap in a new node.
+        """
+
         node: DirectionalAcyclicGraphNode[T] = DirectionalAcyclicGraphNode(value)
         self.add_node(node)
 
 
-
     def add_edge(self, orig_node: DirectionalAcyclicGraphNode[T], dest_node: DirectionalAcyclicGraphNode[T]) -> None:
+        """
+        Add a directed edge from one node to another.
+
+        Args:
+            orig_node (DirectionalAcyclicGraphNode[T]): Origin node.
+            dest_node (DirectionalAcyclicGraphNode[T]): Destination node.
+
+        Raises:
+            InvalidArgumentException: If the origin node is not contained in the graph.
+        """
+
         if not self.contains_node(orig_node):
             raise InvalidArgumentException(f"Cannot add an edge from the node '{str(orig_node)}' to the node '{str(dest_node)}' because the origin node is not contained in the graph.'")
 
@@ -70,14 +110,23 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         self._entry_nodes_ = DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph(self._entry_nodes_)
 
 
-
     def remove_node(self, node: DirectionalAcyclicGraphNode[T]) -> None:
+        """
+        Remove the given node from the graph.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[T]): Node to remove.
+
+        Raises:
+            InvalidArgumentException: If the node is not contained in the graph.
+        """
+
         if not self.contains_node(node):
             raise InvalidArgumentException(f"Cannot remove the node '{str(node)}' from the graph because it is not contained in the graph.")
         if CollectionsUtils.is_exact_element_in_collection(node, self._entry_nodes_):
             self._entry_nodes_.remove(node)
 
-        potential_new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = self._entry_nodes_ + node.successors
+        potential_new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = (self._entry_nodes_ + node.successors)
 
         node.clear_predecessors()
         node.clear_successors()
@@ -85,17 +134,36 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         self._entry_nodes_ = DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph(potential_new_entry_nodes)
 
 
-
     def remove_edge(self, orig_node: DirectionalAcyclicGraphNode[T], dest_node: DirectionalAcyclicGraphNode[T]) -> None:
+        """
+        Remove the directed edge from one node to another.
+
+        Args:
+            orig_node (DirectionalAcyclicGraphNode[T]): Origin node.
+            dest_node (DirectionalAcyclicGraphNode[T]): Destination node.
+
+        Raises:
+            InvalidArgumentException: If the origin node is not contained in the graph.
+        """
+
         if not self.contains_node(orig_node):
             raise InvalidArgumentException(f"Cannot remove the edge from the node '{str(orig_node)}' to the node '{str(dest_node)}' because the edge is not contained in the graph.'")
 
-        potential_new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = self._entry_nodes_ + [dest_node]
+        potential_new_entry_nodes: list[DirectionalAcyclicGraphNode[T]] = (self._entry_nodes_ + [dest_node])
         self._entry_nodes_ = DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph(potential_new_entry_nodes)
 
 
-
     def contains_node(self, node: DirectionalAcyclicGraphNode[T]) -> bool:
+        """
+        Check whether the given node is contained in the graph.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[T]): Node to check.
+
+        Returns:
+            bool: True if the node is contained, otherwise False.
+        """
+
         for entry_node in self._entry_nodes_:
             if entry_node.can_reach_node(node):
                 return True
@@ -103,8 +171,14 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         return False
 
 
-
     def depth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        """
+        Iterate over the graph in depth-first order.
+
+        Returns:
+            Generator[DirectionalAcyclicGraphNode[T], Any, None]: Generator over visited nodes.
+        """
+
         stack: deque[DirectionalAcyclicGraphNode[T]] = deque(self._entry_nodes_)
         traversed_nodes: set[int] = set()
 
@@ -117,7 +191,15 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
                 traversed_nodes.add(id(current_node))
                 yield current_node
 
+
     def breadth_first_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        """
+        Iterate over the graph in breadth-first order.
+
+        Returns:
+            Generator[DirectionalAcyclicGraphNode[T], Any, None]: Generator over visited nodes.
+        """
+
         queue: deque[DirectionalAcyclicGraphNode[T]] = deque(self._entry_nodes_)
         traversed_nodes: set[int] = set()
 
@@ -130,12 +212,29 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
                 traversed_nodes.add(id(current_node))
                 yield current_node
 
+
     def topological_traversal(self) -> Generator[DirectionalAcyclicGraphNode[T], Any, None]:
+        """
+        Iterate over the graph in topological order.
+
+        Returns:
+            Generator[DirectionalAcyclicGraphNode[T], Any, None]: Generator over visited nodes.
+        """
+
         yield from DirectionalAcyclicGraphUtils.topological_traversal(self)
 
 
-
     def value_map(self, value_mapping: Callable[[T], U]) -> DirectionalAcyclicGraph[U]:
+        """
+        Create a new DAG by applying a mapping function to each node's value.
+
+        Args:
+            value_mapping (Callable[[T], U]): Function to transform node values.
+
+        Returns:
+            DirectionalAcyclicGraph[U]: A new graph with mapped values.
+        """
+
         if not self._entry_nodes_:
             return DirectionalAcyclicGraph[U]()
         else:
@@ -143,6 +242,19 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
 
     def get_index_of_node_(self, node: DirectionalAcyclicGraphNode[T]) -> int:
+        """
+        Return the breadth-first index of the given node in the graph.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[T]): Node to locate.
+
+        Returns:
+            int: The index of the node in breadth-first order.
+
+        Raises:
+            ValueError: If the node is not contained in the graph.
+        """
+
         for index, own_node in enumerate(self.breadth_first_traversal()):
             if own_node is node:
                 return index
@@ -150,14 +262,19 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         raise ValueError(f"The node '{str(node)}' is not contained in the graph.")
 
 
-
     #########################
     ### Getters & setters ###
     #########################
     @property
     def entry_nodes(self) -> list[DirectionalAcyclicGraphNode[T]]:
-        return copy(self._entry_nodes_)
+        """
+        Return a copy of the current entry nodes of the graph.
 
+        Returns:
+            list[DirectionalAcyclicGraphNode[T]]: Entry nodes of the graph.
+        """
+
+        return copy(self._entry_nodes_)
 
 
     ##########################
@@ -175,7 +292,7 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
 
     def __hash__(self) -> int | None:
-        if self._frozen_:   # instance is immutable
+        if self._frozen_:  # instance is immutable
             hash_values: list[int] = []
 
             for node in self.breadth_first_traversal():
@@ -183,7 +300,7 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
             return hash(hash_values)
 
-        else:   # instance is mutable
+        else:
             return None
 
 
@@ -199,21 +316,18 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         raise IndexError(f"Index '{index}' is out of range.")
 
 
-
     #######################
     ### Private methods ###
     #######################
-    def _init_from_nodes_(self, nodes : list[DirectionalAcyclicGraphNode[T]]) -> None:
+    def _init_from_nodes_(self, nodes: list[DirectionalAcyclicGraphNode[T]]) -> None:
         self._entry_nodes_ = DirectionalAcyclicGraphUtils.get_entry_nodes_to_node_graph(nodes)
-
 
 
     def _init_from_str_(self, string: str) -> None:
         entry_list: list[str] = INIFormatUtils.split_into_entries(string)
         entry_dict: dict[str, str] = INIFormatUtils.split_entries_into_key_value_pairs(entry_list)
-        nodes, edges = DirectionalAcyclicGraph._convert_key_value_pairs_into_nodes_and_edges_in_string_init_(entry_dict)
+        nodes, edges = (DirectionalAcyclicGraph._convert_key_value_pairs_into_nodes_and_edges_in_string_init_(entry_dict))
         self._construct_graph_from_nodes_and_edges_in_string_init_(nodes, edges)
-
 
 
     def _construct_graph_from_nodes_and_edges_in_string_init_(self, nodes: dict[str, DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]]], edges: list[tuple[str, str]]) -> None:
@@ -222,20 +336,25 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
 
         for edge in edges:
             if edge[0] not in nodes:
-                raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                f"There is no node with the id '{edge[0]}' but it's specified as the origin of the edge '{edge}'.")
+                raise TypeError(
+                    f"Cannot parse the string into an directional acyclic graph."
+                    f"There is no node with the id '{edge[0]}' but it's specified as the origin of the edge '{edge}'."
+                )
             if edge[1] not in nodes:
-                raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                f"There is no node with the id '{edge[1]}' but it's specified as the destination of the edge '{edge}'.")
+                raise TypeError(
+                    f"Cannot parse the string into an directional acyclic graph."
+                    f"There is no node with the id '{edge[1]}' but it's specified as the destination of the edge '{edge}'."
+                )
 
             source_node: DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]] = nodes[edge[0]]
-            dest_node: DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]] = nodes[edge[1]]
+            dest_node: DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]] = (nodes[edge[1]])
             self.add_edge(source_node, dest_node)
 
 
-
     @staticmethod
-    def _convert_key_value_pairs_into_nodes_and_edges_in_string_init_(entry_dict: dict[str, str]) -> tuple[dict[str, DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]]], list[tuple[str, str]]]:
+    def _convert_key_value_pairs_into_nodes_and_edges_in_string_init_(entry_dict: dict[str, str]) \
+            -> tuple[dict[str, DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]]], list[tuple[str, str]]]:
+
         nodes: dict[str, DirectionalAcyclicGraphNode[T]] = {}
         edges: list[tuple[str, str]] = []
 
@@ -243,7 +362,6 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
             DirectionalAcyclicGraph._handle_node_key_value_pair_in_string_init_(key, value, nodes, edges)
 
         return nodes, edges
-
 
 
     @staticmethod
@@ -254,22 +372,20 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         properties: dict[str, str] = {}
 
         if len(value_lines) >= 2:
-            property_entries: list[str] = INIFormatUtils.split_into_entries('\n'.join(value_lines[1:]))
+            property_entries: list[str] = INIFormatUtils.split_into_entries("\n".join(value_lines[1:]))
             properties = INIFormatUtils.split_entries_into_key_value_pairs(property_entries)
 
         DirectionalAcyclicGraph._add_edges_from_node_properties_in_string_init_(node_id, properties, edges)
 
         node_value: tuple[str, str, dict[str, str]] = (node_id, node_type, properties)
-        new_node: DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]] = DirectionalAcyclicGraphNode(node_value)
+        new_node: DirectionalAcyclicGraphNode[tuple[str, str, dict[str, str]]] = (DirectionalAcyclicGraphNode(node_value))
         nodes[node_id] = new_node
-
 
 
     @staticmethod
     def _add_edges_from_node_properties_in_string_init_(node_id: str, node_properties: dict[str, str], edges: list[tuple[str, str]]) -> None:
         DirectionalAcyclicGraph._add_predecessors_from_node_properties_in_string_init_(node_id, node_properties, edges)
         DirectionalAcyclicGraph._add_successors_from_node_properties_in_string_init_(node_id, node_properties, edges)
-
 
 
     @staticmethod
@@ -279,15 +395,19 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
             predecessors_object: Any = eval(predecessors_string)
 
             if not isinstance(predecessors_object, Iterable):
-                raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                f"The 'predecessors' field of the node '{node_id}' must be iterable but is of type"
-                                f"'{type(predecessors_object)}',which is not iterable.")
+                raise TypeError(
+                    f"Cannot parse the string into an directional acyclic graph."
+                    f"The 'predecessors' field of the node '{node_id}' must be iterable but is of type"
+                    f"'{type(predecessors_object)}',which is not iterable."
+                )
 
             for predecessor in predecessors_object:
                 if not isinstance(predecessor, str):
-                    raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                    f"The item '{repr(predecessor)}' of the 'predecessors' field from the node"
-                                    f"'{node_id}' must be a string but is from type '{type(predecessor)}'.")
+                    raise TypeError(
+                        f"Cannot parse the string into an directional acyclic graph."
+                        f"The item '{repr(predecessor)}' of the 'predecessors' field from the node"
+                        f"'{node_id}' must be a string but is from type '{type(predecessor)}'."
+                    )
 
                 edges.append((predecessor, node_id))
 
@@ -301,20 +421,23 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
             successors_object: Any = eval(successors_string)
 
             if not isinstance(successors_object, Iterable):
-                raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                f"The 'successors' field of the node '{node_id}' must be iterable but is of type"
-                                f"'{type(successors_object)}',which is not iterable.")
+                raise TypeError(
+                    f"Cannot parse the string into an directional acyclic graph."
+                    f"The 'successors' field of the node '{node_id}' must be iterable but is of type"
+                    f"'{type(successors_object)}',which is not iterable."
+                )
 
             for successor in successors_object:
                 if not isinstance(successor, str):
-                    raise TypeError(f"Cannot parse the string into an directional acyclic graph."
-                                    f"The item '{repr(successor)}' of the 'predecessors' field from the node"
-                                    f"'{node_id}' must be a string but is from type '{type(successor)}'.")
+                    raise TypeError(
+                        f"Cannot parse the string into an directional acyclic graph."
+                        f"The item '{repr(successor)}' of the 'predecessors' field from the node"
+                        f"'{node_id}' must be a string but is from type '{type(successor)}'."
+                    )
 
                 edges.append((node_id, successor))
 
             del node_properties["successors"]
-
 
 
     def _create_mapped_dag_based_on_self_(self, value_mapping: Callable[[T], U]) -> DirectionalAcyclicGraph[U]:
@@ -338,11 +461,9 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         return DirectionalAcyclicGraph[U](new_entry_nodes)
 
 
-
     @staticmethod
-    def _create_mapped_new_node_(old_node: DirectionalAcyclicGraphNode[T], value_mapping: Callable[[T], U],
-                                 node_mapping: dict[int, DirectionalAcyclicGraphNode[U]],
-                                 node_queue: list[DirectionalAcyclicGraphNode[T]]) -> DirectionalAcyclicGraphNode[U]:
+    def _create_mapped_new_node_(old_node: DirectionalAcyclicGraphNode[T], value_mapping: Callable[[T], U], node_mapping: dict[int, DirectionalAcyclicGraphNode[U]],
+        node_queue: list[DirectionalAcyclicGraphNode[T]]) -> DirectionalAcyclicGraphNode[U]:
 
         new_value: U = value_mapping(old_node.value)
         new_node: DirectionalAcyclicGraphNode[U] = DirectionalAcyclicGraphNode[U](new_value)
@@ -350,8 +471,3 @@ class DirectionalAcyclicGraph(Generic[T], Freezable):
         node_queue.append(old_node)
 
         return new_node
-
-
-
-
-

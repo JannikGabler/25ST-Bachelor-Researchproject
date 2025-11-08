@@ -33,6 +33,7 @@ def create_equidistant_nodes(amount_of_nodes: int, data_type: DTypeLike) -> jnp.
     result_data: PipelineData = generator.perform_action()
     return result_data.interpolation_nodes
 
+
 def create_chebyshev_1_nodes(amount_of_nodes: int, data_type: DTypeLike) -> jnp.ndarray:
     pipeline_data, additional_execution_data = create_input_data(amount_of_nodes, data_type)
 
@@ -40,6 +41,7 @@ def create_chebyshev_1_nodes(amount_of_nodes: int, data_type: DTypeLike) -> jnp.
 
     result_data: PipelineData = generator.perform_action()
     return result_data.interpolation_nodes
+
 
 def create_chebyshev_2_nodes(amount_of_nodes: int, data_type: DTypeLike) -> jnp.ndarray:
     pipeline_data, additional_execution_data = create_input_data(amount_of_nodes, data_type)
@@ -73,8 +75,6 @@ def check_for_duplicates(nodes: jnp.ndarray) -> bool:
     n = nodes.shape[0]
 
     def body_fun(i, found_duplicate):
-        # Falls schon ein Duplikat gefunden wurde, überspringen wir den Rest
-        # (lax.cond wird hier genutzt, weil normales if im JIT nicht erlaubt ist)
         def check_next(_):
             return jnp.logical_or(found_duplicate, jnp.all(nodes[i] == nodes[i + 1]))
         return jax.lax.cond(found_duplicate, lambda _: found_duplicate, check_next, operand=None)

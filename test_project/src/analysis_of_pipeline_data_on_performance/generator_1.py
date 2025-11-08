@@ -19,7 +19,9 @@ class Generator1:
     @partial(jax.jit, static_argnums=0)
     def generate_nodes(self) -> jnp.ndarray:
         # Rescale int array for better stability
-        nodes: jnp.ndarray = jnp.arange(1, 2 * self.__node_count__ + 1, step=2, dtype=self.__data_type__)
+        nodes: jnp.ndarray = jnp.arange(
+            1, 2 * self.__node_count__ + 1, step=2, dtype=self.__data_type__
+        )
         nodes = jnp.multiply(nodes, jnp.pi / (2 * self.__node_count__))
 
         nodes = jnp.cos(nodes)
@@ -30,8 +32,6 @@ class Generator1:
         # jnp.add(nodes, (self.__interval__[0] + self.__interval__[1]) / 2)
 
         return nodes
-
-
 
     def __repr__(self) -> str:
         return "Node generator for type 1 chebyshev points"

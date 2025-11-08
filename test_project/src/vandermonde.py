@@ -5,9 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def vandermonde_interpolator(x_data: jnp.ndarray,
-                             y_data: jnp.ndarray,
-                             input_validation: bool = False):
+def vandermonde_interpolator(
+    x_data: jnp.ndarray, y_data: jnp.ndarray, input_validation: bool = False
+):
     """
     Given 1D arrays x_data, y_data of length n,
     returns a function p(x) evaluating the unique
@@ -48,17 +48,17 @@ def vandermonde_interpolator(x_data: jnp.ndarray,
 
     # build Vandermonde matrix (columns: x^0, x^1, ..., x^(n-1))
     V = jnp.vander(x_data, N=x_data.size, increasing=True)
-    
+
     # solve for coefficients c (length n)
     c = jnp.linalg.solve(V, y_data)
-    
+
     # 3) return a function that evaluates p(x) = sum c_j x^j
-    @jax.jit # Just-in-time compile for performance
+    @jax.jit  # Just-in-time compile for performance
     def p(x: jnp.ndarray):
         # For broadcasting, we can compute powers of x up to degree n-1:
         Xpow = jnp.vander(x, N=c.size, increasing=True)
         return Xpow @ c
-    
+
     return p, c
 
 
@@ -91,16 +91,16 @@ def plot_interpolation(x_data, y_data, reference_func=None, num_points: int = 20
     y_np = np.array(y)
 
     plt.figure()
-    plt.scatter(x_np, y_np, label='Data points')
-    plt.plot(xs_np, ys_np, label='Interpolation', linewidth=2)
+    plt.scatter(x_np, y_np, label="Data points")
+    plt.plot(xs_np, ys_np, label="Interpolation", linewidth=2)
 
     # Plot reference function if provided
     if reference_func is not None:
         y_ref_np = reference_func(xs_np)
-        plt.plot(xs_np, y_ref_np, '--', label='Expected function', linewidth=2)
+        plt.plot(xs_np, y_ref_np, "--", label="Expected function", linewidth=2)
 
-    plt.xlabel('x')
-    plt.ylabel('p(x)')
+    plt.xlabel("x")
+    plt.ylabel("p(x)")
     plt.legend()
     plt.show()
 

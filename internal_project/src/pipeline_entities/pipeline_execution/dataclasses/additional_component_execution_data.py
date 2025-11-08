@@ -1,10 +1,17 @@
 from dataclasses import dataclass
 
-from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
-from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
-from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
-    PipelineComponentInstantiationInfo
-from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import (
+    DirectionalAcyclicGraphNode,
+)
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import (
+    PipelineComponentExecutionReport,
+)
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import (
+    PipelineComponentInstantiationInfo,
+)
+from data_classes.pipeline_configuration.pipeline_configuration import (
+    PipelineConfiguration,
+)
 from data_classes.pipeline_input.pipeline_input import PipelineInput
 
 

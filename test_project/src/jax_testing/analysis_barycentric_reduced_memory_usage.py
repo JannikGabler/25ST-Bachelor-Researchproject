@@ -5,7 +5,6 @@ import jax
 import jax.numpy as jnp
 
 
-
 def _internal_perform_action_(nodes) -> jnp.ndarray:
     # Create a square matrix where each entry [j, k] is the difference between node j and node k
     # Note that the diagonal entries are all zero, since each node is subtracted from itself
@@ -40,7 +39,6 @@ def barycentric_weights_fori(nodes: jnp.ndarray) -> jnp.ndarray:
     return jax.lax.fori_loop(0, n, body, w0)
 
 
-
 def barycentric_weights_vmap(nodes: jnp.ndarray) -> jnp.ndarray:
     n = nodes.shape[0]
     idx = jnp.arange(n)
@@ -54,8 +52,6 @@ def barycentric_weights_vmap(nodes: jnp.ndarray) -> jnp.ndarray:
     return jax.vmap(weight_fn, in_axes=(0, 0))(idx, nodes)
 
 
-
-
 operations = [barycentric_weights_fori, _internal_perform_action_]
 
 
@@ -65,7 +61,7 @@ for e in range(5):
 
     print(f"\n\n--- Node count {node_count} ---")
     nodes: jnp.ndarray = jnp.linspace(-1, 1, node_count, dtype=jnp.float32)
-    #values: jnp.ndarray = jnp.cos(nodes)
+    # values: jnp.ndarray = jnp.cos(nodes)
 
     print("Compiling...")
     compiled = []
@@ -76,7 +72,6 @@ for e in range(5):
         compiled.append(comp)
 
     print("Compiled.\n")
-
 
     for i, comp in enumerate(compiled):
         durations = []
@@ -130,7 +125,3 @@ for e in range(5):
 # print("Calculated.\n")
 #
 # print(results)
-
-
-
-

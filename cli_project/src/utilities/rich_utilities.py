@@ -11,10 +11,13 @@ from rich.text import Text
 from rich.live import Live
 
 
-
 class RichUtilities:
-    _REFRESH_RATE_: int = 1
+    """
+    Utility class for displaying and updating Rich panels in the console. Provides methods to open a panel, write styled
+    lines to it, close it, and interactively query yes/no input from the user.
+    """
 
+    _REFRESH_RATE_: int = 1
 
     _console_: Console = Console()
     _panel_opened_: bool = False
@@ -23,13 +26,18 @@ class RichUtilities:
     _is_current_panel_empty_: bool = True
     _lock_: Lock = threading.Lock()
     _live_thread_: Thread
-    #_live_thread_pause_event_: threading.Event = threading.Event()
-    #_live = None
-
 
 
     @classmethod
     def open_panel(cls, title: str):
+        """
+        Open a new Rich panel with the given title. If a panel is already open, it will be closed first.
+        Starts a background thread to continuously refresh the panel display.
+
+        Args:
+            title (str): The title to display at the top of the panel.
+        """
+
         if cls._panel_opened_:
             cls.close_panel()
 
@@ -48,7 +56,6 @@ class RichUtilities:
         cls._live_thread_.start()
 
 
-
     @classmethod
     def _live_worker_operation_(cls):
         sleep_delay = 1 / cls._REFRESH_RATE_
@@ -62,15 +69,25 @@ class RichUtilities:
                 time.sleep(sleep_delay)
 
 
-
     @classmethod
     def _render_(cls):
         return Panel(cls._current_panel_text_, title=cls._current_panel_title_)
 
 
-
     @classmethod
     def write_lines_in_panel(cls, lines: str, style: str | None = None, indent_level: int = 0):
+        """
+        Write one or multiple lines into the currently opened panel.
+
+        Args:
+            lines (str): The text lines to write.
+            style (str | None): Optional Rich style string for formatting text.
+            indent_level (int): Indentation level, each level adds two spaces.
+
+        Raises:
+            RuntimeError: If no panel is opened.
+        """
+
         if not cls._panel_opened_:
             raise RuntimeError("Can't write line into panel because there is no panel opened.")
 
@@ -79,7 +96,6 @@ class RichUtilities:
 
         if lines.endswith("\n"):
             lines_array.append("")
-
 
         for i, line in enumerate(lines_array):
             lines_array[i] = f"{indent}{line}"
@@ -95,82 +111,42 @@ class RichUtilities:
                 else:
                     cls._current_panel_text_.append(Text("\n"))
                     cls._current_panel_text_.append(text_line)
-        # with cls._lock_:
-        #     if cls._is_current_panel_empty_:
-        #         cls._current_panel_text_.append(lines)
-        #     else:
-        #         cls._current_panel_text_.append("\n" + lines)
-        #
-        #     cls._is_current_panel_empty_ = False
-
 
 
     @classmethod
     def close_panel(cls):
+        """
+        Close the currently opened panel and stop its background refresh thread. If no panel is open, nothing happens.
+        """
+
         if cls._panel_opened_:
             cls._panel_opened_ = False
 
             cls._live_thread_.join()
 
-            #final_panel = cls._render_()
-            #cls._console_.print(final_panel)
-
             cls._is_current_panel_empty_ = True
 
 
-
-
-
-
-
-    # @classmethod
-    # def get_user_input(cls, prompt_text: str) -> str:
-    #     return Prompt.ask("-> ")
-    #
-    #     # # 1. Live pausieren
-    #     # cls._live_thread_pause_event_.clear()
-    #     #
-    #     # # 2. Live-Instanz beenden
-    #     # if hasattr(cls, "_live_instance_") and cls._live_instance_ is not None:
-    #     #     cls._live_instance_.stop()
-    #     #     cls._live_instance_ = None
-    #     #
-    #     # # 3. Terminal kurz "beruhigen"
-    #     # time.sleep(0.05)
-    #     #
-    #     # # 4. Cursor anzeigen
-    #     # cls._console_.show_cursor(True)
-    #     #
-    #     # try:
-    #     #     # 5. Prompt-Zeile ausgeben
-    #     #     cls._console_.print(f"[bold cyan]→ {prompt_text}[/bold cyan]", end=" ")
-    #     #
-    #     #     # 6. Eingabe holen
-    #     #     user_input = input()
-    #     #
-    #     #     return user_input
-    #     # finally:
-    #     #     # 7. Cursor ausblenden
-    #     #     cls._console_.show_cursor(False)
-    #     #
-    #     #     # 8. Panel offen halten für nächste Schritte
-    #     #     cls._panel_opened_ = True
-    #     #
-    #     #     # 9. Live wieder aktivieren
-    #     #     cls._live_thread_pause_event_.set()
-
-
-
     @classmethod
-    def get_yes_no_input(cls, repeat_after_invalid_input: bool=True, default_yes: bool = True) -> bool | None:
+    def get_yes_no_input(cls, repeat_after_invalid_input: bool = True, default_yes: bool = True) -> bool | None:
         """
-        Prompts the user for yes or no. If default_yes is set to True (default), entering nothing will return True.
-        If default_yes is set to False, entering nothing will return False.
+        Prompt the user for a yes/no answer via console input.
+
+        Args:
+            repeat_after_invalid_input (bool, optional): If True, the prompt repeats until valid input is given.
+                If False, the method returns None for invalid input.
+            default_yes (bool): Determines the default answer when the user presses Enter without typing anything.
+                If True, an empty input counts as "yes"; if False, as "no".
+
+        Returns:
+            bool | None: True if the user enters "y" or "yes", False if the user enters "n" or "no".
+                None if the input is invalid and repeat_after_invalid_input is False.
         """
+
         prompt = "-> "
 
         while True:
-            user_input = Prompt.ask(prompt).lower() #input(prompt).lower()
+            user_input = Prompt.ask(prompt).lower()  # input(prompt).lower()
 
             if user_input == "y" or user_input == "yes" or (default_yes and user_input == ""):
                 return True

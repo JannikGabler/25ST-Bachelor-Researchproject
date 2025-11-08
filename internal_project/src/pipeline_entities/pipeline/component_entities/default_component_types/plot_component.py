@@ -12,8 +12,15 @@ from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_c
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.plot_template.plot_template import PlotTemplate
 
+
 class PlotComponent(PipelineComponent, ABC):
-    SUB_PROCESS_CODE = textwrap.dedent("""
+    """
+    Abstract base class for pipeline plot components that render a PlotTemplate and display it.
+    """
+
+
+    SUB_PROCESS_CODE = textwrap.dedent(
+        """
         import os
         import sys
         import dill
@@ -34,8 +41,10 @@ class PlotComponent(PipelineComponent, ABC):
                     pass
 
                 template.fig.show()
-                plt.show(block=True)""")
-    
+                plt.show(block=True)"""
+    )
+
+
     #######################################
     ### To be implemented by subclasses ###
     #######################################
@@ -43,8 +52,15 @@ class PlotComponent(PipelineComponent, ABC):
     PLOT_COMPONENT_UTILS_CLASS = None
 
 
-    
+
     def perform_action(self) -> PipelineData:
+        """
+        Render the plot via the configured utils, display it (optionally in a subprocess), attach the PlotTemplate to the pipeline data, and return it.
+
+        Returns:
+            PipelineData: The pipeline data with the created plot attached.
+        """
+
         if self.PLOT_COMPONENT_CONSTANTS_CLASS is None or self.PLOT_COMPONENT_UTILS_CLASS is None:
             raise Exception("Plot components must specify PLOT_COMPONENT_UTILS_CLASS and PLOT_COMPONENT_CONSTANTS_CLASS.")
 
@@ -73,4 +89,3 @@ class PlotComponent(PipelineComponent, ABC):
             data_file = file.name
 
         subprocess.Popen([sys.executable, "-c", self.SUB_PROCESS_CODE, "--child", data_file])
-        # subprocess.Popen([sys.executable, __file__, "--child", data_file])

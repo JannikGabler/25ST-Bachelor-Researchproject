@@ -1,4 +1,6 @@
-
 class NoSuchPipelineComponentError(Exception):
-    pass
+    """
+    Exception raised when a requested pipeline component cannot be found.
+    """
 
+    pass

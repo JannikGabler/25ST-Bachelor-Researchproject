@@ -14,15 +14,29 @@ from file_handling.result_persistence.save_policy import SavePolicy
 
 
 class PipelineConfigurationConstants:
-    # Namespace for dynamically loaded modules is getting added on demand
-    PARSING_EVAL_NAMESPACE: dict[str, object] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode,
-                                                'DirectionalAcyclicGraph': DirectionalAcyclicGraph,
-                                                'DirectionalAcyclicGraphNode': DirectionalAcyclicGraphNode}
+    """
+    Constants used for pipeline configuration, including a namespace for dynamically loaded modules.
+    """
 
+
+    PARSING_EVAL_NAMESPACE: dict[str, object] = {
+        "jax": jax,
+        "jax.numpy": jnp,
+        "math": math,
+        "numpy": numpy,
+        "Version": Version,
+        "Tree": Tree,
+        "TreeNode": TreeNode,
+        "DirectionalAcyclicGraph": DirectionalAcyclicGraph,
+        "DirectionalAcyclicGraphNode": DirectionalAcyclicGraphNode,
+    }
 
 
 class OldInterpolantsPlotComponentConstants:
+    """
+    Constants defining default parameters for the old interpolants plot component, including evaluation points, colors, line styles, and plotting options.
+    """
+
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
     AMOUNT_OF_EVALUATION_POINTS: int = 250
@@ -31,30 +45,34 @@ class OldInterpolantsPlotComponentConstants:
 
     COLORS = [
         "black",
-        "#66c2a5",  # grünlich
+        "#66c2a5",  # greenish
         "#fc8d62",  # orange
-        "#8da0cb",  # bläulich
+        "#8da0cb",  # blueish
         "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#ffd92f",  # gelb
+        "#a6d854",  # light green
+        "#ffd92f",  # yellow
         "#e5c494",  # beige
-        "#b3b3b3"  # grau
+        "#b3b3b3",  # grey
     ]
 
     LINE_STYLES = [
-        # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
-        (0, (1, 1)),  # sehr feine Punkte
-        (0, (5, 5)),  # lange Striche mit Lücken
-        (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
+        # '-',  # solid
+        "--",  # dashed
+        "-.",  # dashdot
+        ":",  # dotted
+        (0, (1, 1)),  # very light dots
+        (0, (5, 5)),  # long lines with gaps
+        (0, (3, 5, 1, 5)),  # lines with light dots
     ]
 
     FIGURE_SIZE = (10, 6)
 
 
 class InterpolantsPlotComponentConstants:
+    """
+    Constants defining default parameters for interpolants plot component, including evaluation points, axis limits, colors, line styles, and plotting options.
+    """
+
     SHOW_PLOT: bool = True
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
@@ -65,20 +83,20 @@ class InterpolantsPlotComponentConstants:
 
     COLORS = [
         "black",
-        # "#FF0000",  # Rot
-        "#00FF00",  # Grün
+        # "#FF0000",  # red
+        "#00FF00",  # green
         "#00BFFF",  # DeepSkyBlue
-        # "#FFFF00",  # Gelb
+        # "#FFFF00",  # yellow
         # "#e5c494",  # beige
         # "brown",
         "#00FFFF",  # Cyan
         "#FF00FF",  # Magenta
         "#FFA500",  # Orange
-        "#66c2a5",  # grünlich
-        "#8da0cb",  # bläulich
+        "#66c2a5",  # greenish
+        "#8da0cb",  # blueish
         "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#a6d854",  # light green
+        "#b3b3b3",  # grey
     ]
 
     LINE_STYLE_DASH_DISTANCE: float = 2.5
@@ -87,6 +105,10 @@ class InterpolantsPlotComponentConstants:
 
 
 class AbsoluteErrorPlotComponentConstants:
+    """
+    Constants defining default parameters for absolute error plot component, including evaluation points, line width, colors, line styles, and plotting options.
+    """
+
     SHOW_PLOT: bool = True
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
@@ -95,35 +117,38 @@ class AbsoluteErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
 
     COLORS = [
-        # "#FF0000",  # Rot
-        "#00FF00",  # Grün
+        # "#FF0000",  # red
+        "#00FF00",  # green
         "#00BFFF",  # DeepSkyBlue
-        # "#FFFF00",  # Gelb
+        # "#FFFF00",  # yellow
         # "#e5c494",  # beige
         # "brown",
         "#00FFFF",  # Cyan
         "#FF00FF",  # Magenta
         "#FFA500",  # Orange
-        "#66c2a5",  # grünlich
-        "#8da0cb",  # bläulich
+        "#66c2a5",  # greenish
+        "#8da0cb",  # blueish
         "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#a6d854",  # light green
+        "#b3b3b3",  # grey
     ]
 
     LINE_STYLES = [
-        # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
-        (0, (1, 1)),  # sehr feine Punkte
-        (0, (5, 5)),  # lange Striche mit Lücken
-        (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
+        # '-',  # solid
+        "--",  # dashed
+        "-.",  # dashdot
+        ":",  # dotted
+        (0, (1, 1)),  # very light dots
+        (0, (5, 5)),  # long lines with gaps
+        (0, (3, 5, 1, 5)),  # lines with light dots
     ]
-
 
 
 class RelativeErrorPlotComponentConstants:
+    """
+    Constants defining default parameters for relative error plot component, including evaluation points, line width, colors, line styles, and plotting options.
+    """
+
     SHOW_PLOT: bool = True
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
@@ -132,35 +157,39 @@ class RelativeErrorPlotComponentConstants:
     LINE_WIDTH: int = 2
 
     COLORS = [
-        # "#FF0000",  # Rot
-        "#00FF00",  # Grün
+        # "#FF0000",  # red
+        "#00FF00",  # green
         "#00BFFF",  # DeepSkyBlue
-        # "#FFFF00",  # Gelb
+        # "#FFFF00",  # yellow
         # "#e5c494",  # beige
         # "brown",
         "#00FFFF",  # Cyan
         "#FF00FF",  # Magenta
         "#FFA500",  # Orange
-        "#66c2a5",  # grünlich
-        "#8da0cb",  # bläulich
+        "#66c2a5",  # greenish
+        "#8da0cb",  # blueish
         "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#a6d854",  # light green
+        "#b3b3b3",  # grey
     ]
 
     LINE_STYLES = [
-        # '-',  # durchgezogen (solid)
-        '--',  # gestrichelt (dashed)
-        '-.',  # strich-punkt (dashdot)
-        ':',  # gepunktet (dotted)
-        (0, (1, 1)),  # sehr feine Punkte
-        (0, (5, 5)),  # lange Striche mit Lücken
-        (0, (3, 5, 1, 5)),  # Striche mit feinen Punkten
+        # '-',  # solid
+        "--",  # dashed
+        "-.",  # dashdot
+        ":",  # dotted
+        (0, (1, 1)),
+        (0, (5, 5)),
+        (0, (3, 5, 1, 5)),
     ]
 
 
 
 class BaseRoundOffErrorPlotComponentConstants:
+    """
+    Constants defining default parameters for base round-off error plot components, including evaluation points, axis limits, colors, and line styles.
+    """
+
     AMOUNT_OF_EVALUATION_POINTS: int = 800
 
     DEFAULT_Y_LIMIT: float = 10.0
@@ -169,20 +198,20 @@ class BaseRoundOffErrorPlotComponentConstants:
     Y_THRESHOLD_ATTRIBUTE_NAME: str = "y_threshold"
 
     COLORS = [
-        # "#FF0000",  # Rot
-        "#00FF00",  # Grün
-        "#00BFFF",  # DeepSkyBlue
-        # "#FFFF00",  # Gelb
-        # "#e5c494",  # beige
+        # "#FF0000",
+        "#00FF00",
+        "#00BFFF",
+        # "#FFFF00",
+        # "#e5c494",
         # "brown",
-        "#00FFFF",  # Cyan
-        "#FF00FF",  # Magenta
-        "#FFA500",  # Orange
-        "#66c2a5",  # grünlich
-        "#8da0cb",  # bläulich
-        "#e78ac3",  # pink
-        "#a6d854",  # hellgrün
-        "#b3b3b3"  # grau
+        "#00FFFF",
+        "#FF00FF",
+        "#FFA500",
+        "#66c2a5",
+        "#8da0cb",
+        "#e78ac3",
+        "#a6d854",
+        "#b3b3b3",
     ]
 
     LINE_WIDTH: int = 2
@@ -193,24 +222,35 @@ class BaseRoundOffErrorPlotComponentConstants:
     FIGURE_SIZE = (10, 6)
 
 
-
 class AbsoluteRoundOffErrorPlotComponentConstants:
+    """
+    Constants defining default parameters for absolute round-off error plot components, including plotting options and process configuration.
+    """
+
     SHOW_PLOT: bool = True
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
-
 class RelativeRoundOffErrorPlotComponentConstants:
+    """
+    Constants defining default parameters for relative round-off error plot components, including plotting options and process configuration.
+    """
+
     SHOW_PLOT: bool = True
 
     SHOW_PLOT_IN_SEPARATE_PROCESS: bool = True
 
 
 class FilesystemResultStoreConstants:
-    POLICY = SavePolicy( 
-            mode="soft-state", # or "snapshot"
-            keep_soft_state_n=3,
-            json_indent=2,
-            plot_formats=("svg", "png", "pdf"),
-        )
+    """
+    Constants defining default save policy and file formats for filesystem-based result storage.
+    """
+
+
+    POLICY = SavePolicy(
+        mode="soft-state",  # or "snapshot"
+        keep_soft_state_n=3,
+        json_indent=2,
+        plot_formats=("svg", "png", "pdf"),
+    )

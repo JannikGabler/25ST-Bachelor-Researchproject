@@ -22,5 +22,3 @@ print(data)
 
 restored_pipeline_data: PipelineData = dill.loads(data)
 print(restored_pipeline_data)
-
-

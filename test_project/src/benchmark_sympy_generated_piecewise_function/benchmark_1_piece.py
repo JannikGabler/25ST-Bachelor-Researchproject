@@ -8,8 +8,8 @@ from sympy import Expr
 
 data_type = jnp.float32
 x_array = jnp.linspace(-1.0, 1.0, 101, dtype=data_type)
-warmups=10
-runs=1000
+warmups = 10
+runs = 1000
 
 
 def get_hard_coded_callable():
@@ -26,7 +26,6 @@ def get_hard_coded_callable_piecewise():
 
     dummy_x = jnp.empty(len(x_array), dtype=data_type)
     return jax.jit(_func_).lower(dummy_x).compile()
-
 
 
 def get_sympy_callable(function_string: str, simplify_expression=True) -> callable:
@@ -47,7 +46,10 @@ def get_sympy_callable(function_string: str, simplify_expression=True) -> callab
     return jax.jit(f_vectorized).lower(dummy_x).compile()
 
 
-def get_sympy_callable_piecewise(piecewise_function_strings: list[tuple[tuple[any, any], str]], simplify_expression=True) -> callable:
+def get_sympy_callable_piecewise(
+    piecewise_function_strings: list[tuple[tuple[any, any], str]],
+    simplify_expression=True,
+) -> callable:
     # 1. Symbolisch parsen mit SymPy
     x = sympy.symbols("x")
     expressions: list[tuple[Expr, any]] = []
@@ -91,7 +93,9 @@ print(f"Compilation of the sympy parsed callable took: {(end - start) * 1E06:0.1
 start = time.perf_counter()
 sympy_callable_piecewise = get_sympy_callable_piecewise([((-1, 1), "cos(x)")])
 end = time.perf_counter()
-print(f"Compilation of the sympy parsed piecewise callable took: {(end - start) * 1E06:0.1f} µs")
+print(
+    f"Compilation of the sympy parsed piecewise callable took: {(end - start) * 1E06:0.1f} µs"
+)
 
 
 for _ in range(warmups):
@@ -100,7 +104,7 @@ for _ in range(warmups):
     sympy_callable_piecewise(x_array).block_until_ready()
 
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     hard_coded_callable(x_array).block_until_ready()
@@ -111,7 +115,7 @@ avg = sum(times) / len(times)
 print(f"The hard coded callable took in average: {avg * 1E06:0.1f} µs")
 
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     sympy_callable(x_array).block_until_ready()
@@ -122,8 +126,7 @@ avg = sum(times) / len(times)
 print(f"The sympy parsed callable took in average: {avg * 1E06:0.1f} µs")
 
 
-
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     sympy_callable_piecewise(x_array).block_until_ready()

@@ -3,7 +3,9 @@ import jax.numpy as jnp
 
 
 @jax.jit
-def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray) -> jnp.ndarray:
+def divided_differences(
+    interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray
+) -> jnp.ndarray:
     """
     Computes the coefficients of the Newton interpolation polynomial using divided differences.
     These coefficients can then be used to evaluate the interpolation polynomial efficiently in Newton form.
@@ -28,7 +30,7 @@ def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.n
         def inner_loop(i, coef_inner):
             numerator = coef_outer[i] - coef_outer[i - 1]
             denominator = interpolation_nodes[i] - interpolation_nodes[i - j]
-            return coef_inner.at[i].set(numerator/denominator)
+            return coef_inner.at[i].set(numerator / denominator)
 
         # Apply the inner loop to update coefficients for the current order
         coef_outer = jax.lax.fori_loop(j, n, inner_loop, coef_outer)
@@ -41,7 +43,11 @@ def divided_differences(interpolation_nodes: jnp.ndarray, function_values: jnp.n
 
 
 @jax.jit
-def newton_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.ndarray, function_values: jnp.ndarray) -> jnp.ndarray:
+def newton_interpolate(
+    evaluation_points: jnp.ndarray,
+    interpolation_nodes: jnp.ndarray,
+    function_values: jnp.ndarray,
+) -> jnp.ndarray:
     """
     Evaluates the Newton interpolation polynomial at given points.
     The polynomial is defined by the coefficients and the interpolation nodes.
@@ -69,7 +75,10 @@ def newton_interpolate(evaluation_points: jnp.ndarray, interpolation_nodes: jnp.
     # Inner loop function implementing the nested form of the Newton polynomial, which corresponds to Horner's scheme for Newton form
     def horner_step(i, val):
         reverse_index = n - 1 - i
-        return val * (evaluation_points - interpolation_nodes[reverse_index]) + coefficients[reverse_index]
+        return (
+            val * (evaluation_points - interpolation_nodes[reverse_index])
+            + coefficients[reverse_index]
+        )
 
     # Initialize the array to hold the evaluated polynomial values
     polynomial_values = jnp.zeros_like(evaluation_points)

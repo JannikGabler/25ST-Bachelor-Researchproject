@@ -25,7 +25,7 @@ def _make_component(nodes, values, eval_points, dtype=jnp.float32):
     pd = _FakePipelineData(nodes, values, eval_points, dtype=dtype)
     comp = AitkenNevilleEvaluator.__new__(AitkenNevilleEvaluator)
     comp._pipeline_data_ = [pd]
-    
+
     comp._compiled_jax_callable_ = jax.jit(comp._internal_perform_action_)
     return comp, pd
 
@@ -60,7 +60,9 @@ class TestAitkenNevilleEvaluator(unittest.TestCase):
 
     def test_quadratic(self):
         # p(x) = 1 - 2x + x**2
-        def p(x): return 1.0 - 2.0 * x + x**2
+        def p(x):
+            return 1.0 - 2.0 * x + x**2
+
         nodes = jnp.array([-1.0, 0.0, 2.0])
         values = p(nodes)
         xs = jnp.array([-1.0, -0.5, 0.0, 0.5, 1.5, 2.0])

@@ -4,18 +4,27 @@ from pathlib import Path
 from exceptions.not_instantiable_error import NotInstantiableError
 from file_handling.ini_handling.ini_file_manager import INIFileManager
 from data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
+
 from data_classes.pipeline_input.pipeline_input import PipelineInput
 from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 
 
 class PipelineConfigurationFileManager:
+    """
+    Utility class for loading and saving pipeline configuration files. This class is a static utility and
+    is not instantiable.
+    """
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError(f"{self.__class__.__name__} cannot be instantiated.")
+        """
+        Raises:
+            NotInstantiableError: Always raised when attempting to instantiate the class.
+        """
 
+        raise NotInstantiableError(f"{self.__class__.__name__} cannot be instantiated.")
 
 
     ######################
@@ -23,6 +32,16 @@ class PipelineConfigurationFileManager:
     ######################
     @staticmethod
     def load_from_file(path: Path) -> PipelineConfigurationData:
+        """
+        Load pipeline configuration from the file.
+
+        Args:
+            path (Path): Path to the file.
+
+        Returns:
+            PipelineConfigurationData: The pipeline configuration object.
+        """
+
         data: PipelineConfigurationData = PipelineConfigurationData()
 
         entries: dict[str, str] = INIFileManager.load_file_as_key_value_pairs(path)
@@ -33,12 +52,20 @@ class PipelineConfigurationFileManager:
         return data
 
 
-
-    # TODO
     @staticmethod
     def save_to_file(to_save: PipelineInput | PipelineInputData, path: Path) -> None:
-        pass
+        """
+        Save a pipeline input object to a file.
 
+        Args:
+            to_save (PipelineInput | PipelineInputData): The object to serialize.
+            path (Path): Target file path.
+
+        Returns:
+            None
+        """
+
+        pass
 
 
     #######################
@@ -50,4 +77,3 @@ class PipelineConfigurationFileManager:
             setattr(data, key, value)
         else:
             data.additional_values[key] = value
-

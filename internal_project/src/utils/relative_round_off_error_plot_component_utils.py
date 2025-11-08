@@ -1,36 +1,30 @@
-import math
-
 import jax.numpy as jnp
 
-from dataclasses import dataclass
-from fractions import Fraction
-
-from matplotlib.lines import Line2D
-
-from constants.internal_logic_constants import BaseRoundOffErrorPlotComponentConstants
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.plot_template.plot_template import PlotTemplate
-from data_classes.plotting.base_round_off_error_plot_component_utils_data.base_round_off_error_plot_component_utils_data import \
-    BaseRoundOffErrorPlotComponentUtilsData
+from data_classes.plotting.base_round_off_error_plot_component_utils_data.base_round_off_error_plot_component_utils_data import BaseRoundOffErrorPlotComponentUtilsData
 from exceptions.not_instantiable_error import NotInstantiableError
-from functions.abstracts.compilable_function import CompilableFunction
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
-    AdditionalComponentExecutionData
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
 from utils.base_round_off_error_plot_component_utils import BaseRoundOffErrorPlotComponentUtils
 from utils.plot_utils import PlotUtils
 
 
 class RelativeRoundOffErrorPlotComponentUtils:
     """
-    TODO
+    Utility helpers for generating relative round-off error plots. This class cannot be instantiated.
     """
+
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self):
-        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} can not be instantiated.")
+        """
+       Raises:
+           NotInstantiableError: Always raised when initialized to indicate that this class is not meant to be instantiated.
+       """
 
+        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} can not be instantiated.")
 
 
     ######################
@@ -38,6 +32,17 @@ class RelativeRoundOffErrorPlotComponentUtils:
     ######################
     @classmethod
     def plot_data(cls, pipeline_data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> PlotTemplate:
+        """
+        Create the relative round-off error plot for the given pipeline data.
+
+        Args:
+            pipeline_data (list[PipelineData]): Data containing interpolant functions to evaluate.
+            additional_data (AdditionalComponentExecutionData): Additional information for plot annotation.
+
+        Returns:
+            PlotTemplate: Configured plot visualizing the relative round-off errors.
+        """
+
         template: PlotTemplate = BaseRoundOffErrorPlotComponentUtils.plot_data(pipeline_data, additional_data, cls._set_relative_round_off_errors_)
 
         template.fig.suptitle("Relative floating-point error plot")
@@ -46,7 +51,6 @@ class RelativeRoundOffErrorPlotComponentUtils:
         template.fig.tight_layout()
 
         return template
-
 
 
     #######################

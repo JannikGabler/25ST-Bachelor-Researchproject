@@ -11,11 +11,16 @@ if TYPE_CHECKING:
 
 
 class PipelineComponent(metaclass=PipelineComponentMeta):
+    """
+    Abstract base class for pipeline components.
+    Subclasses receive pipeline data and execution context and must implement `perform_action`.
+    """
+
+
     ###########################
     ### Attributes of class ###
     ###########################
     _info_: PipelineComponentInfo
-
 
 
     ###############################
@@ -25,14 +30,20 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     _additional_execution_info_: AdditionalComponentExecutionData
 
 
-
     ###################
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the component with input data and execution context.
+
+        Args:
+            pipeline_data: Input pipeline data.
+            additional_execution_info: Execution context and metadata.
+        """
+
         self._pipeline_data_ = pipeline_data
         self._additional_execution_info_ = additional_execution_info
-
 
 
     ########################
@@ -40,8 +51,14 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     ########################
     @abstractmethod
     def perform_action(self) -> PipelineData:
-        pass
+        """
+        Execute the component's action and produce output data.
 
+        Returns:
+            PipelineData: Resulting pipeline data.
+        """
+
+        pass
 
 
     #########################
@@ -49,5 +66,11 @@ class PipelineComponent(metaclass=PipelineComponentMeta):
     #########################
     @property
     def info(self) -> PipelineComponentInfo:
-        return self._info_ # PipelineComponentInfo is immutable
+        """
+       Immutable component metadata.
 
+       Returns:
+           PipelineComponentInfo: Pipeline component info.
+       """
+
+        return self._info_

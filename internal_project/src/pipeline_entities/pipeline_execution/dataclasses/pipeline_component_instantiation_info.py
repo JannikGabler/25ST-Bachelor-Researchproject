@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from typing import Any
 
-from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import PipelineComponentInfo
+from pipeline_entities.pipeline.component_entities.component_info.dataclasses.pipeline_component_info import (
+    PipelineComponentInfo,
+)
 
 
 @dataclass

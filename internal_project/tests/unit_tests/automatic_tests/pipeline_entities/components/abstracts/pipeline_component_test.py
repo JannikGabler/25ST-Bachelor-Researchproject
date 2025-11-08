@@ -1,11 +1,17 @@
 import unittest
 
-from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component import PipelineComponent
-from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.equidistant_node_generator import EquidistantNodeGenerator
-from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.first_type_chebyshev_node_generator import \
-    FirstTypeChebyshevNodeGenerator
-from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.second_type_chebyshev_node_generator import \
-    SecondTypeChebyshevNodeGenerator
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component import (
+    PipelineComponent,
+)
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.equidistant_node_generator import (
+    EquidistantNodeGenerator,
+)
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.first_type_chebyshev_node_generator import (
+    FirstTypeChebyshevNodeGenerator,
+)
+from pipeline_entities.pipeline.component_entities.default_components.default_node_generators.second_type_chebyshev_node_generator import (
+    SecondTypeChebyshevNodeGenerator,
+)
 
 
 class MyTestCase(unittest.TestCase):
@@ -21,10 +27,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected_id, result_id)
         self.assertEqual(expected_type, result_type)
 
-
-
     def test_attributes_of_first_type_chebyshev_node_generator(self):
-        generator: PipelineComponent = FirstTypeChebyshevNodeGenerator((-5.6142, 1.161), 13, int)
+        generator: PipelineComponent = FirstTypeChebyshevNodeGenerator(
+            (-5.6142, 1.161), 13, int
+        )
 
         expected_id: str = "Chebyshev1"
         expected_type: ComponentType = ComponentType.NODE_GENERATOR
@@ -35,10 +41,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected_id, result_id)
         self.assertEqual(expected_type, result_type)
 
-
-
     def test_attributes_of_second_type_chebyshev_node_generator(self):
-        generator: PipelineComponent = SecondTypeChebyshevNodeGenerator((-556, -5), 1, int)
+        generator: PipelineComponent = SecondTypeChebyshevNodeGenerator(
+            (-556, -5), 1, int
+        )
 
         expected_id: str = "Chebyshev2"
         expected_type: ComponentType = ComponentType.NODE_GENERATOR
@@ -50,5 +56,5 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(expected_type, result_type)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

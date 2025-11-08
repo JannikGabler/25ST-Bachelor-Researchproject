@@ -20,12 +20,30 @@ from utils.typing_utils import TypingUtils
 
 
 class PipelineInput:
+    """
+    Parsed pipeline input container. Stores typed function definitions, interpolation settings,
+    evaluation points, and additional values after parsing and optional expression evaluation.
+
+    Raises:
+        EvaluationError: If evaluation of an expression fails.
+        TypeError: If an attribute of an instance is initialized with a wrong type.
+        TypeAnnotationError: If a required attribute is missing type annotations.
+        ValueError: If the attribute of an instance is not set although it is required to be set.
+    """
+
+
     ###########################
     ### Attributes of class ###
     ###########################
-    _parsing_eval_namespace_: dict[str, object] = {'jax': jax, 'jax.numpy': jnp, 'math': math, 'numpy': numpy,
-                                                'Version': Version, 'Tree': Tree, 'TreeNode': TreeNode} # Namespace for dynamically loaded modules is getting added on demand
-
+    _parsing_eval_namespace_: dict[str, object] = {
+        "jax": jax,
+        "jax.numpy": jnp,
+        "math": math,
+        "numpy": numpy,
+        "Version": Version,
+        "Tree": Tree,
+        "TreeNode": TreeNode,
+    }
 
 
     ###############################
@@ -49,7 +67,6 @@ class PipelineInput:
     _additional_values_: dict[str, object]
 
 
-
     ###################
     ### Constructor ###
     ###################
@@ -62,117 +79,238 @@ class PipelineInput:
         self._validate_attribute_types_()
 
 
-
     #########################
     ### Getters & setters ###
     #########################
     @property
     def name(self) -> str | None:
+        """
+        The name of the pipeline input.
+
+        Returns:
+            str: Pipeline name.
+        """
+
         return self._name_
+
 
     @property
     def data_type(self) -> DTypeLike:
+        """
+        The data type.
+
+        Returns:
+            DTypeLike: Data type.
+        """
+
         return self._data_type_
+
 
     @property
     def node_count(self) -> int:
+        """
+        The number of interpolation nodes.
+
+        Returns:
+            int: Node count.
+        """
+
         return self._node_count_
+
 
     @property
     def interpolation_interval(self) -> jnp.ndarray:
+        """
+        The interpolation interval.
+
+        Returns:
+            jnp.ndarray: Interval boundaries as an array.
+        """
+
         return self._interpolation_interval_
+
 
     @property
     def function_expression(self) -> str | None:
+        """
+        The function expression as a string.
+
+        Returns:
+            str | None: Expression string or None if not set.
+        """
+
         return self._function_expression_
+
 
     @property
     def piecewise_function_expression(self) -> list[tuple[tuple[any, any], str]] | None:
+        """
+        The piecewise function expression.
+
+        Returns:
+            list[tuple[tuple[float, float], str]] | None: List of interval-expression pairs or None if not set.
+        """
+
         return self._piecewise_function_expression_
+
 
     @property
     def sympy_function_expression_simplification(self) -> bool | None:
+        """
+        Whether SymPy simplification should be applied.
+
+        Returns:
+            bool | None: True/False if set, otherwise None.
+        """
+
         return self._sympy_function_expression_simplification_
+
 
     @property
     def function_callable(self) -> Callable[[jnp.ndarray], jnp.ndarray] | None:
+        """
+        Callable version of the function.
+
+        Returns:
+            Callable[[jnp.ndarray], jnp.ndarray] | None: Callable function or None if not set.
+        """
+
         return self._function_callable_
+
 
     @property
     def interpolation_values(self) -> jnp.ndarray | None:
+        """
+        The interpolation values.
+
+        Returns:
+            jnp.ndarray | None: Values or None if not set.
+        """
+
         return self._interpolation_values_
+
 
     @property
     def interpolant_evaluation_points(self):
+        """
+        The points at which the interpolant is evaluated.
+
+        Returns:
+            jnp.ndarray | None: Evaluation points or None if not set.
+        """
+
         return self._interpolant_evaluation_points_
+
 
     @property
     def additional_directly_injected_values(self) -> dict[str, object]:
+        """
+        Additional injected values.
+
+        Returns:
+            dict[str, object]: Additional injected values.
+        """
+
         return self._additional_directly_injected_values_
+
 
     @property
     def additional_values(self) -> dict[str, object]:
-        return self._additional_values_
+        """
+        Additional evaluated values.
 
+        Returns:
+            dict[str, object]: Additional evaluated values.
+        """
+
+        return self._additional_values_
 
 
     ##########################
     ### Overridden methods ###
     ##########################
     def __repr__(self) -> str:
-        return (f"{self.__class__.__name__}(name={repr(self._name_)}', data_type='{repr(self._data_type_)}', "
-                f"node_count={repr(self.node_count)}, interpolation_interval={repr(self.interpolation_interval)}, "
-                f"function_expression={repr(self.function_expression)}, "
-                f"piecewise_function_expressions={repr(self.piecewise_function_expression)}, "
-                f"sympy_function_expression_simplification='{repr(self.sympy_function_expression_simplification)}', "
-                f"function_callable={repr(self.function_callable)}, "
-                f"interpolation_values={repr(self.interpolation_values)}', "
-                f"interpolant_evaluation_points={repr(self.interpolant_evaluation_points)}, "
-                f"additional_directly_injected_values={repr(self.additional_directly_injected_values)}, "
-                f"additional_values={repr(self.additional_values)}')")
+        return (
+            f"{self.__class__.__name__}(name={repr(self._name_)}', data_type='{repr(self._data_type_)}', "
+            f"node_count={repr(self.node_count)}, interpolation_interval={repr(self.interpolation_interval)}, "
+            f"function_expression={repr(self.function_expression)}, "
+            f"piecewise_function_expressions={repr(self.piecewise_function_expression)}, "
+            f"sympy_function_expression_simplification='{repr(self.sympy_function_expression_simplification)}', "
+            f"function_callable={repr(self.function_callable)}, "
+            f"interpolation_values={repr(self.interpolation_values)}', "
+            f"interpolant_evaluation_points={repr(self.interpolant_evaluation_points)}, "
+            f"additional_directly_injected_values={repr(self.additional_directly_injected_values)}, "
+            f"additional_values={repr(self.additional_values)}')"
+        )
+
 
     def __str__(self) -> str:
         return self.__repr__()
 
 
-
     def __hash__(self) -> int:
-        return hash((self._name_, self._data_type_, self._node_count_, self._interpolation_interval_,
-                     self._function_expression_, self._piecewise_function_expression_,
-                     self._sympy_function_expression_simplification_, self._function_callable_,
-                     self._interpolation_values_, self._interpolant_evaluation_points_,
-                     self._additional_directly_injected_values_, self._additional_values_))
-
+        return hash(
+            (
+                self._name_,
+                self._data_type_,
+                self._node_count_,
+                self._interpolation_interval_,
+                self._function_expression_,
+                self._piecewise_function_expression_,
+                self._sympy_function_expression_simplification_,
+                self._function_callable_,
+                self._interpolation_values_,
+                self._interpolant_evaluation_points_,
+                self._additional_directly_injected_values_,
+                self._additional_values_,
+            )
+        )
 
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         else:
-            return (self._name_ == other._name_ and self._data_type_ == other._data_type_
-                    and self._node_count_ == other._node_count_
-                    and jnp.array_equal(self._interpolation_interval_, other._interpolation_interval_)
-                    and self._function_expression_ == other._function_expression_
-                    and self._piecewise_function_expression_ == other._piecewise_function_expression_
-                    and self._sympy_function_expression_simplification_ == other._sympy_function_expression_simplification_
-                    and (self._function_callable_ is None == other._function_callable_ is None)
-                    and jnp.array_equal(self._interpolation_values_, other._interpolation_values_)
-                    and jnp.array_equal(self._interpolant_evaluation_points_, other._interpolant_evaluation_points_)
-                    and self._additional_directly_injected_values_ == other._additional_directly_injected_values_
-                    and self._additional_values_ == other._additional_values_)
-
+            return (
+                self._name_ == other._name_
+                and self._data_type_ == other._data_type_
+                and self._node_count_ == other._node_count_
+                and jnp.array_equal(
+                    self._interpolation_interval_, other._interpolation_interval_
+                )
+                and self._function_expression_ == other._function_expression_
+                and self._piecewise_function_expression_
+                == other._piecewise_function_expression_
+                and self._sympy_function_expression_simplification_
+                == other._sympy_function_expression_simplification_
+                and (
+                    self._function_callable_
+                    is None
+                    == other._function_callable_
+                    is None
+                )
+                and jnp.array_equal(
+                    self._interpolation_values_, other._interpolation_values_
+                )
+                and jnp.array_equal(
+                    self._interpolant_evaluation_points_,
+                    other._interpolant_evaluation_points_,
+                )
+                and self._additional_directly_injected_values_
+                == other._additional_directly_injected_values_
+                and self._additional_values_ == other._additional_values_
+            )
 
 
     #######################
     ### Private methods ###
     #######################
     def _parse_input_data_(self, input_data: PipelineInputData) -> None:
-        eval_name_space: dict[str, object] = DynamicModuleLoader.get_module_namespace() | self._parsing_eval_namespace_
+        eval_name_space: dict[str, object] = (DynamicModuleLoader.get_module_namespace() | self._parsing_eval_namespace_)
 
         self._parse_regular_input_values_(input_data, eval_name_space)
         self._parse_additional_input_values_(input_data, eval_name_space)
         self._parse_additional_directly_injected_input_values_(input_data, eval_name_space)
-
 
 
     def _parse_regular_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
@@ -180,9 +318,8 @@ class PipelineInput:
             name: str = field.name
             value: str = getattr(input_data, name)
 
-            if name not in ('additional_values', 'additional_directly_injected_values'):
+            if name not in ("additional_values", "additional_directly_injected_values"):
                 self._parse_single_regular_input_value_(name, value, eval_name_space)
-
 
 
     def _parse_single_regular_input_value_(self, field_name: str, field_value: str, eval_name_space: dict[str, object]) -> None:
@@ -195,14 +332,12 @@ class PipelineInput:
             setattr(self, transformed_field_name, None)
 
 
-
     def _parse_additional_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
         self._additional_values_ = {}
 
         for key, value in input_data.additional_values.items():
             parsed_value: object = self._try_expression_evaluation_(value, key, eval_name_space)
             self._additional_values_[key] = parsed_value
-
 
 
     def _parse_additional_directly_injected_input_values_(self, input_data: PipelineInputData, eval_name_space: dict[str, object]) -> None:
@@ -213,15 +348,12 @@ class PipelineInput:
             self._additional_directly_injected_values_[key] = parsed_value
 
 
-
     @staticmethod
     def _try_expression_evaluation_(expression: str, field_name: str, name_space: dict[str, object]) -> object:
         try:
-            # Security node: __builtins__ are available by default! Might be a security issue (-> define custom safe build ins).
             return eval(expression, {}, name_space)
         except Exception as e:
             raise EvaluationError(f"Error while evaluating '{expression}': {e}")
-
 
 
     def _validate_attribute_types_(self) -> None:
@@ -230,10 +362,9 @@ class PipelineInput:
         for field in fields(PipelineInputData):
             name: str = field.name
 
-            if name not in ('additional_values', 'additional_directly_injected_values'):
+            if name not in ("additional_values", "additional_directly_injected_values"):
                 transformed_name: str = f"_{name}_"
                 self._validate_single_attribute_type(transformed_name, type_hints)
-
 
 
     def _validate_single_attribute_type(self, field_name: str, type_hints: dict[str, object]) -> None:
@@ -249,20 +380,18 @@ class PipelineInput:
             self._validate_set_attribute_type_(field_name, field_value, type_annotation)
 
 
-
     def _validate_set_attribute_type_(self, field_name: str, field_value: object, type_annotation: object) -> None:
         if not TypingUtils.does_value_match_type_annotation(field_value, type_annotation):
-            raise TypeError(f"The attribute '{self.__class__.__name__}.{field_name}' of this instance was initialized with a wrong type. "
-                            f"Expected is '{type_annotation}' but got '{type(field_value)}'.")
-
+            raise TypeError(
+                f"The attribute '{self.__class__.__name__}.{field_name}' of this instance was initialized with a wrong type. "
+                f"Expected is '{type_annotation}' but got '{type(field_value)}'."
+            )
 
 
     def _validate_non_set_attribute_type_(self, field_name: str, type_annotation: object) -> None:
         type_origin: ParamSpec = typing.get_origin(type_annotation)
         type_args: tuple = typing.get_args(type_annotation)
 
-        # Checks if type annotation of attributes allows None (e.g. ... | None, Union[..., None], Optional[...])
-        # We assume that there is no plain None outside a Union
         if type_origin is typing.Union or type_origin is types.UnionType:
             for argument in type_args:
                 if argument is type(None):

@@ -14,11 +14,13 @@ class Generator3:
         self.__data__ = data
 
         # 1️⃣  Reine Rechenfunktion (keine self-Captures!)
-        def _generate_nodes_impl_(node_count: int,
-                                 interval: tuple[float, float],
-                                 data_type) -> jnp.ndarray:
+        def _generate_nodes_impl_(
+            node_count: int, interval: tuple[float, float], data_type
+        ) -> jnp.ndarray:
             # Rescale int array for better stability
-            nodes: jnp.ndarray = jnp.arange(1, 2 * node_count + 1, step=2, dtype=data_type)
+            nodes: jnp.ndarray = jnp.arange(
+                1, 2 * node_count + 1, step=2, dtype=data_type
+            )
             nodes = jnp.multiply(nodes, jnp.pi / (2 * node_count))
 
             nodes = jnp.cos(nodes)
@@ -29,31 +31,23 @@ class Generator3:
 
         # 2️⃣  JIT mit statischen Parametern
         _jit = jax.jit(
-            _generate_nodes_impl_,
-            static_argnames=("node_count", "data_type")
+            _generate_nodes_impl_, static_argnames=("node_count", "data_type")
         )
 
         # 3️⃣  Beispiel-(Attrappen)-Argumente vorbereiten
         abstract_interval = jax.ShapeDtypeStruct((2,), dtype=data.data_type)
 
         # 4️⃣  Vorab kompilieren  ➜  ausführbares Callable speichern
-        self._compiled_generate_nodes = (
-            _jit
-            .lower(node_count=data.node_count,
-                   interval=abstract_interval,
-                   dtype=data.data_type,
-                   static_argnames=("node_count", "data_type"))
-            .compile()
-        )
-
-
+        self._compiled_generate_nodes = _jit.lower(
+            node_count=data.node_count,
+            interval=abstract_interval,
+            dtype=data.data_type,
+            static_argnames=("node_count", "data_type"),
+        ).compile()
 
     def generate_nodes(self):
-        interval = jnp.asarray(self.__data__.interpolation_interval,
-                               dtype=jnp.float32)
+        interval = jnp.asarray(self.__data__.interpolation_interval, dtype=jnp.float32)
         return self._compiled_generate_nodes(interval=interval)
-
-
 
     def __repr__(self) -> str:
         return "Node generator for type 1 chebyshev points"

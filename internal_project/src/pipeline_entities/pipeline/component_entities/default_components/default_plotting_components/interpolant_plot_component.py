@@ -1,13 +1,15 @@
 from pipeline_entities.pipeline.component_entities.default_component_types.plot_component import PlotComponent
-
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.interpolants_plot_component_meta_info import interpolants_plot_component_meta_info
-
 from utils.interpolant_plot_component_utils import InterpolantPlotComponentUtils
 from constants.internal_logic_constants import InterpolantsPlotComponentConstants
 
 
 @pipeline_component(id="interpolant plotter", type=PlotComponent, meta_info=interpolants_plot_component_meta_info)
 class InterpolantPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the interpolant plot.
+    """
+
     PLOT_COMPONENT_UTILS_CLASS = InterpolantPlotComponentUtils
     PLOT_COMPONENT_CONSTANTS_CLASS = InterpolantsPlotComponentConstants

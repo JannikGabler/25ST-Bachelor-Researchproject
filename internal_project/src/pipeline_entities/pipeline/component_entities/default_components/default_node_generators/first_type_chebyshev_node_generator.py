@@ -1,8 +1,7 @@
 import jax
 from jax import numpy as jnp
 
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.node_generators.first_type_chebyshev_node_generator_meta_info import \
-    first_type_chebyshev_node_generator_meta_info
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.node_generators.first_type_chebyshev_node_generator_meta_info import first_type_chebyshev_node_generator_meta_info
 from pipeline_entities.pipeline.component_entities.default_component_types.node_generator import NodeGenerator
 from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
@@ -11,17 +10,31 @@ from data_classes.pipeline_data.pipeline_data import PipelineData
 
 @pipeline_component(id="chebyshev1 node generator", type=NodeGenerator, meta_info=first_type_chebyshev_node_generator_meta_info)
 class FirstTypeChebyshevNodeGenerator(NodeGenerator):
+    """
+    Pipeline component that generates Chebyshev nodes of the first type over the specified interval.
+    """
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _compiled_jax_callable_: callable
 
 
-
     ###################
     ### Constructor ###
     ###################
     def __init__(self, pipeline_data: list[PipelineData], additional_execution_info: AdditionalComponentExecutionData) -> None:
+        """
+        Initialize the Chebyshev node generator and compile a JAX function to efficiently compute Chebyshev nodes of the first type.
+
+        Args:
+            pipeline_data (list[PipelineData]): Input pipeline data.
+            additional_execution_info (AdditionalComponentExecutionData): Additional execution info.
+
+        Returns:
+            None
+        """
+
         super().__init__(pipeline_data, additional_execution_info)
         data: PipelineData = pipeline_data[0]
 
@@ -32,18 +45,23 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
         self._compiled_jax_callable_ = self._create_compiled_callable_(data_type, node_count, interpolation_interval)
 
 
-
     ######################
     ### Public methods ###
     ######################
     def perform_action(self) -> PipelineData:
+        """
+        Generate Chebyshev nodes of the first type and store them in the pipeline data.
+
+        Returns:
+            PipelineData: Updated pipeline data with generated interpolation nodes.
+        """
+
         pipeline_data: PipelineData = self._pipeline_data_[0]
 
         nodes: jnp.ndarray = self._compiled_jax_callable_()
 
         pipeline_data.interpolation_nodes = nodes
         return pipeline_data
-
 
 
     #######################
@@ -68,7 +86,6 @@ class FirstTypeChebyshevNodeGenerator(NodeGenerator):
                 return jnp.add(rescaled_nodes, interpolation_interval[0] + length_ratio)
 
             return jax.lax.cond(do_rescale, rescale_nodes, lambda: nodes)
-
 
         return (
             jax.jit(_internal_perform_action_)  # → XLA-compatible HLO

@@ -14,14 +14,11 @@ from pipeline_entities.pipeline_execution.output.pipeline_component_execution_re
 
 from file_handling.result_persistence.utils import type_repr, to_jsonable, prune_trivial
 
+
 def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
-    """
-    Convert a PipelineComponentExecutionReport into a JSON-serializable dict.
-    Keeps it lean and stable; avoids dumping large PipelineData contents.
-    """
     comp_inst_info: PipelineComponentInstantiationInfo = rep.component_instantiation_info
     comp_info: PipelineComponentInfo = comp_inst_info.component
-    
+
     comp_name = getattr(comp_inst_info, "component_name", None) or getattr(comp_info, "name", None)
     comp_id = getattr(comp_info, "component_id", None)
     comp_type = type_repr(getattr(comp_info, "component_type", None))
@@ -38,36 +35,38 @@ def _serialize_report(rep: PipelineComponentExecutionReport) -> dict[str, Any]:
             "id": comp_id,
             "name": comp_name,
             "type": comp_type,
-            "class": comp_class
-            # could add more metadata (version, tags, etc.)
+            "class": comp_class,
         },
         "timing": {
             "init_time": rep.component_init_time,
             "avg_exec_time": rep.average_component_execution_time,
             "std_exec_time": rep.standard_deviation_component_execution_time,
         },
-        "outputs": {
-            "plots_count": plots_count,
-            "pipeline_data": pd_json
-        },
+        "outputs": {"plots_count": plots_count, "pipeline_data": pd_json},
     }
-
 
 
 class ReportsSaver(Saver):
     """Saves a list of PipelineComponentExecutionReport to a single JSON."""
+
     kind = "reports"
 
-    def save(
-        self,
-        artifact: Iterable[PipelineComponentExecutionReport] | PipelineComponentExecutionReport,
-        run_dir: Path,
-        policy: SavePolicy
-    ) -> Path:
+    def save(self, artifact: (Iterable[PipelineComponentExecutionReport] | PipelineComponentExecutionReport), run_dir: Path, policy: SavePolicy) -> Path:
+        """
+        Serialize and save one or multiple PipelineComponentExecutionReport objects into a single JSON file within the 'reports' subdirectory.
+
+        Args:
+            artifact (Iterable[PipelineComponentExecutionReport] | PipelineComponentExecutionReport): Single report or iterable of reports to serialize.
+            run_dir (Path): Target run directory where the 'reports' folder will be created.
+            policy (SavePolicy): Save policy defining JSON formatting options (e.g., indentation).
+
+        Returns:
+            Path: Path to the generated JSON file (e.g. <run>/reports/reports.json).
+        """
+
         reports_dir = run_dir / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        # Normalize to list
         if isinstance(artifact, PipelineComponentExecutionReport):
             payload = [_serialize_report(artifact)]
         else:

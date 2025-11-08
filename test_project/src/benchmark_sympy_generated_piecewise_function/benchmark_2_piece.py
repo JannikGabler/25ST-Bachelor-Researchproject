@@ -7,8 +7,8 @@ from sympy import Expr
 
 data_type = jnp.float32
 x_array = jnp.linspace(0, 3, 101, dtype=data_type)
-warmups=10
-runs=10000
+warmups = 10
+runs = 10000
 
 
 # def get_hard_coded_callable():
@@ -25,7 +25,6 @@ def get_hard_coded_callable_piecewise():
 
     dummy_x = jnp.empty(len(x_array), dtype=data_type)
     return jax.jit(_func_).lower(dummy_x).compile()
-
 
 
 # def get_sympy_callable(function_string: str, simplify_expression=True) -> callable:
@@ -46,7 +45,10 @@ def get_hard_coded_callable_piecewise():
 #     return jax.jit(f_vectorized).lower(dummy_x).compile()
 
 
-def get_sympy_callable_piecewise(piecewise_function_strings: list[tuple[tuple[any, any], str]], simplify_expression=True) -> callable:
+def get_sympy_callable_piecewise(
+    piecewise_function_strings: list[tuple[tuple[any, any], str]],
+    simplify_expression=True,
+) -> callable:
     # 1. Symbolisch parsen mit SymPy
     x = sympy.symbols("x")
     expressions: list[tuple[Expr, any]] = []
@@ -73,18 +75,26 @@ def get_sympy_callable_piecewise(piecewise_function_strings: list[tuple[tuple[an
 
 for _ in range(warmups):
     get_hard_coded_callable_piecewise()(x_array).block_until_ready()
-    get_sympy_callable_piecewise([((0, 1), "sin(x)"), ((1, 2), "exp(x)"), ((2, 3), "cos(x)")])(x_array).block_until_ready()
+    get_sympy_callable_piecewise(
+        [((0, 1), "sin(x)"), ((1, 2), "exp(x)"), ((2, 3), "cos(x)")]
+    )(x_array).block_until_ready()
 
 
 start = time.perf_counter()
 hard_coded_callable_piecewise = get_hard_coded_callable_piecewise()
 end = time.perf_counter()
-print(f"Compilation of the hard coded piecewise callable took: {(end - start) * 1E06:0.1f} µs")
+print(
+    f"Compilation of the hard coded piecewise callable took: {(end - start) * 1E06:0.1f} µs"
+)
 
 start = time.perf_counter()
-sympy_callable_piecewise = get_sympy_callable_piecewise([((0, 1), "sin(x)"), ((1, 2), "exp(x)"), ((2, 3), "cos(x)")])
+sympy_callable_piecewise = get_sympy_callable_piecewise(
+    [((0, 1), "sin(x)"), ((1, 2), "exp(x)"), ((2, 3), "cos(x)")]
+)
 end = time.perf_counter()
-print(f"Compilation of the sympy parsed piecewise callable took: {(end - start) * 1E06:0.1f} µs")
+print(
+    f"Compilation of the sympy parsed piecewise callable took: {(end - start) * 1E06:0.1f} µs"
+)
 
 
 for _ in range(warmups):
@@ -92,7 +102,7 @@ for _ in range(warmups):
     sympy_callable_piecewise(x_array).block_until_ready()
 
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     hard_coded_callable_piecewise(x_array).block_until_ready()
@@ -103,7 +113,7 @@ avg = sum(times) / len(times)
 print(f"The hard coded piecewise callable took in average: {avg * 1E06:0.1f} µs")
 print(f"Cost: {hard_coded_callable_piecewise.cost_analysis()}")
 
-times=[]
+times = []
 for _ in range(runs):
     start = time.perf_counter()
     sympy_callable_piecewise(x_array).block_until_ready()
@@ -113,4 +123,3 @@ for _ in range(runs):
 avg = sum(times) / len(times)
 print(f"The sympy parsed piecewise callable took in average: {avg * 1E06:0.1f} µs")
 print(f"Cost: {sympy_callable_piecewise.cost_analysis()}")
-
