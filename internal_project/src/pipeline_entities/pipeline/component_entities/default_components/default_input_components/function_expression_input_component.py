@@ -1,42 +1,35 @@
 from functions.abstracts.compilable_function import CompilableFunction
-from functions.defaults.single_sympy_expression_function import (
-    SingleSympyExpressionFunction,
-)
-from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.input_components.function_expression_input_component_meta_info import (
-    function_expression_input_component_meta_info,
-)
-from pipeline_entities.pipeline.component_entities.default_component_types.input_pipeline_component import (
-    InputPipelineComponent,
-)
-from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import (
-    pipeline_component,
-)
+from functions.defaults.single_sympy_expression_function import SingleSympyExpressionFunction
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.input_components.function_expression_input_component_meta_info import function_expression_input_component_meta_info
+from pipeline_entities.pipeline.component_entities.default_component_types.input_pipeline_component import InputPipelineComponent
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
 from data_classes.pipeline_data.pipeline_data import PipelineData
 from data_classes.pipeline_input.pipeline_input import PipelineInput
 
 
-@pipeline_component(
-    id="function expression input",
-    type=InputPipelineComponent,
-    meta_info=function_expression_input_component_meta_info,
-)
+@pipeline_component(id="function expression input", type=InputPipelineComponent, meta_info=function_expression_input_component_meta_info)
 class FunctionExpressionInputComponent(InputPipelineComponent):
+    """
+    Pipeline component that creates a compilable function from a symbolic expression and assigns it to the pipeline data.
+    """
+
 
     ##########################
     ### Overridden methods ###
     ##########################
     def perform_action(self) -> PipelineData:
-        pipeline_data: PipelineData = self._pipeline_data_[0]
+        """
+        Convert a function expression string from the pipeline input into a compilable SymPy-based function and store it
+        in the pipeline data.
 
+        Returns:
+            PipelineData: Updated pipeline data containing the compilable function.
+        """
+
+        pipeline_data: PipelineData = self._pipeline_data_[0]
         pipeline_input: PipelineInput = self._additional_execution_info_.pipeline_input
         function_expression: str = pipeline_input.function_expression
-        simplify_expression: bool = (
-            pipeline_input.sympy_function_expression_simplification
-        )
-
-        compilable_function: CompilableFunction = SingleSympyExpressionFunction(
-            "Original function", function_expression, simplify_expression
-        )
+        simplify_expression: bool = pipeline_input.sympy_function_expression_simplification
+        compilable_function: CompilableFunction = SingleSympyExpressionFunction("Original function", function_expression, simplify_expression)
         pipeline_data.original_function = compilable_function
-
         return pipeline_data

@@ -2,4 +2,8 @@
 
 
 def register():
+    """
+    Register dummy pipeline component.
+    """
+
     from . import dummy_pipeline_component
