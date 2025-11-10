@@ -4,29 +4,41 @@ from typing import TypeVar, Generic, Any, Generator, Callable, Iterable
 from general_data_structures.freezable import Freezable
 from general_data_structures.tree.tree_node import TreeNode
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
 
 class Tree(Generic[T], Freezable, Iterable[T]):
+    """
+    Generic tree data structure based on TreeNode. A tree can be initialized from a root node, a string representation,
+    or left empty. The tree supports pre-order and post-order traversals, mapping of node values, and equality/hash operations when frozen.
+    """
+
+
     ###############################
     ### Attributes of instances ###
     ###############################
     _root_node_: TreeNode[T] | None
 
 
-
     ###################
     ### Constructor ###
     ###################
     def __init__(self, argument: TreeNode[T] | str | None) -> None:
+        """
+        Raises:
+            TypeError: If the argument is not TreeNode, str, or None.
+        """
+
         if argument is not None:
             if isinstance(argument, TreeNode):
                 self._init_from_root_node_(argument)
             elif isinstance(argument, str):
                 self._init_from_str_(argument)
             else:
-                raise TypeError(f"Got argument of type '{type(argument)}' but must be a TreeNode[T], str or None.")
+                raise TypeError(
+                    f"Got argument of type '{type(argument)}' but must be a TreeNode[T], str or None."
+                )
         else:
             self._root_node_ = None
 
@@ -35,18 +47,40 @@ class Tree(Generic[T], Freezable, Iterable[T]):
     ### Public methods ###
     ######################
     def pre_order_traversal(self) -> Generator[TreeNode[T], Any, None]:
+        """
+        Traverse the tree in pre-order (root before children).
+
+        Returns:
+            Generator yielding nodes in pre-order.
+        """
+
         if self._root_node_:
             yield from self._root_node_.pre_order_traversal()
 
 
-
     def post_order_traversal(self) -> Generator[TreeNode[T], Any, None]:
+        """
+        Traverse the tree in post-order (children before root).
+
+        Returns:
+            Generator yielding nodes in post-order.
+        """
+
         if self._root_node_:
             yield from self._root_node_.post_order_traversal()
 
 
-
     def value_map(self, value_mapping: Callable[[T], U]) -> Tree[U]:
+        """
+        Create a new tree by applying a mapping function to each node's value.
+
+        Args:
+            value_mapping (Callable[[T], U]): Function to transform node values.
+
+        Returns:
+            Tree with mapped values.
+        """
+
         if self._root_node_ is None:
             return Tree[U](None)
         else:
@@ -54,25 +88,36 @@ class Tree(Generic[T], Freezable, Iterable[T]):
             return Tree[U](new_root_node)
 
 
-
     #########################
     ### Getters & setters ###
     #########################
     @property
     def root_node(self) -> TreeNode[T] | None:
-        return self._root_node_
+        """
+        Return the root node of the tree.
 
+        Returns:
+            The root node, or None if the tree is empty.
+        """
+
+        return self._root_node_
 
 
     @property
     def amount_of_nodes(self) -> int:
+        """
+        Return the number of nodes contained in the tree.
+
+        Returns:
+            Total count of nodes.
+        """
+
         result: int = 0
 
         for _ in self.pre_order_traversal():
             result += 1
 
         return result
-
 
 
     ##########################
@@ -82,14 +127,12 @@ class Tree(Generic[T], Freezable, Iterable[T]):
         return f"Tree(root_node={repr(self._root_node_)})"
 
 
-
     def __iter__(self) -> Generator[TreeNode[T], Any, None]:
         yield from self.pre_order_traversal()
 
 
-
     def __eq__(self, other: any) -> bool:
-        if not isinstance(other, Tree): # Checks for None
+        if not isinstance(other, Tree):  # Checks for None
             return False
         else:
             own_gen = self.pre_order_traversal()
@@ -105,14 +148,12 @@ class Tree(Generic[T], Freezable, Iterable[T]):
                     return False
 
 
-
     def __hash__(self):
-        if self._frozen_:  # instance is immutable
+        if self._frozen_:
             hash_values: list[int] = [node.__hash__() for node in self]
             return hash(hash_values)
         else:  # instance is mutable
             return None
-
 
 
     def freeze(self) -> None:
@@ -122,7 +163,6 @@ class Tree(Generic[T], Freezable, Iterable[T]):
             child.freeze()
 
 
-
     #######################
     ### Private methods ###
     #######################
@@ -130,9 +170,8 @@ class Tree(Generic[T], Freezable, Iterable[T]):
         self._root_node_ = root_node
 
 
-
     def _init_from_str_(self, string: str) -> None:
-        lines: list[str] = string.strip('\n').splitlines()
+        lines: list[str] = string.strip("\n").splitlines()
         if not lines:
             self._root_node_ = None
             return
@@ -156,6 +195,3 @@ class Tree(Generic[T], Freezable, Iterable[T]):
                     parent_node.add_child_node(node)
 
                 stack.append((indent, node))
-
-
-

@@ -2,7 +2,7 @@ import dill
 import jax.numpy as jnp
 
 from functions.defaults.callable_wrapping_function import CallableWrappingFunction
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_data.pipeline_data import PipelineData
 
 
 def func(x):
@@ -22,5 +22,3 @@ print(data)
 
 restored_pipeline_data: PipelineData = dill.loads(data)
 print(restored_pipeline_data)
-
-

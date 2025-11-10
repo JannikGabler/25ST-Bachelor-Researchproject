@@ -2,7 +2,9 @@ import jax.numpy as jnp
 import unittest
 
 from test_interpolation_core_base import TestInterpolationCoreBase
-from functions.defaults.default_interpolants.barycentric_first_interpolant import BarycentricFirstInterpolant
+from functions.defaults.default_interpolants.barycentric_first_interpolant import (
+    BarycentricFirstInterpolant,
+)
 from pipeline_entities.pipeline.component_entities.default_components.default_interpolation_cores.barycentric_first_interpolation_core import (
     BarycentricFirstInterpolationCore,
 )
@@ -42,6 +44,7 @@ class TestBarycentricFirstInterpolationCore(TestInterpolationCoreBase):
         where l(x) = Π_j (x - x_j).
         If x equals a node, return the exact f_j.
         """
+
         def eval_one(x):
             diffs = x - nodes
             exact_mask = diffs == 0.0
@@ -66,8 +69,8 @@ class TestBarycentricFirstInterpolationCore(TestInterpolationCoreBase):
     def test_quadratic(self):
         # p(x) = 1 + 2x + x^2 -> nodes [0,1,2], values [1,4,9]
         nodes = jnp.array([0.0, 1.0, 2.0])
-        values = (nodes ** 2) + 2.0 * nodes + 1.0
-        f_true = lambda x: (x ** 2) + 2.0 * x + 1.0
+        values = (nodes**2) + 2.0 * nodes + 1.0
+        f_true = lambda x: (x**2) + 2.0 * x + 1.0
         xs = jnp.array([-1.0, 0.0, 0.5, 1.0, 3.0])
         self._run_case(nodes, values, f_true, xs)
 

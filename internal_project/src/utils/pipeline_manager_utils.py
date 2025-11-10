@@ -3,38 +3,58 @@ from dataclasses import fields
 
 from exceptions.not_instantiable_error import NotInstantiableError
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
+
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from data_classes.pipeline_input.pipeline_input import PipelineInput
 from pipeline_entities.pipeline.pipeline import Pipeline
-from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import \
-    AdditionalComponentExecutionData
-from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
-    PipelineComponentInstantiationInfo
-from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import \
-    PipelineComponentExecutionReport
+from pipeline_entities.pipeline_execution.dataclasses.additional_component_execution_data import AdditionalComponentExecutionData
+
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
 
 
 class PipelineManagerUtils:
-    REMOVE_VALUE_MARKER = object()
+    """
+    Utility helpers for the pipeline manager. This class is not meant to be instantiated.
+    """
 
+    REMOVE_VALUE_MARKER = object()
 
 
     ###################
     ### Constructor ###
     ###################
     def __init__(self) -> None:
-        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
+        """
+        Raises:
+            NotInstantiableError: Always raised when initialized to indicate that this class is not meant to be instantiated.
+        """
 
+        raise NotInstantiableError(f"The class {repr(self.__class__.__name__)} cannot be instantiated.")
 
 
     ######################
     ### Public methods ###
     ######################
     @classmethod
-    def create_input_for_node(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                    pipeline: Pipeline, reports: dict[int, PipelineComponentExecutionReport]) \
-                    -> tuple[list[PipelineData], AdditionalComponentExecutionData, dict[str, object]]:
+    def create_input_for_node(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], pipeline: Pipeline, reports: dict[int, PipelineComponentExecutionReport]) \
+            -> tuple[list[PipelineData], AdditionalComponentExecutionData, dict[str, object]]:
+        """
+        Construct the input tuple for a component node.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]): Target component node.
+            pipeline (Pipeline): The current pipeline.
+            reports (dict[int, PipelineComponentExecutionReport]): Execution reports collected so far.
+
+        Returns:
+            tuple[list[PipelineData], AdditionalComponentExecutionData, dict[str, object]]:
+                - list[PipelineData]: List of pipeline data.
+                - AdditionalComponentExecutionData: Additional execution data.
+                - dict[str, object]: Mapping of overridden attribute names to their previous values.
+        """
 
         data: list[PipelineData]
         additional_data: AdditionalComponentExecutionData
@@ -48,43 +68,47 @@ class PipelineManagerUtils:
         return data, additional_data, old_attributes
 
 
-
     @classmethod
-    def reverse_attribute_overrides(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                                    output_data: PipelineData, old_attributes: dict[str, object]) -> None:
+    def reverse_attribute_overrides(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], output_data: PipelineData, old_attributes: dict[str, object]) -> None:
+        """
+        Revert attribute overrides for a node.
+
+        Args:
+            node (DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]): Target node.
+            output_data (PipelineData): Output data whose attributes will be restored.
+            old_attributes (dict[str, object]): Previous values of overridden attributes.
+
+        Returns:
+            None
+        """
+
         for attribute_name, old_value in old_attributes.items():
             if attribute_name not in node.value.component.component_meta_info.attributes_modifying:
-                cls._override_attribute_(attribute_name, old_value, [output_data])
-
+                 cls._override_attribute_(attribute_name, old_value, [output_data])
 
 
     #######################
     ### Private methods ###
     #######################
     @classmethod
-    def _create_new_input_for_entry_node_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                    pipeline: Pipeline) -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
+    def _create_new_input_for_entry_node_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], pipeline: Pipeline) \
+            -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
 
-        index_of_old_node: int = pipeline.pipeline_configuration.components.get_index_of_node_(node)
+        index_of_old_node: int = (pipeline.pipeline_configuration.components.get_index_of_node_(node))
 
         new_configuration: PipelineConfiguration = deepcopy(pipeline.pipeline_configuration)
         new_input: PipelineInput = deepcopy(pipeline.pipeline_input)
         new_own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo] = new_configuration.components[index_of_old_node]
 
-        additional_component_execution_data: AdditionalComponentExecutionData = (
-            AdditionalComponentExecutionData({}, new_configuration, new_input, new_own_node, {}) # TODO: overridden attributes
-        )
+        additional_component_execution_data: AdditionalComponentExecutionData = (AdditionalComponentExecutionData({}, new_configuration, new_input, new_own_node, {}))
 
         new_pipeline_data: PipelineData = PipelineData()
         return [new_pipeline_data], additional_component_execution_data
 
 
-
-    # TODO: split up (functional decomposition)
     @classmethod
-    def _create_input_for_non_entry_node_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                    pipeline: Pipeline, reports: dict[int, PipelineComponentExecutionReport]) \
-                    -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
+    def _create_input_for_non_entry_node_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], pipeline: Pipeline, reports: dict[int, PipelineComponentExecutionReport]) \
+            -> tuple[list[PipelineData], AdditionalComponentExecutionData]:
 
         old_configuration: PipelineConfiguration = pipeline.pipeline_configuration
         new_configuration: PipelineConfiguration = deepcopy(old_configuration)
@@ -104,13 +128,12 @@ class PipelineManagerUtils:
             new_reports[id(new_predecessor)] = deepcopy(report)
 
         pipeline_data_list: list[PipelineData] = [new_reports[id(pre)].component_output for pre in new_own_node.predecessors]
-        return pipeline_data_list, AdditionalComponentExecutionData({}, new_configuration, new_input, new_own_node, new_reports) # TODO: overridden attributes
-
+        return pipeline_data_list, AdditionalComponentExecutionData({}, new_configuration, new_input, new_own_node, new_reports)
 
 
     @classmethod
-    def _insert_overridden_attributes_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                    data: list[PipelineData], additional_data: AdditionalComponentExecutionData) -> dict[str, object]:
+    def _insert_overridden_attributes_(cls, node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], data: list[PipelineData], additional_data: AdditionalComponentExecutionData) \
+            -> dict[str, object]:
 
         overridden_attributes: dict[str, object] = deepcopy(node.value.overridden_attributes)
         old_attributes: dict[str, object] = {}
@@ -122,7 +145,6 @@ class PipelineManagerUtils:
             old_attributes[attribute_name] = old_value
 
         return old_attributes
-
 
 
     @classmethod

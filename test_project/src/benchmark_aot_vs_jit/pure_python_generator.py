@@ -14,7 +14,6 @@ class PurePythonGenerator:
     def __init__(self, data: PipelineData) -> None:
         self.__data__ = data
 
-
     def generate_nodes(self) -> None:
         # Rescale int array for better stability
         nodes: list = [1 + 2 * i for i in range(self.__data__.node_count)]
@@ -24,9 +23,11 @@ class PurePythonGenerator:
 
         nodes: jnp.ndarray = jnp.array(nodes, dtype=self.__data__.data_type)
 
-        self.__data__.nodes = jax_utils.rescale_array_to_interval(nodes, jnp.array([-1, 1], dtype=self.__data__.data_type),
-                                                   self.__data__.interpolation_interval)
-
+        self.__data__.nodes = jax_utils.rescale_array_to_interval(
+            nodes,
+            jnp.array([-1, 1], dtype=self.__data__.data_type),
+            self.__data__.interpolation_interval,
+        )
 
     def __repr__(self) -> str:
         return "Node generator for type 1 chebyshev points"

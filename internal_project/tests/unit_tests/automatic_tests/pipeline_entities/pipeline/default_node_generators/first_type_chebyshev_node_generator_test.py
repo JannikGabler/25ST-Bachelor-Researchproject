@@ -10,7 +10,9 @@ from pipeline_entities.pipeline.component_entities.default_components.default_no
 class TestFirstTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
     CORE_CLS = FirstTypeChebyshevNodeGenerator
 
-    def build_expected_nodes(self, node_count: int, interval: jnp.ndarray, dtype) -> jnp.ndarray:
+    def build_expected_nodes(
+        self, node_count: int, interval: jnp.ndarray, dtype
+    ) -> jnp.ndarray:
         """
         Implementation mirrors your generator:
 
@@ -20,9 +22,9 @@ class TestFirstTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
         Rescale to [a, b] if interval != [-1, 1]:
           x' = ((b - a) / 2) * x + (a + b) / 2
         """
-        # base nodes on [-1, 1]
-        k = jnp.arange(1, 2 * node_count + 1, 2, dtype=dtype)  # 1,3,5,...,2n-1
-        thetas = k * (jnp.pi / (2 * node_count))
+        # base nodes on [-1, 1]; ascending (left-to-right) order
+        k = jnp.arange(node_count - 1, -1, -1, dtype=dtype)  # n-1, n-2, ..., 0
+        thetas = (2 * k + 1) * (jnp.pi / (2 * node_count))
         base = jnp.cos(thetas).astype(dtype)
 
         a, b = interval[0], interval[1]
@@ -30,7 +32,6 @@ class TestFirstTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
             scale = (b - a) / jnp.asarray(2, dtype=dtype)
             return base * scale + (a + scale)
         return base
-
 
     def test_default_interval_float32(self):
         # [-1, 1], n=6
@@ -43,6 +44,7 @@ class TestFirstTypeChebyshevNodeGenerator(TestNodeGeneratorBase):
     def test_single_node_edge_case(self):
         # n=1 -> cos(pi/2) = 0 on [-1,1]; after rescale it's midpoint (a+b)/2
         self._run_case(node_count=1, interval=(-3.0, 5.0), dtype=jnp.float32)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,7 +9,9 @@ data_type = jnp.float16
 
 
 def generate_nodes_1(node_count: int) -> jnp.ndarray:
-    return generate_nodes_1_core(jnp.arange(1, 2 * node_count - 1, step=2, dtype=data_type))
+    return generate_nodes_1_core(
+        jnp.arange(1, 2 * node_count - 1, step=2, dtype=data_type)
+    )
 
 
 @jax.jit
@@ -26,7 +28,6 @@ def generate_nodes_2(node_count: int) -> jnp.ndarray:
     nodes = jnp.multiply(nodes, jnp.pi / (2 * node_count))
 
     return jnp.cos(nodes)
-
 
 
 @partial(jax.jit, static_argnames=("node_count",))
@@ -61,7 +62,6 @@ def generate_nodes_5(node_count: int) -> jnp.ndarray:
     return jnp.cos(angles)
 
 
-
 def benchmark(function, node_count: int, warmup=5, runs=50):
     # Warm-up
     for _ in range(warmup):
@@ -75,7 +75,9 @@ def benchmark(function, node_count: int, warmup=5, runs=50):
         times.append(end - start)
 
     avg_time = sum(times) / runs
-    print(f"{function.__name__}: {avg_time * 1e6:.2f} µs in average per call (runs = {runs})")
+    print(
+        f"{function.__name__}: {avg_time * 1e6:.2f} µs in average per call (runs = {runs})"
+    )
     return avg_time * 1e6
 
 
@@ -90,7 +92,7 @@ for i, node_count in enumerate(node_counts):
 
 
 for i, times_array in enumerate(times_matrix):
-    plt.plot(node_counts, times_array, label=f'{i+1}')
+    plt.plot(node_counts, times_array, label=f"{i+1}")
 
 plt.loglog()
 plt.legend()

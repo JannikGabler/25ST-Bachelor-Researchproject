@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
-    PipelineComponentInstantiationInfo
+from data_classes.pipeline_data.pipeline_data import PipelineData
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import (
+    PipelineComponentInstantiationInfo,
+)
 
 
 @dataclass

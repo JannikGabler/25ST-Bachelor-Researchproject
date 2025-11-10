@@ -1,0 +1,15 @@
+from pipeline_entities.pipeline.component_entities.default_component_types.plot_component import PlotComponent
+from pipeline_entities.pipeline.component_entities.pipeline_component.pipeline_component_decorator import pipeline_component
+from pipeline_entities.pipeline.component_entities.component_meta_info.defaults.plot_components.absolute_round_off_error_plot_component import absolute_round_off_error_plot_component_meta_info
+from constants.internal_logic_constants import AbsoluteRoundOffErrorPlotComponentConstants
+from utils.absolute_round_off_error_plot_component_utils import AbsoluteRoundOffErrorPlotComponentUtils
+
+
+@pipeline_component(id="absolute round off error plotter", type=PlotComponent, meta_info=absolute_round_off_error_plot_component_meta_info)
+class AbsoluteRoundOffErrorPlotComponent(PlotComponent):
+    """
+    Pipeline component that generates the absolute round off error plot.
+    """
+
+    PLOT_COMPONENT_UTILS_CLASS = AbsoluteRoundOffErrorPlotComponentUtils
+    PLOT_COMPONENT_CONSTANTS_CLASS = AbsoluteRoundOffErrorPlotComponentConstants

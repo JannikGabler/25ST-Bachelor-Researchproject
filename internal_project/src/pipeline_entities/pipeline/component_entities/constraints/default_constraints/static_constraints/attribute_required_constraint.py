@@ -1,14 +1,16 @@
-from dataclasses import fields
-
 from general_data_structures.directional_acyclic_graph.directional_acyclic_graph_node import DirectionalAcyclicGraphNode
+
 from pipeline_entities.pipeline.component_entities.constraints.abstracts.static_constraint import StaticConstraint
-from pipeline_entities.large_data_classes.pipeline_data.pipeline_data import PipelineData
-from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import \
-    PipelineComponentInstantiationInfo
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
+from pipeline_entities.pipeline_execution.dataclasses.pipeline_component_instantiation_info import PipelineComponentInstantiationInfo
+from data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
 
 
 class AttributeRequiredConstraint(StaticConstraint):
+    """
+    Static constraint that ensures a specific attribute is guaranteed to be set for a given node in the pipeline's DAG.
+    """
+
+
     ##############################
     ### Attributs of instances ###
     ##############################
@@ -16,24 +18,35 @@ class AttributeRequiredConstraint(StaticConstraint):
     _error_message_: str | None
 
 
-
-
     ###################
     ### Constructor ###
     ###################
     def __init__(self, attribute_name: str):
+        """
+        Args:
+            attribute_name: Name of the attribute that must be guaranteed to be set.
+        """
+
         self._attribute_name_ = attribute_name
         self._error_message_ = None
-
 
 
     ######################
     ### Public methods ###
     ######################
-    def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo],
-                 pipeline_configuration: PipelineConfiguration) -> bool:
+    def evaluate(self, own_node: DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo], pipeline_configuration: PipelineConfiguration) -> bool:
+        """
+        Evaluate whether the required attribute is guaranteed to be set for the given node and its predecessors.
 
-        if self._is_attribute_for_component_guaranteed_set_(own_node) :
+        Args:
+            own_node (DirectionalAcyclicGraphNode[PipelineComponentInstantiationInfo]): The node to evaluate.
+            pipeline_configuration (PipelineConfiguration): The pipeline configuration.
+
+        Returns:
+            bool: True if the attribute is guaranteed to be set, False otherwise.
+        """
+
+        if self._is_attribute_for_component_guaranteed_set_(own_node):
             self._error_message_ = None
             return True
         else:
@@ -42,8 +55,14 @@ class AttributeRequiredConstraint(StaticConstraint):
 
 
     def get_error_message(self) -> str | None:
-        return self._error_message_
+        """
+        Retrieve the last error message generated during evaluation, if any.
 
+        Returns:
+            str | None: Error message if evaluation failed, otherwise None.
+        """
+
+        return self._error_message_
 
 
     ##########################
@@ -52,22 +71,20 @@ class AttributeRequiredConstraint(StaticConstraint):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(attribute_name={repr(self._attribute_name_)})"
 
+
     def __str__(self):
         return self.__repr__()
-
 
 
     def __hash__(self):
         return hash(self._attribute_name_)
 
 
-
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):   # Covers None
+        if not isinstance(other, self.__class__):  # Covers None
             return False
         else:
             return self._attribute_name_ == other._attribute_name_
-
 
 
     #######################

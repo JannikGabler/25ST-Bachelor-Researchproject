@@ -16,11 +16,15 @@ def aitken_neville_full_array(nodes: jnp.ndarray, values: jnp.ndarray) -> jnp.nd
         # Update entries for current order of divided differences
         def inner_loop(i, polynomials_inner):
             node_difference: jnp.ndarray = nodes[i] - nodes[i - k]
-            polynomial_difference: jnp.ndarray = polynomials_outer[i] - polynomials_outer[i - 1]
+            polynomial_difference: jnp.ndarray = (
+                polynomials_outer[i] - polynomials_outer[i - 1]
+            )
 
             summand1: jnp.ndarray = polynomials_outer[i]
-            summand2: jnp.ndarray = - nodes[i] / node_difference * polynomial_difference
-            summand3: jnp.ndarray = jnp.roll(polynomial_difference / node_difference, 1, axis=0)
+            summand2: jnp.ndarray = -nodes[i] / node_difference * polynomial_difference
+            summand3: jnp.ndarray = jnp.roll(
+                polynomial_difference / node_difference, 1, axis=0
+            )
 
             return polynomials_inner.at[i].set(summand1 + summand2 + summand3)
 
@@ -58,8 +62,8 @@ def aitken_neville_coeffs(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
         for i in range(n - d):
             j = i + d
             # P_{i+1,j} and P_{i,j-1}
-            p1 = poly[i+1, j]
-            p2 = poly[i, j-1]
+            p1 = poly[i + 1, j]
+            p2 = poly[i, j - 1]
             xi = xs[i]
             xj = xs[j]
             # Numerators: (x - xi)*p1 - (x - xj)*p2
@@ -69,10 +73,7 @@ def aitken_neville_coeffs(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
             poly = poly.at[i, j].set(num / denom)
 
     # The full interpolant is P_{0,n-1}
-    return poly[0, n-1]
-
-
-
+    return poly[0, n - 1]
 
 
 operations = [aitken_neville_full_array, aitken_neville_coeffs]
@@ -95,7 +96,6 @@ for e in range(5):
         compiled.append(comp)
 
     print("Compiled.\n")
-
 
     for i, comp in enumerate(compiled):
         durations = []
@@ -149,7 +149,3 @@ for e in range(5):
 # print("Calculated.\n")
 #
 # print(results)
-
-
-
-

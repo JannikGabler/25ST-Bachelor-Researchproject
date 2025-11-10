@@ -3,22 +3,34 @@ import tempfile
 
 from pathlib import Path
 
-from file_handling.pipeline_input_handling.pipeline_input_file_manager import PipelineInputFileManager
-from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import PipelineComponentExecutionReport
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration_data import PipelineConfigurationData
-from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import \
-    PipelineConfigurationFileManager
-from pipeline_entities.large_data_classes.pipeline_configuration.pipeline_configuration import PipelineConfiguration
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input import PipelineInput
-from pipeline_entities.large_data_classes.pipeline_input.pipeline_input_data import PipelineInputData
+from file_handling.pipeline_input_handling.pipeline_input_file_manager import (
+    PipelineInputFileManager,
+)
+from pipeline_entities.pipeline_execution.output.pipeline_component_execution_report import (
+    PipelineComponentExecutionReport,
+)
+from data_classes.pipeline_configuration.pipeline_configuration_data import (
+    PipelineConfigurationData,
+)
+from file_handling.pipeline_configuration_handling.pipeline_configuration_file_manager import (
+    PipelineConfigurationFileManager,
+)
+from data_classes.pipeline_configuration.pipeline_configuration import (
+    PipelineConfiguration,
+)
+from data_classes.pipeline_input.pipeline_input import PipelineInput
+from data_classes.pipeline_input.pipeline_input_data import PipelineInputData
 from pipeline_entities.pipeline.data_classes.pipeline import Pipeline
 from pipeline_entities.pipeline.pipeline_builder.pipeline_builder import PipelineBuilder
-from pipeline_entities.pipeline_execution.pipeline_manager.pipeline_manager import PipelineManager
+from pipeline_entities.pipeline_execution.pipeline_manager.pipeline_manager import (
+    PipelineManager,
+)
 from setup_manager.internal_logic_setup_manager import InternalLogicSetupManager
 
 InternalLogicSetupManager.setup()
 
-pipeline_configuration_file_content: bytes = textwrap.dedent("""\
+pipeline_configuration_file_content: bytes = textwrap.dedent(
+    """\
     name="DemoPipeline"
     supported_program_version=Version(\"1.0.0\")
     components=DirectionalAcyclicGraph(\"\"\"
@@ -29,7 +41,8 @@ pipeline_configuration_file_content: bytes = textwrap.dedent("""\
             predecessors=["1"]
         \"\"\")
     extra_value=True
-    """).encode("utf-8")
+    """
+).encode("utf-8")
 
 
 temp_dir = tempfile.TemporaryDirectory()
@@ -41,16 +54,21 @@ with open(temp_pipeline_configuration_file, "wb") as f:
 print(temp_dir.name)
 
 
-pipeline_configuration_data: PipelineConfigurationData = PipelineConfigurationFileManager.load_from_file(temp_pipeline_configuration_file)
+pipeline_configuration_data: PipelineConfigurationData = (
+    PipelineConfigurationFileManager.load_from_file(temp_pipeline_configuration_file)
+)
 
 print(pipeline_configuration_data)
 
 
-pipeline_configuration: PipelineConfiguration = PipelineConfiguration(pipeline_configuration_data)
+pipeline_configuration: PipelineConfiguration = PipelineConfiguration(
+    pipeline_configuration_data
+)
 
 print(pipeline_configuration)
 
-pipeline_input_file_content: bytes = textwrap.dedent("""\
+pipeline_input_file_content: bytes = textwrap.dedent(
+    """\
     name="TestPipeline"
     data_type=jax.numpy.float32
     node_count=5
@@ -62,7 +80,8 @@ pipeline_input_file_content: bytes = textwrap.dedent("""\
     function_values=jax.numpy.array([0.0, 1.0, 4.0, 9.0, 16.0])
     §secret_token="abc123"
     extra_value=[1, 2, 3]
-    """).encode("utf-8")
+    """
+).encode("utf-8")
 
 
 temp_pipeline_input_file = Path(temp_dir.name + "/pipeline_input.ini")
@@ -71,7 +90,9 @@ with open(temp_pipeline_input_file, "wb") as f:
     f.write(pipeline_input_file_content)
 
 
-pipeline_input_data: PipelineInputData = PipelineInputFileManager.load_from_file(temp_pipeline_input_file)
+pipeline_input_data: PipelineInputData = PipelineInputFileManager.load_from_file(
+    temp_pipeline_input_file
+)
 
 print(pipeline_input_data)
 
@@ -93,6 +114,8 @@ while not pipeline_manager.is_completely_executed:
     node_name: str = report.component_instantiation_info.component_name
     node_id: str = report.component_instantiation_info.component.component_id
 
-    print(f"###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######")
+    print(
+        f"###### Report from node {report.component_instantiation_info.component_name} ({report.component_instantiation_info.component.component_id}) ######"
+    )
     print(report)
     print("\n\n")

@@ -22,9 +22,7 @@ def create_callable(function_string: str, simplify_expression=True) -> callable:
     return jax.jit(f_vectorized).lower(dummy_input).compile()
 
 
-
-
-#function_string: str = input("-> ")
+# function_string: str = input("-> ")
 function_string: str = "cos(x) * (2 ** x)"
 
 
